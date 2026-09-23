@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hard and Soft Skills in IT: Conditionals 0-3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme:light;
+  --paper:#eef2f7; --desk:#e2e9f1; --card:#ffffff; --card2:#f3f7fb;
+  --ink:#16223a; --muted:#56667c; --line:#dce4ee; --line2:#b7c4d4;
+  --acc:#0f6e8c; --acc-d:#0a4c62; --acc-l:#dcecf1; --acc-xl:#eef7fa;
+  --hi:#f2a93c; --hi-l:#fbe6c2;
+  --ok:#1f6b45; --ok-bg:#d9efe2; --bad:#a1322a; --bad-bg:#f4d9cf;
+  --warn:#7a5510; --warn-bg:#f3e2b3;
+  --red:#c8201e; --red-l:#fde6e3;
+  --hard:#2b6cb0; --hard-l:#dde9f7; --soft:#b26a00; --soft-l:#f6e5c6;
+  --c0:#5b6b7d; --c1:#2f7d4f; --c2:#2b6cb0; --c3:#7a4fa0;
+  --head:'Space Grotesk','Trebuchet MS',ui-sans-serif,system-ui,sans-serif;
+  --body:'Inter','Segoe UI',ui-sans-serif,system-ui,sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:var(--body);font-size:17px;line-height:1.55;color:var(--ink);background:var(--paper);background:linear-gradient(180deg,var(--desk) 0,var(--paper) 420px) fixed;min-height:100vh}
+h1,h2,h3,h4,h5{font-family:var(--head);line-height:1.15;margin:0 0 .5em;letter-spacing:-.01em;color:var(--ink)}
+h1{font-size:clamp(2.6rem,7vw,4.6rem);font-weight:800;letter-spacing:-.03em}
+h2{font-size:clamp(1.8rem,3.8vw,2.5rem);font-weight:800;margin-bottom:.35em}
+h3{font-size:1.32rem;font-weight:700}
+h4{font-size:1.05rem;font-weight:700;margin-bottom:.3em}
+h5{font-size:.9rem;font-weight:700}
+p{margin:0 0 .8em}
+small,.small{font-size:.88rem;color:var(--muted)}
+.lead{font-size:1.15rem;color:var(--muted);max-width:60ch}
+:focus-visible{outline:3px solid var(--hi);outline-offset:2px;border-radius:6px}
+button{font-family:inherit}
+
+/* top bar */
+.top{position:sticky;top:0;z-index:30;background:var(--paper);background:color-mix(in srgb,var(--paper) 90%,transparent);backdrop-filter:blur(8px);border-bottom:1.5px solid var(--line)}
+.top-in{max-width:1140px;margin:auto;padding:8px 16px;display:flex;align-items:center;gap:14px}
+.brand{font-family:var(--head);font-weight:800;font-size:1.05rem;color:var(--acc-d);white-space:nowrap}
+.pills{display:flex;gap:6px;overflow-x:auto;flex:1;padding:3px 2px;scrollbar-width:thin}
+.pill{border:1.5px solid var(--line2);background:var(--card);color:var(--ink);border-radius:999px;padding:4px 13px;font:700 .84rem var(--body);cursor:pointer;white-space:nowrap}
+.pill.on{background:var(--acc);border-color:var(--acc);color:var(--card)}
+.bar{height:4px;background:var(--line)}
+.bar i{display:block;height:100%;width:0;background:var(--acc);transition:width .3s}
+main{max-width:1140px;margin:0 auto;padding:26px 16px 110px}
+.slide{display:none}
+.slide.on{display:block;animation:in .3s ease}
+@keyframes in{from{opacity:0}to{opacity:1}}
+.foot{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--paper);border-top:1.5px solid var(--line);padding:9px 16px}
+.foot-in{max-width:1140px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:12px}
+#where{font-weight:700;color:var(--muted);font-size:.92rem;text-align:center}
+
+/* generic blocks */
+.card{background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:20px 22px;margin:0 0 20px}
+.g2,.g3,.g4{display:grid;gap:18px;margin-bottom:18px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr))}
+.card .g2,.card .g3,.card .g4{margin-bottom:6px}
+.chip{display:inline-block;padding:2px 11px;border-radius:999px;background:var(--acc-l);color:var(--acc-d);font-weight:700;font-size:.88rem;margin:3px 4px 3px 0}
+.chip.sun{background:var(--hi-l);color:var(--warn)}
+.btn{font:800 1rem var(--body);border:2px solid var(--acc);background:var(--acc);color:var(--card);border-radius:12px;padding:9px 20px;cursor:pointer}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;color:var(--acc-d)}
+.btn.sm{padding:5px 13px;font-size:.9rem}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.big{font-size:1.15rem;padding:13px 28px;border-radius:14px}
+.note{border-left:6px solid var(--acc);background:var(--acc-xl);padding:12px 16px;border-radius:6px 14px 14px 6px;margin:14px 0}
+.note.warn{border-color:#e0a100;background:var(--warn-bg)}
+.note p:last-child{margin:0}
+.sw{display:inline-flex;align-items:center;gap:8px;font-weight:700;color:var(--muted);margin:0 0 14px;cursor:pointer}
+.sw input{width:18px;height:18px;accent-color:var(--acc)}
+.scroll{overflow-x:auto}
+u{text-decoration:underline;text-decoration-color:var(--acc);text-decoration-thickness:2.5px;text-underline-offset:4px;text-decoration-skip-ink:none}
+body.nopred u{text-decoration:none}
+.k{display:inline-block;padding:1px 10px;border-radius:8px;font-weight:800;font-size:.95rem}
+.k.s{background:var(--acc-l);color:var(--acc-d)}
+.k.a{background:var(--hi-l);color:var(--warn)}
+.k.v{background:var(--ok-bg);color:var(--ok)}
+.fx{margin:.3em 0 .6em;line-height:2}
+.eg{font-size:1.02rem}
+.tbl{width:100%;border-collapse:separate;border-spacing:0;font-size:.95rem;min-width:560px}
+.tbl th{background:var(--acc);color:var(--card);text-align:left;padding:9px 12px;font-family:var(--head);font-weight:700}
+.tbl th:first-child{border-radius:12px 0 0 0}.tbl th:last-child{border-radius:0 12px 0 0}
+.tbl td{padding:9px 12px;border-bottom:1.5px solid var(--line);vertical-align:top}
+.tbl tr:nth-child(even) td{background:var(--card2)}
+.tbl td:first-child{font-weight:800;color:var(--acc-d)}
+.tbl tr.on td{background:var(--hi-l)}
+.mist{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:8px 22px}
+.mist p{margin:0;padding:6px 0;border-bottom:1px dashed var(--line2)}
+.x{color:var(--bad);font-weight:800}.v2{color:var(--ok);font-weight:800}
+.x+span{text-decoration:line-through;text-decoration-color:var(--bad)}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:34px;align-items:center;margin-bottom:26px}
+.hero-pic{margin:0}
+.frame{background:linear-gradient(160deg,#f6fbff,#cfe7fa);border-radius:34px 34px 34px 8px;padding:14px;border:2px solid var(--line2)}
+.frame img{display:block;width:100%;height:auto;mix-blend-mode:multiply;border-radius:24px}
+.hero-pic figcaption{margin-top:10px;font-family:var(--head);font-weight:700;font-size:1.05rem;color:var(--acc-d);text-align:center}
+.kicker{font-weight:800;color:var(--acc);margin:0 0 6px}
+.map{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:10px}
+.map button{text-align:left;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:10px 14px;cursor:pointer;color:var(--ink);font:600 .95rem var(--body)}
+.map button b{display:block;font-family:var(--head);color:var(--acc-d)}
+.map button:hover{border-color:var(--acc)}
+.obj ul{margin:0;padding-left:1.2em}.obj li{margin:.25em 0}
+
+/* warm-up */
+.rq{font-family:var(--head);font-size:1.45rem;font-weight:700;min-height:4.6em;display:flex;align-items:center;background:var(--acc-xl);border-radius:16px;padding:14px 18px;margin:8px 0 12px}
+.timer{font:800 2.4rem var(--head);color:var(--acc-d);margin-left:auto}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.ring{border:2px solid var(--line2);border-radius:26px;padding:32px 12px 12px;position:relative;background:var(--rb,var(--card))}
+.ring>h5{position:absolute;top:9px;left:16px;margin:0;color:var(--acc-d)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;min-height:8px;margin-bottom:8px}
+.pchip{background:var(--card);border:1.5px solid var(--acc);border-radius:999px;padding:1px 4px 1px 11px;font-weight:700;font-size:.9rem}
+.pchip button{border:0;background:none;color:var(--muted);font-size:1rem;cursor:pointer;padding:0 6px}
+input[type=text],input[type=number],select,textarea{font:600 1rem var(--body);color:var(--ink);background:var(--card);border:2px solid var(--line2);border-radius:10px;padding:7px 11px;max-width:100%}
+input[type=text]:focus,select:focus,textarea:focus{border-color:var(--acc);outline:none}
+textarea{width:100%;min-height:80px;resize:vertical}
+
+/* vocabulary */
+.vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:18px}
+.vcard{background:var(--card);border:1.5px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column}
+.vpic svg,.pcard svg{display:block;width:100%;height:auto}
+.vbody{padding:12px 16px 14px}
+.vbody h4{font-size:1.25rem;margin:0;display:flex;align-items:center;justify-content:space-between;gap:8px;color:var(--acc-d)}
+.vbody .uk{font-weight:700;margin:2px 0 6px}
+.vbody .ex{font-size:.95rem;margin:0;color:var(--muted)}
+.vbody .vn{font-size:.88rem;margin:.5em 0 0;background:var(--hi-l);border-radius:8px;padding:4px 9px}
+#vgrid.hide-uk .uk{display:none}
+.say{border:1.5px solid var(--line2);background:var(--card2);border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:.9rem;flex:none}
+.legend{display:flex;flex-wrap:wrap;gap:14px;align-items:center;font-size:.92rem;color:var(--muted);margin:6px 0 14px}
+.dot{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:-2px;margin-right:5px}
+
+/* phrases */
+.meter{height:16px;border-radius:999px;background:linear-gradient(90deg,#1c73c4,#6bb4ee,#c5d7e6,#f0b2a4,#d64a4a);margin:6px 0 4px}
+.meter-l{display:flex;justify-content:space-between;font-weight:700;font-size:.9rem;color:var(--muted);margin-bottom:18px}
+.pgroup{margin:0 0 22px}
+.pgroup>h3{display:flex;align-items:center;gap:10px}
+.pcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+.phc{background:var(--card);border:1.5px solid var(--line);border-left:8px solid var(--gc,var(--acc));border-radius:8px 16px 16px 8px;padding:10px 14px}
+.phc h4{margin:0;font-size:1.12rem;color:var(--acc-d)}
+.phc .uk{font-weight:700;margin:0 0 4px}
+.phc .ex{font-size:.94rem;color:var(--muted);margin:0}
+.phc .tag{font-size:.82rem;font-weight:700;color:var(--warn);background:var(--hi-l);border-radius:8px;padding:1px 8px;display:inline-block;margin-top:5px}
+
+/* exercises */
+.task{background:var(--card);border:2px solid var(--acc);border-radius:24px 24px 24px 6px;padding:20px 24px;margin:0 0 26px}
+.task h3{margin-bottom:.15em}
+.inst{color:var(--muted);margin-bottom:12px}
+.q{padding:12px 0;border-top:1.5px dashed var(--line2)}
+.q .txt{font-weight:700;margin-bottom:8px}
+.gap{display:inline-block;min-width:4.5em;border-bottom:2.5px solid var(--acc);text-align:center;color:var(--acc-d)}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opt{border:1.5px solid var(--line2);background:var(--card2);color:var(--ink);border-radius:10px;padding:6px 14px;font:700 .95rem var(--body);cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--acc);background:var(--acc-xl)}
+.opt.ok{background:var(--ok-bg);border-color:var(--ok);color:var(--ok)}
+.opt.bad{background:var(--bad-bg);border-color:var(--bad);color:var(--bad);text-decoration:line-through}
+.exp{font-size:.93rem;color:var(--muted);margin-top:6px}
+.tfoot{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px;padding-top:12px;border-top:1.5px solid var(--line)}
+.score{font-weight:800;color:var(--acc-d);margin-right:auto}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}
+.pcard{border:3px solid var(--line);border-radius:16px;overflow:hidden;background:var(--card)}
+.pcard select{width:100%;border:0;border-top:2px solid var(--line);border-radius:0;background:var(--card2)}
+.pcard.ok{border-color:var(--ok)}.pcard.bad{border-color:var(--bad)}
+.pcard .ans{display:none;padding:4px 10px;font-weight:800;color:var(--ok);background:var(--ok-bg)}
+.pcard.show .ans{display:block}
+.pool{display:flex;flex-wrap:wrap;gap:8px;min-height:50px;padding:10px;border:2px dashed var(--line2);border-radius:14px;margin-bottom:12px}
+.buckets{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:12px}
+.bucket{border:2px solid var(--line2);border-radius:16px;padding:10px 12px;min-height:110px;background:var(--card2);cursor:pointer}
+.bucket:hover{border-color:var(--acc)}
+.bucket h4{margin:0 0 8px}
+.bucket .in{display:flex;flex-wrap:wrap;gap:6px}
+.tok{border:1.5px solid var(--acc);background:var(--card);border-radius:999px;padding:4px 13px;font:700 .92rem var(--body);cursor:pointer;color:var(--ink)}
+.tok.sel{background:var(--hi);border-color:#c99700;color:#3a2a00}
+.tok.ok{background:var(--ok-bg);border-color:var(--ok);color:var(--ok)}
+.tok.bad{background:var(--bad-bg);border-color:var(--bad);color:var(--bad)}
+.mwrap{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.mcol{display:flex;flex-direction:column;gap:8px}
+.mit{position:relative;text-align:left;border:2px solid var(--line2);background:var(--card2);color:var(--ink);border-radius:12px;padding:8px 12px 8px 14px;font:700 .95rem var(--body);cursor:pointer}
+.mit.sel{border-color:#c99700;background:var(--hi-l)}
+.mit.paired{border-color:var(--pc);box-shadow:inset 7px 0 0 var(--pc)}
+.mit.ok{background:var(--ok-bg)}.mit.bad{background:var(--bad-bg)}
+.mit .bd{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--pc,var(--line2));color:var(--card);font-size:.8rem;margin-right:8px}
+.gapl{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:9px 0;border-top:1.5px dashed var(--line2)}
+.gapl input{width:9.5em;text-align:center}
+.gapl input.ok,.tin.ok{border-color:var(--ok);background:var(--ok-bg)}
+.gapl input.bad,.tin.bad{border-color:var(--bad);background:var(--bad-bg)}
+.tr{padding:12px 0;border-top:1.5px dashed var(--line2)}
+.tr .uk{font-weight:700;font-size:1.05rem;margin-bottom:6px}
+.tin{width:100%}
+.fb{margin:6px 0 0;font-weight:700;font-size:.95rem}
+.fb.ok{color:var(--ok)}.fb.mid{color:var(--warn)}.fb.bad{color:var(--bad)}
+.ptask{padding:10px 0;border-top:1.5px dashed var(--line2)}
+.ptask .words{display:flex;flex-wrap:wrap;gap:4px 3px;font-size:1.08rem}
+.w{border:0;background:none;font:inherit;color:inherit;padding:1px 3px;border-radius:6px;cursor:pointer}
+.w:hover{background:var(--acc-l)}
+.w.sel{background:var(--hi)}
+.w.ok{background:var(--ok-bg)}
+.w.miss{background:var(--bad-bg)}
+
+/* grammar */
+.fbox{border:1.5px solid var(--line);border-radius:14px;padding:12px 16px;background:var(--card2)}
+.fbox h4{color:var(--acc-d)}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.tabs button{border:2px solid var(--acc);background:transparent;color:var(--acc-d);border-radius:999px;padding:5px 18px;font:800 1rem var(--body);cursor:pointer}
+.tabs button[aria-pressed="true"]{background:var(--acc);color:var(--card)}
+.vsel{margin-bottom:14px;font-weight:700}
+.fcard{background:var(--card2);border:1.5px solid var(--line);border-radius:16px;padding:12px 16px}
+.fcard h4{color:var(--acc-d)}
+.fcard p{margin:.3em 0}
+.fcard .lbl{display:block;font-size:.82rem;font-weight:800;color:var(--muted);margin-top:.7em}
+.fline{font-size:1.06rem}
+details{margin-top:14px}
+summary{cursor:pointer;font-weight:800;color:var(--acc-d)}
+.uses{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:14px}
+.use{border:1.5px solid var(--line);border-radius:16px;padding:12px 16px;background:var(--card2)}
+.use h4{display:flex;gap:8px;align-items:center;margin-bottom:.15em}
+.use .rule{color:var(--muted);margin:0 0 .35em;font-size:.95rem}
+.use .eg{margin:0 0 .4em}
+.scale{display:flex;flex-wrap:wrap;gap:0;border-radius:14px;overflow:hidden;border:1.5px solid var(--line2);margin:8px 0 6px}
+.scale span{flex:1 1 80px;text-align:center;padding:8px 4px;font-weight:800;font-size:.92rem;color:#0f2c44}
+.pct{display:flex;justify-content:space-between;font-weight:700;font-size:.85rem;color:var(--muted);margin-bottom:12px}
+.cmp td:first-child{white-space:nowrap}
+.cmp td:nth-child(2){background:var(--acc-xl)}
+.cmp tr:nth-child(even) td:nth-child(2){background:var(--acc-l)}
+.tl{width:100%;height:auto;display:block}
+
+/* linking words + dialogue */
+.lw{background:none;color:var(--red);font-weight:800}
+body.nohl .lw{color:inherit;font-weight:inherit}
+.ph{background:var(--ph);border-radius:6px;padding:0 4px}
+body.noph .ph{background:none;padding:0}
+.vw{border-bottom:2px dotted var(--acc);cursor:help}
+.lgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:16px}
+.lcat{background:var(--card);border:1.5px solid var(--line);border-radius:18px;padding:14px 18px}
+.lcat h4{display:flex;gap:8px;align-items:center;color:var(--acc-d);margin-bottom:.1em}
+.lcat .job{color:var(--muted);margin:0 0 6px;font-size:.95rem}
+.lcat .ex{font-size:.95rem;margin:.4em 0 0;padding-left:10px;border-left:3px solid var(--line2)}
+.dlg{display:flex;flex-direction:column;gap:14px}
+.turn{display:flex;gap:12px;align-items:flex-end;max-width:min(92%,760px)}
+.turn.r{flex-direction:row-reverse;margin-left:auto}
+.avatar{width:56px;height:56px;border-radius:50%;overflow:hidden;flex:none;background:var(--acc-l);border:2px solid var(--line2)}
+.avatar svg{width:100%;height:100%;display:block}
+.bubble{background:var(--card);border:1.5px solid var(--line2);border-radius:20px 20px 20px 4px;padding:9px 16px 11px;position:relative}
+.turn.r .bubble{border-radius:20px 20px 4px 20px;background:var(--acc-xl)}
+.who{display:flex;align-items:center;gap:8px;font:800 .82rem var(--body);color:var(--muted)}
+.who .say{width:26px;height:26px;font-size:.72rem}
+.scene{font-style:italic;color:var(--muted);margin-bottom:14px}
+.ruled{position:relative;background-color:var(--card);background-image:repeating-linear-gradient(to bottom,transparent 0,transparent 31px,var(--line) 31px,var(--line) 32px);background-position:0 9px;line-height:32px;padding:14px 26px 6px 62px;border:1.5px solid var(--line);border-radius:20px;margin:0 0 20px}
+.ruled:before{content:"";position:absolute;left:42px;top:0;bottom:0;width:2px;background:var(--line2)}
+.ruled p{margin:0 0 32px}
+.ruled h3{line-height:32px;margin:0 0 32px}
+.ruled .vw{border-bottom:2px dotted var(--acc)}
+
+/* questionnaire */
+.qform fieldset{border:1.5px solid var(--line);border-radius:16px;padding:12px 18px 14px;margin:0 0 16px;background:var(--card)}
+.qform legend{font-family:var(--head);font-weight:700;color:var(--acc-d);padding:0 8px}
+.qform label{display:inline-flex;align-items:center;gap:7px;margin:4px 16px 4px 0;font-weight:600;cursor:pointer}
+.qform input[type=checkbox],.qform input[type=radio]{width:18px;height:18px;accent-color:var(--acc)}
+.qrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0}
+.qrow input[type=text]{flex:1 1 200px}
+.scale5{display:grid;grid-template-columns:1fr repeat(5,44px);gap:4px 0;align-items:center}
+.scale5 .h{font-size:.8rem;color:var(--muted);text-align:center;font-weight:700}
+.scale5 label{margin:0;justify-content:center}
+.result{white-space:pre-wrap;font-size:1.02rem;line-height:1.7}
+.stars button{border:0;background:none;font-size:1.8rem;cursor:pointer;color:var(--line2)}
+.stars button.on{color:#f0a500}
+
+@media (max-width:760px){
+  body{font-size:16px}
+  .hero{grid-template-columns:1fr}
+  .hero-pic{order:-1}
+  .brand{display:none}
+  .mwrap{grid-template-columns:1fr}
+  .turn{max-width:100%}
+  .scale5{grid-template-columns:1fr repeat(5,34px)}
+  .ruled{padding-left:44px}.ruled:before{left:28px}
+  .timer{font-size:1.8rem}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+@media print{
+  .top,.foot,.tfoot .btn,.sw{display:none!important}
+  .slide{display:block!important;page-break-after:always}
+  body{background:#fff}
+}
+.w.bad{background:var(--bad-bg);text-decoration:line-through}
+#pgroups.hide-uk .uk{display:none}
+/* grammar workout */
+.kind{color:var(--muted);font-weight:600;font-size:.95rem}
+.ord{padding:12px 0;border-top:1.5px dashed var(--line2)}
+.ord .otxt{font-weight:700;margin-bottom:8px}
+.ord .otxt .kind{margin-left:4px}
+.built{display:flex;flex-wrap:wrap;align-items:center;gap:6px;min-height:54px;padding:8px 12px;border:2px solid var(--line2);border-radius:14px;background:var(--card2);margin-bottom:8px}
+.built.ok{border-color:var(--ok);background:var(--ok-bg)}
+.built.bad{border-color:var(--bad);background:var(--bad-bg)}
+.built .ph0{color:var(--muted);font-style:italic}
+.built .endm{font-weight:800;font-size:1.15rem;color:var(--acc-d)}
+.ord .pool{min-height:46px;margin-bottom:10px}
+.ptxt{font-weight:700;font-size:1.05rem}
+.tr .ptxt{margin-bottom:2px}
+.editrow{display:flex;gap:10px;align-items:center;margin-top:6px}
+.editrow input{flex:1 1 auto;min-width:0}
+.cloze{font-size:1.06rem;line-height:2.7}
+.cloze input{width:10.5em;text-align:center;margin:0 4px}
+.cloze input.ok{border-color:var(--ok);background:var(--ok-bg)}
+.cloze input.bad{border-color:var(--bad);background:var(--bad-bg)}
+.cloze .vb{color:var(--acc-d);font-weight:800}
+.cloze .gn{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--acc);color:var(--paper);font-size:.75rem;font-weight:800;line-height:1;vertical-align:middle;margin-right:2px}
+.cloze .gp{white-space:nowrap}
+.dice{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));gap:12px;margin:14px 0}
+.die{background:var(--acc-xl);border:2px solid var(--line2);border-radius:16px;padding:12px 14px;text-align:center;min-height:96px;display:flex;flex-direction:column;justify-content:center}
+.die .dl{font-size:.78rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.die .dv{font:800 1.3rem/1.2 var(--head);color:var(--ink);margin-top:4px;overflow-wrap:anywhere}
+.die.pop{animation:diepop .35s ease-out}
+@keyframes diepop{0%{transform:scale(.85) rotate(-4deg)}60%{transform:scale(1.06) rotate(2deg)}100%{transform:none}}
+@media (max-width:760px){.editrow{flex-wrap:wrap}.cloze input{width:8.5em}}
+/* ===== IT skills conditionals lesson: overrides and new components ===== */
+[hidden]{display:none!important}
+body{background-color:var(--paper);font-size:17.5px}
+h1{font-weight:800;letter-spacing:-.02em}
+.hero h1{font-size:clamp(2.1rem,4.4vw,3.3rem);line-height:1.06}
+.hero .lead{margin:8px 0 14px}
+.hero .obj{padding:14px 18px;margin-bottom:14px}
+.hero .obj h3{margin:0 0 8px;font-size:1.02rem}
+.hero .obj ul{margin:0;padding-left:1.2em}
+.hero .obj li{margin:.28em 0;font-size:.96rem;line-height:1.4}
+main{padding-top:16px}
+.top{top:env(safe-area-inset-top,0px)}
+.foot{padding-bottom:calc(9px + env(safe-area-inset-bottom,0px))}
+.pill{font-weight:700}
+.btn:focus-visible,.pill:focus-visible,.opt:focus-visible,.tok:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+:focus-visible{outline:3px solid var(--acc)}
+.plain{margin:0 0 14px;padding-left:1.3em}.plain li{margin:.4em 0}
+
+/* predicate: red, always on */
+.pd{color:var(--red);background:var(--red-l);font-weight:700;padding:0 .18em;border-radius:4px;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.eg{font-size:1.02rem;line-height:1.75}
+.fx{line-height:2;font-weight:700}
+
+/* hero: venn diagram */
+.hero{display:grid;grid-template-columns:1.1fr 1fr;gap:36px;align-items:start;margin-bottom:8px}
+.hero-fig{margin:32px 0 0;background:var(--card);border:1.5px solid var(--line);border-radius:26px;padding:14px 18px 10px}
+.hero-fig svg{width:100%;height:auto;display:block}
+.frame{background:var(--card2);border:1.5px solid var(--line2);border-radius:18px;padding:8px}
+.frame img{display:block;width:100%;height:auto;border-radius:12px}
+.vc{fill-opacity:.16;stroke-width:2.5}
+.vc-h{fill:var(--hard);stroke:var(--hard)}
+.vc-s{fill:var(--soft);stroke:var(--soft)}
+.vt{font:700 20px var(--head);fill:var(--ink)}
+.vt-h{fill:var(--hard-l);}
+.vt.vt-h{fill:color-mix(in srgb,var(--hard) 80%,black)}
+.vt.vt-s{fill:color-mix(in srgb,var(--soft) 80%,black)}
+.vt-x{font:700 17px var(--head);fill:var(--ink)}
+.ve{font:500 14px var(--body);fill:var(--muted)}
+.hero-fig figcaption{margin-top:6px;font-size:.95rem;color:var(--muted);text-align:center}
+.map{grid-template-columns:repeat(auto-fit,minmax(min(100%,225px),1fr))}
+.map button{text-align:left;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:10px 14px;color:var(--ink);font:400 .9rem var(--body);cursor:pointer}
+.map button b{display:block;font-family:var(--head);color:var(--acc-d)}
+.map button:hover{border-color:var(--acc)}
+
+/* warm-up */
+.chips-sel{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.chipbtn{border:2px solid var(--acc);background:transparent;color:var(--acc-d);border-radius:999px;padding:4px 14px;font:700 .95rem var(--body);cursor:pointer}
+.chipbtn[aria-pressed="true"]{background:var(--acc);color:var(--card)}
+.says{font-family:var(--head);font-weight:600;font-size:1.05rem;background:var(--acc-xl);border-radius:14px;padding:10px 14px;margin:8px 0 0;min-height:2.6em}
+.rq{min-height:3.2em;font-size:1.25rem}
+
+/* grammar cards */
+.tcard{background:var(--card);border:1.5px solid var(--line);border-top:8px solid var(--tc);border-radius:8px 8px 22px 22px;padding:14px 20px 14px;display:flex;flex-direction:column}
+.tcard header h3{margin:0 0 6px}
+.tlw{background:var(--card2);border:1.5px solid var(--line);border-radius:12px;padding:6px 10px;margin:4px 0 8px}
+.tcard h4{margin:14px 0 6px;color:var(--acc-d)}
+.frow{padding:8px 0;border-top:1px dashed var(--line2)}
+.frow .lbl{display:block;font-size:.82rem;font-weight:700;color:var(--muted);margin-bottom:2px}
+.uses2{margin:0;padding-left:1.3em}.uses2 li{margin:0 0 .5em}
+.chip.tm{background:color-mix(in srgb,var(--tc,var(--acc)) 15%,var(--card));color:var(--ink);border:1px solid color-mix(in srgb,var(--tc,var(--acc)) 45%,var(--card));font-weight:700}
+.tsw{display:inline-block;width:12px;height:12px;border-radius:3px;background:var(--tc);margin-right:8px;vertical-align:-1px}
+.tlsvg{width:100%;height:auto;display:block}
+.tlsvg text{font:12px var(--body);fill:var(--muted)}
+.tlsvg .tll{font-weight:700;fill:var(--ink)}
+.tlsvg .ax{stroke:var(--line2);stroke-width:3;fill:none}
+.tlsvg .ah{fill:var(--line2)}
+.tlsvg .now{stroke:var(--muted);stroke-width:2;stroke-dasharray:4 4}
+.chart{min-width:900px}
+.chart td{vertical-align:top}
+.chart td.fx{min-width:220px}
+.chart tr:nth-child(even) td{background:var(--card2)}
+
+/* introductory words */
+.iw{grid-template-columns:repeat(auto-fill,minmax(275px,1fr))}
+.iwc{border-left:8px solid var(--line2)}
+.iwc[data-g="std"]{border-left-color:var(--acc)}
+.iwc[data-g="time"]{border-left-color:var(--muted)}
+.iwc[data-g="lim"]{border-left-color:var(--ok)}
+.iwc[data-g="img"]{border-left-color:var(--c3)}
+.iwc[data-g="oth"]{border-left-color:var(--hi)}
+.iwc[data-g="inv"]{border-left-color:var(--soft)}
+.iwc:focus-visible{outline:3px solid var(--acc)}
+.badges{display:flex;flex-wrap:wrap;gap:4px;margin:2px 0 6px}
+.tb{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 6px;border-radius:7px;background:var(--tc);color:var(--card);font:700 .82rem var(--body)}
+.vd{margin:2px 0 6px;font-weight:400;color:var(--ink)}
+.hide-def .iwc:not(.open) .vd{filter:blur(7px);user-select:none}
+.hide-def .iwc{cursor:pointer}
+.vbody .ex{font-style:normal;color:var(--ink);margin:.2em 0}
+.vbody .nt{margin:.2em 0 0;color:var(--muted)}
+.tag{font-size:.8rem;font-weight:700;color:var(--muted);background:var(--card2);border:1px solid var(--line);border-radius:8px;padding:1px 8px;display:inline-block;margin-top:6px}
+
+/* practice: shared */
+.long .opts{flex-direction:column;align-items:stretch}
+.long .opt{text-align:left;font-weight:500;line-height:1.7;padding:8px 14px}
+.mit,.opt{font-weight:500}
+
+/* dropdown story */
+.dropstory{font-size:1.08rem;line-height:2.7}
+.dropstory h4{margin:0 0 10px;color:var(--acc-d)}
+.dsel{font:600 .98rem var(--body);color:var(--ink);background:var(--card2);border:2px solid var(--line2);border-radius:10px;padding:4px 10px;margin:0 3px}
+.dsel.ok{border-color:var(--ok);background:var(--ok-bg)}
+.dsel.bad{border-color:var(--bad);background:var(--bad-bg)}
+
+/* own-idea task */
+.ownrow{padding:14px 0;border-top:1.5px dashed var(--line2)}
+.ownrow:first-child{border-top:none;padding-top:4px}
+.ptxt2{font-weight:600;font-size:1.05rem;margin:0 0 8px}
+.own-in{width:100%;font-family:var(--body);font-size:1rem}
+.ownrow .model{background:var(--acc-xl);border-radius:10px;padding:8px 12px;margin:8px 0 0}
+
+/* image tasks */
+.scene-fig{margin:0 0 18px}
+.scene-fig svg{width:100%;height:auto;display:block;border-radius:14px;border:1.5px solid var(--line)}
+.scene-fig figcaption{margin-top:8px;font-size:.95rem;color:var(--muted)}
+.sc-bg{fill:var(--card2)}
+.sc-board{fill:var(--card);stroke:var(--line2);stroke-width:2}
+.sc-gridl{stroke:var(--line);stroke-width:2}
+.sc-col{font:700 12px var(--body);fill:var(--muted)}
+.sc-card{fill:var(--acc-l);stroke:var(--acc);stroke-width:1.5}
+.sc-card.sc-stuck{fill:var(--bad-bg);stroke:var(--bad)}
+.sc-card.sc-done{fill:var(--ok-bg);stroke:var(--ok)}
+.sc-person circle{fill:#e7c9a9}
+.sc-person path{fill:var(--acc-d)}
+.sc-person.sc-p2 path{fill:var(--soft)}
+.sc-person.sc-p3 path{fill:var(--ok)}
+.sc-arm{stroke:var(--acc-d);stroke-width:8;fill:none;stroke-linecap:round}
+.sc-cup{fill:#fff;stroke:var(--muted);stroke-width:2}
+.sc-laptop{fill:#2a3140}
+.sc-screen{fill:#111726}
+.sc-err{fill:var(--bad)}
+.sc-errt{font:700 9px var(--body);fill:#fff}
+.sc-line{fill:#3a4356}
+.qbig{font-family:var(--head);font-weight:700;font-size:1.1rem;background:var(--card2);border-left:4px solid var(--acc);border-radius:0 10px 10px 0;padding:10px 14px;margin:0 0 6px}
+#finalA{width:100%;font-family:var(--body);font-size:1rem;margin:8px 0}
+
+@media (max-width:760px){
+  .hero{grid-template-columns:1fr}
+  body{font-size:16.5px}
+  .chart-wrap{overflow:visible}
+  .chart,.chart tbody{display:block;min-width:0}
+  .chart tr:first-child{display:none}
+  .chart tr{display:block;background:var(--card);border:1.5px solid var(--line);border-left:8px solid var(--tc);border-radius:10px;margin:0 0 12px;padding:6px 14px 8px}
+  .chart td,.chart tr:nth-child(even) td{display:block;border:0;padding:4px 0;background:transparent;min-width:0!important}
+  .chart td[data-l]::before{content:attr(data-l);display:block;font-size:.8rem;font-weight:700;color:var(--muted)}
+}
+
+/* video card */
+.vidcard{display:flex}
+.vid-row{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.vid-icon{width:150px;flex:0 0 150px;height:auto}
+.vi-scr{fill:#1b2436;stroke:var(--line2);stroke-width:2}
+.vi-inner{fill:#0e1729}
+.vi-btn{fill:var(--red);opacity:.92}
+.vi-tri{fill:#fff}
+.vi-base{fill:var(--line2)}
+.vidcard h3{margin:0 0 4px}
+.vidcard .btn{margin-top:8px}
+
+/* sequence task */
+.seqwrap{display:flex;flex-direction:column;gap:14px}
+.seqlist{min-height:60px;border:2px dashed var(--line2);border-radius:12px;padding:8px 12px;background:var(--card2)}
+.seqlist .ph0{color:var(--muted);font-style:italic;margin:6px 0}
+.seqrow{display:flex;align-items:flex-start;gap:10px;background:var(--card);border:1.5px solid var(--line2);border-radius:10px;padding:8px 12px;margin:6px 0;cursor:pointer}
+.seqrow.ok{border-color:var(--ok);background:var(--ok-bg)}
+.seqrow.bad{border-color:var(--bad);background:var(--bad-bg)}
+.sn{display:inline-grid;place-items:center;min-width:24px;height:24px;border-radius:50%;background:var(--acc);color:var(--card);font:700 .8rem var(--body);flex:0 0 auto}
+.st{line-height:1.45}
+.pool{display:flex;flex-wrap:wrap;gap:8px}
+.seqtok{text-align:left;background:var(--card);border:1.5px solid var(--line2);border-radius:10px;padding:7px 12px;font:500 .96rem var(--body);color:var(--ink);cursor:pointer;max-width:100%}
+.seqtok:hover{border-color:var(--acc)}
+
+/* dialogue with missing replies */
+.dlg{display:block;columns:2;column-gap:22px}
+.turn{display:flex;gap:10px;align-items:flex-start;max-width:100%;margin:0 0 14px;break-inside:avoid}
+.turn.r{flex-direction:row-reverse;margin-left:auto;max-width:96%;text-align:right}
+@media (max-width:760px){.dlg{columns:1}}
+.avatar{flex:0 0 auto;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font:700 .95rem var(--head);color:var(--card);background:var(--acc)}
+.avatar[data-who="Priya"]{background:var(--soft)}
+.bubble{background:var(--card2);border:1.5px solid var(--line);border-radius:14px;padding:10px 14px;line-height:1.55}
+.turn.r .bubble{background:var(--acc-xl)}
+.bubble .who{font:700 .82rem var(--head);color:var(--muted);margin-bottom:2px;display:flex;align-items:center;gap:6px}
+.turn.r .bubble .who{justify-content:flex-end}
+.gapbubble{border:2px dashed var(--line2);background:var(--card)}
+.gapturn.answered .gapbubble{border-style:solid;border-color:var(--ok)}
+.gaplbl{font-weight:400;color:var(--muted)}
+.gapbubble .opts{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.gapbubble .opt{text-align:left;font:500 .95rem var(--body);padding:7px 12px;border-radius:10px;border:1.5px solid var(--line2);background:var(--card);color:var(--ink);cursor:pointer}
+.turn.r .gapbubble .opt{text-align:right}
+.gapbubble .opt.ok{border-color:var(--ok);background:var(--ok-bg)}
+.gapbubble .opt.bad{border-color:var(--bad);background:var(--bad-bg);opacity:.7}
+.gapbubble .exp{margin-top:8px;font-size:.9rem;color:var(--acc-d);border-top:1px dashed var(--line2);padding-top:6px}
+
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <div class="brand">Hard &amp; Soft Skills in IT</div>
+    <nav class="pills" id="pills" aria-label="Lesson slides"></nav>
+  </div>
+  <div class="bar"><i id="prog"></i></div>
+</header>
+<main>
+<!-- 1 WELCOME -->
+<section class="slide" id="s1" data-title="Welcome">
+  <div class="hero">
+    <div>
+      <p class="kicker">English grammar practice · advanced (C1)</p>
+      <h1>Hard and soft skills in IT</h1>
+      <p class="lead">Practise Conditionals 0, 1, 2 and 3 while discussing what really makes a great IT professional: sharp technical skills, or the ability to work well with people.</p>
+      <div class="card obj">
+        <h3>By the end of this lesson you will be able to:</h3>
+        <ul>
+          <li>use Conditionals 0, 1, 2 and 3 correctly, with the right structure and time reference;</li>
+          <li>recognise and fix common mistakes in conditional sentences;</li>
+          <li>use a wide range of introductory words beyond <i>if</i>;</li>
+          <li>discuss hard and soft skills in IT using natural conditional sentences.</li>
+        </ul>
+      </div>
+      <button type="button" class="btn big" data-go="2">Start the lesson</button>
+    </div>
+    <figure class="hero-fig">
+      <div class="frame"><img id="heroimg" alt="Two hands holding wooden blocks: one side spells HARD SKILLS, the other spells SOFT SKILLS, facing each other with a large VS between them" src="data:image/jpeg;base64,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"></div>
+      <figcaption>Which side matters more? The grammar in this lesson will help you argue your case.</figcaption>
+    </figure>
+  </div>
+  <h3>Lesson map</h3>
+  <div class="map" id="map"></div>
+</section>
+
+<!-- 2 WARM-UP -->
+<section class="slide" id="s2" data-title="Warm-up">
+  <h2>Warm-up: hard skills vs soft skills</h2>
+  <p class="lead">Discuss in pairs or small groups. Give reasons and real examples where you can.</p>
+  <div class="g2">
+    <div class="card">
+      <h3>Discussion questions</h3>
+      <ol class="plain">
+        <li>Look at the picture on the first slide. Name three hard skills and three soft skills you think matter most in IT today.</li>
+        <li>Can a brilliant programmer with poor communication skills be a good team member? Why or why not?</li>
+        <li>Which soft skill do you personally need to develop the most?</li>
+        <li>Have you ever seen a project fail because of poor communication rather than a technical problem? What happened?</li>
+        <li>Should soft skills be taught in computer science courses? Why or why not?</li>
+      </ol>
+      <button type="button" class="btn ghost sm" data-go="1">Look at the picture again</button>
+    </div>
+    <div class="card">
+      <h3>Random question</h3>
+      <div class="rq" id="rq" aria-live="polite">Choose a topic below.</div>
+      <div class="row">
+        <button type="button" class="btn sm" data-rq="hard">Hard skills</button>
+        <button type="button" class="btn sm" data-rq="soft">Soft skills</button>
+        <button type="button" class="btn sm ghost" data-rq="any">Surprise me</button>
+      </div>
+      <div class="row" style="margin-top:12px">
+        <button type="button" class="btn sm ghost" id="tstart">Start 60 s timer</button>
+        <button type="button" class="btn sm ghost" id="treset">Reset</button>
+        <span class="timer" id="tval" aria-live="off">60</span>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Rank them</h3>
+    <p class="inst">Tap the skills below in the order you think matters most for a junior developer's first year (most important first). There is no single correct answer — compare your ranking with a partner and defend it.</p>
+    <div class="chips-sel" id="rank" role="group" aria-label="Skills to rank"></div>
+    <p class="says" id="rankOut" aria-live="polite">Tap the skills to build your ranking.</p>
+  </div>
+</section>
+
+<!-- 3 GRAMMAR -->
+<section class="slide" id="s3" data-title="Grammar chart">
+  <h2>Grammar: Conditionals 0, 1, 2 and 3</h2>
+  <p class="lead">In every example, the <b>structure</b> is shown in bold, and the <span class="pd">predicate</span> — the verb group of each clause — is highlighted in red in both the if-clause and the result clause.</p>
+  <div class="g2" id="gr48"></div>
+  <h3 style="margin-top:26px">All four at a glance</h3>
+  <div class="scroll chart-wrap"><table class="tbl chart" id="chart"></table></div>
+  <div class="note warn"><p><b>Real or unreal?</b> Conditionals 0 and 1 describe <b>real</b> situations (facts, or things that can really happen). Conditionals 2 and 3 describe <b>unreal</b> or imagined situations — 2 in the present/future, 3 in the past.</p></div>
+</section>
+
+<!-- 4 INTRODUCTORY WORDS -->
+<section class="slide" id="s4" data-title="Introductory words">
+  <h2>Introductory words: more than just "if"</h2>
+  <p class="lead">Choose a group to study it. The badges show which conditionals each word usually works with.</p>
+  <div class="row" style="margin-bottom:12px">
+    <div class="tabs" id="wfilter" role="group" aria-label="Group of words" style="margin:0"></div>
+    <label class="sw" style="margin:0 0 0 auto"><input type="checkbox" id="hideM"> Test yourself: hide meanings</label>
+  </div>
+  <div class="vgrid iw" id="iw"></div>
+</section>
+
+<!-- 5 TASK 1: RULES -->
+<section class="slide" id="s5" data-title="Task 1: rules">
+  <h2>Practice</h2>
+  <div class="task">
+    <h3>Task 1. Do you know the rules?</h3>
+    <p class="inst">This is not about sentence structure yet — it checks whether you understood <b>when</b> to use each conditional. Choose the best answer.</p>
+    <div id="t-rules"></div>
+  </div>
+</section>
+
+<!-- 6 TASK 2: FIND AND FIX -->
+<section class="slide" id="s6" data-title="Task 2: find the mistake">
+  <div class="task">
+    <h3>Task 2. Find and fix the mistake</h3>
+    <p class="inst">Each sentence has one mistake in the verb forms. Write the correct sentence in the box.</p>
+    <div id="t-fix"></div>
+  </div>
+</section>
+
+<!-- 7 TASK 3: MATCH HALVES -->
+<section class="slide" id="s7" data-title="Task 3: dialogue">
+  <div class="task">
+    <h3>Task 3. A missed deadline: complete the dialogue</h3>
+    <p class="inst">Alex and Priya are talking about a missed deploy. For each gap, choose the reply that fits both the grammar and the situation.</p>
+    <div id="t-dlg"></div>
+  </div>
+</section>
+
+<!-- 8 TASK 4: OWN IDEA -->
+<section class="slide" id="s8" data-title="Task 4: your idea">
+  <div class="task">
+    <h3>Task 4. Complete it with your own idea</h3>
+    <p class="inst">Finish each sentence about IT skills with your own true or imagined ending. Use the conditional shown. When you're ready, reveal a model idea and compare.</p>
+    <div id="t-own"></div>
+  </div>
+</section>
+
+<!-- 9 TASK 5: DROPDOWN STORY -->
+<section class="slide" id="s9" data-title="Task 5: choose from list">
+  <div class="task">
+    <h3>Task 5. Choose the correct predicate</h3>
+    <p class="inst">Read the story about a junior developer's first project. For each gap, choose the correct verb form from the dropdown list.</p>
+    <div id="t-drop"></div>
+  </div>
+</section>
+
+<!-- 10 TASK 6: SORT -->
+<section class="slide" id="s10" data-title="Task 6: sort">
+  <div class="task">
+    <h3>Task 6. Which conditional is it?</h3>
+    <p class="inst">Click a sentence, then click the box for its conditional type.</p>
+    <div id="t-sort"></div>
+  </div>
+</section>
+
+<!-- 11 TASK 7: BUILD -->
+<section class="slide" id="s11" data-title="Task 7: build">
+  <div class="task">
+    <h3>Task 7. Build the sentence</h3>
+    <p class="inst">Click the words in the right order. Click a word in the top line to take it back.</p>
+    <div id="t-ord"></div>
+  </div>
+</section>
+
+<!-- 12 TASK 8: CHOOSE SENTENCE -->
+<section class="slide" id="s12" data-title="Task 8: choose">
+  <div class="task">
+    <h3>Task 8. Choose the correct sentence</h3>
+    <p class="inst">Read the situation and choose the sentence that describes it correctly.</p>
+    <div id="t-mc" class="long"></div>
+  </div>
+</section>
+
+<!-- 13 TASK 9: CLOZE -->
+<section class="slide" id="s13" data-title="Task 9: gap-fill">
+  <div class="task">
+    <h3>Task 9. Complete the text</h3>
+    <p class="inst">Put each verb in brackets into the correct form. <b>(not / finish)</b> means a negative form.</p>
+    <div id="t-cloze"></div>
+  </div>
+</section>
+
+<!-- 14 TASK 10: IMAGE -->
+<section class="slide" id="s14" data-title="Task 10: picture">
+  <h2>Task 10. Describe and imagine</h2>
+  <p class="lead">Look at the picture of a software team in a stand-up meeting.</p>
+  <div class="card">
+    <figure class="scene-fig">
+      <svg viewBox="0 0 700 380" role="img" aria-labelledby="scT scD">
+        <title id="scT">A software team having a stand-up meeting in front of a kanban board</title>
+        <desc id="scD">Four team members stand around a kanban board with columns To do, In progress, Review and Done. One developer looks stressed and is pointing at a card stuck in the Review column. A laptop on a desk nearby shows a red error message. Another teammate is showing a thumbs-up and smiling, holding a cup of coffee.</desc>
+        <rect x="0" y="0" width="700" height="380" class="sc-bg"/>
+        <rect x="40" y="60" width="360" height="230" rx="10" class="sc-board"/>
+        <line x1="130" y1="60" x2="130" y2="290" class="sc-gridl"/><line x1="220" y1="60" x2="220" y2="290" class="sc-gridl"/><line x1="310" y1="60" x2="310" y2="290" class="sc-gridl"/>
+        <text class="sc-col" x="85" y="80">To do</text><text class="sc-col" x="175" y="80">In progress</text><text class="sc-col" x="265" y="80">Review</text><text class="sc-col" x="355" y="80">Done</text>
+        <rect x="52" y="95" width="66" height="30" rx="4" class="sc-card"/><rect x="52" y="132" width="66" height="30" rx="4" class="sc-card"/>
+        <rect x="142" y="95" width="66" height="30" rx="4" class="sc-card"/>
+        <rect x="232" y="95" width="66" height="30" rx="4" class="sc-card sc-stuck"/>
+        <rect x="322" y="95" width="66" height="30" rx="4" class="sc-card sc-done"/><rect x="322" y="132" width="66" height="30" rx="4" class="sc-card sc-done"/>
+        <g class="sc-person" transform="translate(120,300)"><circle cx="0" cy="-46" r="20"/><path d="M-24 8 Q0 -22 24 8 L24 40 L-24 40 Z"/><path d="M-4 -60 L34 -22" class="sc-arm"/></g>
+        <g class="sc-person sc-p2" transform="translate(230,310)"><circle cx="0" cy="-46" r="20"/><path d="M-24 8 Q0 -22 24 8 L24 40 L-24 40 Z"/></g>
+        <g class="sc-person sc-p3" transform="translate(330,300)"><circle cx="0" cy="-46" r="20"/><path d="M-24 8 Q0 -22 24 8 L24 40 L-24 40 Z"/><circle cx="30" cy="6" r="9" class="sc-cup"/></g>
+        <g transform="translate(470,150)">
+          <rect x="0" y="0" width="180" height="120" rx="8" class="sc-laptop"/>
+          <rect x="10" y="10" width="160" height="80" rx="4" class="sc-screen"/>
+          <rect x="18" y="20" width="144" height="16" rx="3" class="sc-err"/>
+          <text class="sc-errt" x="24" y="32">Build failed: 3 errors</text>
+          <rect x="18" y="42" width="100" height="8" rx="2" class="sc-line"/>
+          <rect x="18" y="56" width="120" height="8" rx="2" class="sc-line"/>
+        </g>
+      </svg>
+      <figcaption>What is happening? Who looks worried, and who looks relaxed? Why might that be?</figcaption>
+    </figure>
+    <div class="g2">
+      <div>
+        <h3>Describe and imagine</h3>
+        <ol class="plain">
+          <li>Describe what you see: who is doing what, and how do people seem to feel?</li>
+          <li>Conditional 0: what generally happens when a build fails like this?</li>
+          <li>Conditional 1: what will the team do next if they can't fix the bug today?</li>
+          <li>Conditional 2: imagine you were the stressed developer. What would you do differently?</li>
+          <li>Conditional 3: what might have caused this? What would have happened if someone had tested the code earlier?</li>
+        </ol>
+      </div>
+      <div class="card">
+        <h3>Now answer this question</h3>
+        <p class="qbig">"If your team had one extra soft skill and one extra hard skill for free, which two would you choose — and what would change?"</p>
+        <p class="small">Answer using at least one Conditional 2 sentence and one Conditional 3 sentence.</p>
+        <textarea id="finalA" rows="5" placeholder="If our team communicated more openly about blockers, we would catch problems like this much earlier. If someone had reviewed this code yesterday, we wouldn't have lost a whole morning today..."></textarea>
+        <div class="row"><button type="button" class="btn sm" id="finalCopy">Copy my answer</button><span class="small" id="finalMsg" aria-live="polite"></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 15 LISTENING -->
+<section class="slide" id="s15" data-title="Listening">
+  <h2>Bonus: Listening — Hard Skills vs Soft Skills</h2>
+  <p class="lead">Watch a short video, then put the main ideas in the order they are presented.</p>
+  <div class="card vidcard">
+    <div class="vid-row">
+      <svg class="vid-icon" viewBox="0 0 160 120" role="img" aria-label="A laptop with a play button on the screen">
+        <rect x="10" y="10" width="140" height="82" rx="8" class="vi-scr"/>
+        <rect x="18" y="18" width="124" height="66" rx="4" class="vi-inner"/>
+        <circle cx="80" cy="51" r="22" class="vi-btn"/>
+        <path d="M73 40 L94 51 L73 62 Z" class="vi-tri"/>
+        <path d="M4 96 L156 96 L142 112 L18 112 Z" class="vi-base"/>
+      </svg>
+      <div>
+        <h3>Soft Skills vs Hard Skills: What's the Difference?</h3>
+        <p class="small">A short explainer video comparing hard (technical) skills and soft (people) skills at work.</p>
+        <a class="btn" href="https://www.youtube.com/watch?v=6z9x9kn2Wuk" target="_blank" rel="noopener">▶ Watch the video</a>
+      </div>
+    </div>
+  </div>
+  <div class="task">
+    <h3>Task 11. Put the ideas in the order you hear them</h3>
+    <p class="inst">Click the sentences below in the order the video presents them. Click a sentence in your list to send it back if you change your mind.</p>
+    <div id="t-seq"></div>
+  </div>
+  <div class="card">
+    <h3>Discuss, using conditionals</h3>
+    <ol class="plain">
+      <li>If you had to choose only one type of skill to focus on next year, which would you choose — and why? (Conditional 2)</li>
+      <li>If a company only hired people with strong hard skills and ignored soft skills, what would happen to that team? (Conditional 2)</li>
+      <li>Think of a real situation. If you had developed a particular soft skill earlier in your career, what would have been different? (Conditional 3)</li>
+    </ol>
+  </div>
+</section>
+
+</main>
+<div class="foot"><div class="foot-in">
+  <button type="button" class="btn ghost" id="prev">Back</button>
+  <span id="where" aria-live="polite"></span>
+  <button type="button" class="btn" id="next">Next</button>
+</div></div>
+<script>
+(()=>{'use strict';
+/* ---------- utilities ---------- */
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+function say(t){try{const u=new SpeechSynthesisUtterance(t);u.lang='en-GB';u.rate=.92;speechSynthesis.cancel();speechSynthesis.speak(u);}catch(e){}}
+async function copyText(t){try{await navigator.clipboard.writeText(t);return true;}catch(e){const ta=document.createElement('textarea');ta.value=t;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.select();let ok=false;try{ok=document.execCommand('copy');}catch(_){}ta.remove();return ok;}}
+function nz(s){
+  s=s.toLowerCase().replace(/[’‘`´]/g,"'");
+  [[/\bcan't\b/g,'cannot'],[/\bwon't\b/g,'will not'],[/\bi'm\b/g,'i am'],[/\b(you|we|they)'re\b/g,'$1 are'],[/\b(he|she|it|that|there|what|who)'s\b/g,'$1 is'],[/\b(i|you|we|they|would|could|should|must)'ve\b/g,'$1 have'],[/\b(i|you|he|she|it|we|they)'d\b/g,'$1 had'],[/n't\b/g,' not']].forEach(([r,t])=>{s=s.replace(r,t);});
+  return s.replace(/[^a-z0-9\s]/g,' ').replace(/\s+/g,' ').trim();
+}
+function lev(a,b){const m=a.length,n=b.length;if(!m)return n;if(!n)return m;let p=Array.from({length:n+1},(_,i)=>i);for(let i=1;i<=m;i++){const c=[i];for(let j=1;j<=n;j++)c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));p=c;}return p[n];}
+const sim=(a,b)=>1-lev(a,b)/Math.max(a.length,b.length,1);
+/* markup: {{predicate}} -> red predicate; [S] -> subject chip */
+function mk(t){return t.replace(/\{\{(.+?)\}\}/g,'<span class="pd">$1</span>').replace(/\[S\]/g,'<span class="k s">S</span>');}
+const plain=t=>t.replace(/\{\{(.+?)\}\}/g,'$1').replace(/\[S\]/g,'…');
+
+/* ---------- warm-up ---------- */
+const RQ={
+ hard:['Which technical skill took you the longest to learn well?','Do you think everyone in IT needs to know how to code, even project managers? Why?','What technical skill do you think will be most in demand in five years?','Is it better to know one programming language very well, or several a little?','How important is it to understand databases if you are a front-end developer?'],
+ soft:['Describe a time when good communication saved a project — or bad communication nearly ruined one.','Which is harder to teach: a hard skill or a soft skill? Why?','How do you usually give feedback to a colleague about their code?','What makes a good team leader in a software team?','How do you personally deal with stress before a deadline?']
+};
+const RANK=['writing clean code','debugging quickly','communicating with the team','asking for help when stuck','managing your time','accepting feedback well','learning new tools fast','staying calm under pressure'];
+
+/* ---------- grammar: four conditionals ---------- */
+const GR=[
+ {k:'0',n:'Zero Conditional',c:'var(--c0)',
+  f:{st:'If + [S] {{V1}}, [S] {{V1}}',ng:'If + [S] {{do/does not + V1}}, [S] {{V1}}',yn:'{{Does}} [S] {{V1}} if + [S] {{V1}}?'},
+  use:'General truths, facts, and things that always happen — in nature, in technology, or as a rule. Both clauses are in the Present Simple.',
+  points:['A scientific, technical or general fact','A rule, habit or automatic result','Both the if-clause and the result are always true, not just imagined'],
+  mk:['always','every time','automatically','generally','as a rule'],
+  ex:['If a server {{receives}} too many requests at once, it {{crashes}}.','If you {{don’t test}} your code, bugs {{appear}} later.','If a function {{has}} a bug, the automated tests usually {{fail}}.']},
+ {k:'1',n:'First Conditional',c:'var(--c1)',
+  f:{st:'If + [S] {{V1}}, [S] {{will + V1}}',ng:'If + [S] {{do/does not + V1}}, [S] {{will not + V1}}',yn:'{{Will}} [S] {{V1}} if + [S] {{V1}}?'},
+  use:'Real, likely situations in the future — a genuine condition with a probable result. The if-clause is in the Present Simple (not "will"), the result uses "will".',
+  points:['A realistic condition you expect might actually happen','Warnings, promises, and predictions about the near future','Never use "will" in the if-clause, even though the meaning is future'],
+  mk:['tomorrow','next sprint','soon','if … then','as soon as','unless'],
+  ex:['If you {{learn}} Python well, you {{will find}} a job faster.','If the team {{doesn’t communicate}} clearly, the deadline {{will slip}}.','If you {{don’t document}} your API, other developers {{will struggle}} to use it.']},
+ {k:'2',n:'Second Conditional',c:'var(--c2)',
+  f:{st:'If + [S] {{V2 / were}}, [S] {{would + V1}}',ng:'If + [S] {{did not + V1}}, [S] {{would not + V1}}',yn:'{{Would}} [S] {{V1}} if + [S] {{V2 / were}}?'},
+  use:'Unreal, unlikely or imaginary situations in the present or future — hypotheses, advice, and wishes that are not (or probably won\u2019t be) true. "Were" is correct for every person.',
+  points:['A hypothetical situation that is not true now, or is unlikely','Giving imagined advice: "If I were you, …"','Wishing something were different right now'],
+  mk:['if only','imagine','suppose','in an ideal world','right now'],
+  ex:['If I {{were}} the team lead, I {{would encourage}} more pair programming.','If our company {{invested}} more in soft-skills training, employees {{would collaborate}} better.','If she {{worked}} remotely, she {{would save}} two hours a day.']},
+ {k:'3',n:'Third Conditional',c:'var(--c3)',
+  f:{st:'If + [S] {{had + V3}}, [S] {{would have + V3}}',ng:'If + [S] {{had not + V3}}, [S] {{would not have + V3}}',yn:'{{Would}} [S] {{have + V3}} if + [S] {{had + V3}}?'},
+  use:'Unreal situations in the past — things that did not happen, and their imagined past result. Often used to talk about regrets and mistakes.',
+  points:['A past action that did not happen (or did happen, in the negative)','An imagined past result that never became real','Regret, criticism, or explaining what went wrong'],
+  mk:['yesterday','last sprint','if only … then','in the end'],
+  ex:['If the team {{had communicated}} better, they {{wouldn’t have missed}} the deadline.','If she {{had learned}} React earlier, she {{would have got}} that job.','If he {{hadn’t ignored}} the warning messages, the system {{wouldn’t have crashed}}.']}
+];
+const CH=GR.map(g=>({n:g.n,c:g.c,f:g.f.st,use:g.use.split('.')[0]+'.',ex:g.ex[0]}));
+
+/* ---------- introductory words ---------- */
+const IG={std:'Standard',time:'Time clauses (not conditionals)',lim:'Limits and conditions',img:'Imagining',oth:'Other',inv:'Inversion (formal)'};
+const INTRO=[
+{w:'if',g:'std',t:'0 1 2 3',m:'the basic word for every kind of condition',ex:'If a build {{fails}}, the pipeline {{stops}} automatically.'},
+{w:'unless',g:'std',t:'0 1 2',m:'= if … not',ex:'{{Unless}} you {{write}} tests, bugs {{will slip}} into production.'},
+{w:'even if',g:'std',t:'0 1 2 3',m:'the result stays the same whatever happens',ex:'Even if the client {{is}} unhappy, we {{will finish}} the sprint.'},
+{w:'if only',g:'std',t:'2 3',m:'a strong wish or regret',ex:'If only we {{had tested}} on real devices before release!'},
+{w:'when / whenever',g:'time',t:'0',m:'a real, repeated event — not really a condition',ex:'Whenever the server {{restarts}}, the cache {{clears}}.'},
+{w:'as soon as',g:'time',t:'1',m:'a real future action, immediately after another',ex:'I {{will merge}} the branch as soon as the tests {{pass}}.'},
+{w:'once',g:'time',t:'1',m:'after this happens (then something else will)',ex:'Once you {{finish}} the code review, we {{will deploy}}.'},
+{w:'before / after / until',g:'time',t:'1',m:'real time relationships in the future',ex:'We {{won’t release}} the app until QA {{approves}} it.'},
+{w:'as long as / so long as',g:'lim',t:'0 1 2',m:'only on this condition',ex:'You {{can push}} to main as long as the tests {{pass}}.'},
+{w:'provided (that) / providing (that)',g:'lim',t:'1 2',m:'if, and only if',ex:'Provided that you {{document}} the API, other teams {{will use}} it easily.'},
+{w:'on condition that',g:'lim',t:'1 2',m:'formal: this is the exact condition of an agreement',ex:'We {{will support}} the tool on condition that it {{passes}} a security review.'},
+{w:'only if',g:'lim',t:'1 2',m:'no other condition will do',ex:'I {{will approve}} the merge only if the tests {{are}} green.'},
+{w:'suppose / supposing (that)',g:'img',t:'2 3',m:'let us imagine; often starts a question',ex:'Suppose the whole team {{worked}} remotely — how {{would}} that {{change}} your daily routine?'},
+{w:'imagine (that)',g:'img',t:'2 3',m:'picture a different situation',ex:'Imagine you {{had}} an unlimited budget. What {{would}} you {{build}} first?'},
+{w:'what if',g:'img',t:'1 2 3',m:'asks about a possible or imagined result',ex:'What if the client {{had rejected}} the design? What {{would}} we {{have done}} next?'},
+{w:'otherwise / or else',g:'oth',t:'1 2 3',m:'if not; joins two sentences',ex:'Back up the database now; otherwise you {{will lose}} everything.'},
+{w:'in case',g:'oth',t:'–',m:'not a conditional: it means to be ready for something that might happen',ex:'{{Keep}} a backup in case the migration {{fails}}.',nt:'In case is not the same as if.'},
+{w:'Should + subject + V1',g:'inv',t:'1',m:'= if + should / happen to; a formal, unlikely possibility',ex:'{{Should}} you {{need}} anything, message me on Slack.'},
+{w:'Were + subject',g:'inv',t:'2',m:'= if + were, without if',ex:'{{Were}} I the manager, I {{would change}} the whole process.'},
+{w:'Had + subject + V3',g:'inv',t:'3',m:'= if + had + V3, without if',ex:'{{Had}} she {{asked}} for help sooner, she {{would have finished}} on time.'}
+];
+
+/* ---------- Task 1: rules quiz ---------- */
+const RULES=[
+{q:'Which conditional do we use for a technical fact that is always true, like “Water boils at 100°C”?',o:['Zero Conditional','First Conditional','Second Conditional','Third Conditional'],a:0,e:'Zero Conditional is used for facts and things that always happen.'},
+{q:'“If the client approves the design tomorrow, we will start coding.” Why is this a First Conditional and not a Second?',o:['Because it describes a realistic, likely future situation','Because “tomorrow” always means Second Conditional','Because there are two clauses','Because the sentence is a question'],a:0,e:'First Conditional is for real, likely situations in the future — this is a genuine possibility, not an imagined one.'},
+{q:'You want to give imagined advice, as if you were in someone else’s position. Which conditional fits “If I ___ you, I would ask for a code review”?',o:['Zero','First','Second','Third'],a:2,e:'“If I were you” is a classic Second Conditional pattern for imagined advice.'},
+{q:'Why can’t we say “If I would be the manager, I would change the process”?',o:['“Would” cannot follow “if” in a conditional clause','“Manager” needs a capital letter','The sentence needs a comma','It should be Third Conditional instead'],a:0,e:'“Would” never goes in the if-clause. Correct: “If I were the manager, …”.'},
+{q:'Which conditional talks about a regret — something that did not happen in the past, and its imagined past result?',o:['Zero','First','Second','Third'],a:3,e:'Third Conditional describes unreal past situations, often regrets or mistakes.'},
+{q:'“If a developer never writes tests, bugs usually reach production.” Is this sentence about one specific project, or a general pattern?',o:['One specific project — First Conditional','A general pattern that is often true — Zero Conditional','An imagined situation — Second Conditional','A past regret — Third Conditional'],a:1,e:'This describes a general, repeated result, so it’s Zero Conditional, even without the word “always”.'},
+{q:'You want to say what would happen if your company had an unlimited training budget (it doesn’t, and probably won’t). Which conditional?',o:['Zero','First','Second','Third'],a:2,e:'This is a hypothetical, unlikely situation in the present — Second Conditional.'},
+{q:'What is the main difference between Second and Third Conditional?',o:['Second is about the present or future; Third is about the past','Second uses “will”; Third uses “would”','Second is only for questions','There is no real difference'],a:0,e:'Second Conditional imagines an unreal present/future; Third imagines an unreal past.'},
+{q:'“If they had planned the sprint better, they wouldn’t have missed the deadline.” What does this sentence tell us about reality?',o:['They planned well, and they met the deadline','They did not plan well, and they missed the deadline','They will plan better next time','It is a general rule about all sprints'],a:1,e:'Third Conditional describes the opposite of what really happened: they did NOT plan well and DID miss the deadline.'},
+{q:'Why is “unless” unusual in Third Conditional sentences, even though it can technically appear there?',o:['Because “unless” only works with facts','Because “unless” already means “if … not”, and doubling the negative with an unreal past often sounds awkward','Because “unless” cannot start a sentence','Because “unless” is informal'],a:1,e:'“Unless” = “if … not”, so it is mostly used with real conditionals (0, 1, sometimes 2); with unreal pasts, “if … hadn’t” is usually clearer.'}
+];
+
+/* ---------- Task 2: find and fix the mistake ---------- */
+const FIX=[
+{s:'If you will finish the sprint early, we will celebrate.',a:['If you finish the sprint early, we will celebrate.'],h:'What goes in the if-clause of a First Conditional?',e:'Never use “will” in the if-clause: If you finish …'},
+{s:'If water reach 100°C, it boils.',a:['If water reaches 100°C, it boils.'],h:'Third person singular in the Present Simple.',e:'Zero Conditional needs -s with he/she/it: water reaches.'},
+{s:'If I would be you, I would ask for a code review.',a:['If I were you, I would ask for a code review.'],h:'What goes in the if-clause of a Second Conditional?',e:'Never use “would” in the if-clause: If I were you.'},
+{s:'If she has more experience, she would get the promotion.',a:['If she had more experience, she would get the promotion.'],h:'Match the tense in the if-clause to “would” in the result.',e:'Second Conditional needs the Past Simple in the if-clause: if she had.'},
+{s:'If the server crash, we lose all the data.',a:['If the server crashes, we lose all the data.'],h:'Third person singular in the Present Simple.',e:'Zero Conditional: the server crashes.'},
+{s:'If they will test the app properly, they wouldn’t have missed that bug.',a:['If they had tested the app properly, they wouldn’t have missed that bug.'],h:'Both clauses need to look back at the past.',e:'The result is Third Conditional (wouldn’t have missed), so the if-clause must be had tested, not “will test”.'},
+{s:'If you don’t backup your files, you will lost everything.',a:['If you don’t back up your files, you will lose everything.'],h:'After “will”, use the base form of the verb.',e:'Will is followed by the base form: will lose, not “will lost”.'},
+{s:'If he had asked for help, he doesn’t struggle so much.',a:['If he had asked for help, he wouldn’t have struggled so much.'],h:'The if-clause is Third Conditional (had asked). What must the result be?',e:'The result of Third Conditional is would have + past participle: wouldn’t have struggled.'}
+];
+
+/* ---------- Task 3: match the halves ---------- */
+const MATCH=[
+['If you {{don’t write}} clear commit messages,','your teammates {{won’t understand}} your changes.'],
+['If a junior developer {{asks}} a lot of questions,','they usually {{learn}} faster.'],
+['If the deployment {{fails}} again tonight,','we {{will roll back}} to the previous version.'],
+['If I {{had}} more time for code reviews,','I {{would catch}} more bugs before release.'],
+['If she {{had prepared}} better for the interview,','she {{would have got}} the job.'],
+['If you {{mix}} tabs and spaces in Python,','the code {{doesn’t run}}.'],
+['If our team {{communicated}} more openly,','we {{would solve}} conflicts faster.'],
+['If he {{hadn’t ignored}} the warning messages,','the system {{wouldn’t have crashed}}.']
+];
+
+/* ---------- Task 4: complete with your own idea ---------- */
+const OWN=[
+{k:'0',p:'If a developer never writes tests,',model:'bugs usually {{reach}} production.'},
+{k:'1',p:'If our team finishes this sprint on time,',model:'we {{will}} finally {{have}} time to fix some old bugs too.'},
+{k:'2',p:'If I were the CTO of this company,',model:'I {{would introduce}} a mentoring programme for junior developers.'},
+{k:'2',p:'If soft-skills training were compulsory for developers,',model:'teams {{would communicate}} much better during incidents.'},
+{k:'3',p:'If I had studied computer science instead of my actual degree,',model:'I {{would have started}} coding many years earlier.'},
+{k:'3',p:'If our team had used a proper code review process from the start,',model:'we {{wouldn’t have introduced}} so many bugs into the codebase.'}
+];
+
+/* ---------- Task 5: dropdown story ---------- */
+const DROP={
+title:'Maya’s first project',
+segs:[
+ 'If a new developer ',['is','was','will be','would be'],0,
+ ' too shy to ask questions, they usually learn more slowly — and that is exactly what happened to Maya.\n\nOn her first day, her manager said, “If you ',
+ ['get','got','will get','would get'],0,
+ ' stuck, just message me, and I ',
+ ['will help','help','helped','would have helped'],0,
+ ' you right away.” Maya nodded, but she was too nervous to actually ask anything.\n\nShe kept thinking: “If I ',
+ ['ask','asked','will ask','had asked'],0,
+ ' too many questions, the team ',
+ ['will think','thinks','thought','would think'],0,
+ ' I’m not competent.” So she stayed quiet and tried to work everything out alone.\n\nBy Friday, she was exhausted and behind on her task. Looking back, she realised: if she ',
+ ['had been','was','is','were'],0,
+ ' braver from the start, she ',
+ ['wouldn’t have felt','won’t feel','doesn’t feel','wouldn’t feel'],0,
+ ' so much stress that week.\n\nNow Maya always tells new joiners: “If a junior developer ',
+ ['is','was','will be','were'],0,
+ ' afraid to ask questions, the whole team ',
+ ['works','worked','will work','would work'],0,
+ ' more slowly, not just that one person. My advice? If I ',
+ ['were','was','am','had been'],0,
+ ' you, I ',
+ ['would ask','will ask','ask','had asked'],0,
+ ' for help on day one.”'
+]};
+
+/* ---------- Task 6: sort by conditional type ---------- */
+const SORT={cats:[{id:'0',t:'Zero'},{id:'1',t:'First'},{id:'2',t:'Second'},{id:'3',t:'Third'}],items:[
+['If you don’t commit your code regularly, you lose your changes.','0'],
+['If a function has a bug, the automated tests usually fail.','0'],
+['If two developers edit the same file, Git shows a conflict.','0'],
+['If you finish the feature today, we will deploy it tomorrow.','1'],
+['If the client doesn’t approve the design, we will lose a week.','1'],
+['If you don’t document your API, other developers will struggle to use it.','1'],
+['If I had unlimited budget, I would hire ten more engineers.','2'],
+['If our meetings were shorter, we would get more done.','2'],
+['If she worked remotely, she would save two hours a day.','2'],
+['If they had planned the sprint better, they wouldn’t have missed the deadline.','3'],
+['If I had known about the bug, I would have fixed it immediately.','3'],
+['If the team had tested on real devices, they would have caught the crash.','3']]};
+
+/* ---------- Task 7: build the sentence ---------- */
+const ORD=[
+{h:'Zero Conditional',w:['if','a','server','receives','too','many','requests,','it','crashes'],end:'.',a:['if a server receives too many requests it crashes']},
+{h:'First Conditional',w:['if','you','learn','python','well,','you','will','find','a','job','faster'],end:'.',a:['if you learn python well you will find a job faster']},
+{h:'Second Conditional',w:['if','i','were','the','team','lead,','i','would','encourage','pair','programming'],end:'.',a:['if i were the team lead i would encourage pair programming']},
+{h:'Third Conditional',w:['if','she','had','learned','react','earlier,','she','would','have','got','that','job'],end:'.',a:['if she had learned react earlier she would have got that job']},
+{h:'First Conditional, negative',w:['if','the','team','doesn’t','communicate','clearly,','the','deadline','will','slip'],end:'.',a:['if the team doesn’t communicate clearly the deadline will slip','if the team does not communicate clearly the deadline will slip']},
+{h:'Second Conditional',w:['if','our','company','invested','more','in','training,','employees','would','collaborate','better'],end:'.',a:['if our company invested more in training employees would collaborate better']},
+{h:'Third Conditional, negative',w:['if','the','team','hadn’t','ignored','the','warning,','the','system','wouldn’t','have','crashed'],end:'.',a:['if the team hadn’t ignored the warning the system wouldn’t have crashed','if the team had not ignored the warning the system would not have crashed']},
+{h:'Zero Conditional, negative',w:['if','you','don’t','back','up','your','files,','you','lose','everything'],end:'.',a:['if you don’t back up your files you lose everything','if you do not back up your files you lose everything']}
+];
+
+/* ---------- Task 8: choose the correct sentence ---------- */
+const MC1=[
+{q:'Situation: This is a general rule at the company — it always happens this way.',o:['If a pull request {{has}} no tests, the reviewer {{will reject}} it next time.','If a pull request {{had}} no tests, the reviewer {{would reject}} it.','If a pull request {{has}} no tests, the reviewer {{rejects}} it.','If a pull request {{will have}} no tests, the reviewer {{rejects}} it.'],a:2,e:'A general rule, always true → Zero Conditional: has … rejects.'},
+{q:'Situation: This is a realistic plan for next week.',o:['If the design {{is}} approved next week, we {{start}} coding.','If the design {{is}} approved next week, we {{will start}} coding.','If the design {{were}} approved next week, we {{would start}} coding.','If the design {{will be}} approved next week, we {{will start}} coding.'],a:1,e:'A real future plan → First Conditional: is approved … will start.'},
+{q:'Situation: In reality, the team is not remote, but imagine if it were.',o:['If the team {{worked}} remotely, meetings {{would be}} shorter.','If the team {{works}} remotely, meetings {{are}} shorter.','If the team {{had worked}} remotely, meetings {{would have been}} shorter.','If the team {{will work}} remotely, meetings {{will be}} shorter.'],a:0,e:'An unreal present situation → Second Conditional: worked … would be.'},
+{q:'Situation: In reality, nobody reviewed the code, and it did crash.',o:['If somebody {{reviews}} the code, it {{doesn’t crash}}.','If somebody {{reviewed}} the code, it {{wouldn’t crash}}.','If somebody {{had reviewed}} the code, it {{wouldn’t have crashed}}.','If somebody {{will review}} the code, it {{won’t crash}}.'],a:2,e:'An unreal past situation, a real regret → Third Conditional: had reviewed … wouldn’t have crashed.'},
+{q:'Situation: Advice, imagining being in the manager’s position (you are not the manager).',o:['If I {{am}} the manager, I {{change}} the whole workflow.','If I {{was}} the manager, I {{will change}} the whole workflow.','If I {{were}} the manager, I {{would change}} the whole workflow.','If I {{had been}} the manager, I {{would have changed}} the whole workflow.'],a:2,e:'Imagined advice about now → Second Conditional: were … would change.'},
+{q:'Situation: A general fact about how Git works.',o:['If two people {{edit}} the same line, Git {{shows}} a conflict.','If two people {{edited}} the same line, Git {{would show}} a conflict.','If two people {{will edit}} the same line, Git {{will show}} a conflict.','If two people {{had edited}} the same line, Git {{showed}} a conflict.'],a:0,e:'How Git always behaves → Zero Conditional: edit … shows.'},
+{q:'Situation: A warning about what will really happen if nothing changes.',o:['If you {{don’t fix}} this bug today, the client {{complains}}.','If you {{didn’t fix}} this bug today, the client {{would complain}}.','If you {{don’t fix}} this bug today, the client {{will complain}}.','If you {{hadn’t fixed}} this bug today, the client {{would have complained}}.'],a:2,e:'A real warning about the near future → First Conditional: don’t fix … will complain.'},
+{q:'Situation: Explaining, after the fact, why the project failed.',o:['If they {{communicate}} better, the project {{doesn’t fail}}.','If they {{had communicated}} better, the project {{wouldn’t have failed}}.','If they {{communicated}} better, the project {{wouldn’t fail}}.','If they {{will communicate}} better, the project {{won’t fail}}.'],a:1,e:'Explaining a past failure → Third Conditional: had communicated … wouldn’t have failed.'}
+];
+
+/* ---------- Task 9: gap-fill text ---------- */
+const CLOZE={
+t:`The day the deployment failed<br><br>
+Every Friday, if the whole test suite %1% <span class="vb">(pass)</span>, the team %2% <span class="vb">(deploy)</span> to production automatically — that’s just how their pipeline works.<br><br>
+Last Friday, though, something went wrong. If Daniel %3% <span class="vb">(check)</span> the logs more carefully that morning, he %4% <span class="vb">(notice)</span> the failing test before the deploy started. Instead, he was in a rush, and the broken build went live.<br><br>
+Within minutes, customers started reporting errors. “If we %5% <span class="vb">(not / fix)</span> this in the next hour, we %6% <span class="vb">(lose)</span> a lot of trust,” said the team lead, calling an emergency meeting.<br><br>
+Daniel felt terrible. He thought: if he %7% <span class="vb">(ask)</span> a colleague to double-check his work, this %8% <span class="vb">(not / happen)</span>. He promised himself that next time, if he %9% <span class="vb">(be)</span> unsure about something, he %10% <span class="vb">(ask)</span> for a second opinion straight away.<br><br>
+The team fixed the bug within the hour and wrote a short report. If they %11% <span class="vb">(add)</span> one more automated check to the pipeline next sprint, this exact mistake %12% <span class="vb">(not / happen)</span> again.`,
+a:[['passes'],['deploys'],['had checked'],['would have noticed'],["don’t fix","do not fix"],['will lose'],['had asked'],["wouldn’t have happened","would not have happened"],['is'],['will ask'],['add'],["won’t happen","will not happen"]]
+};
+
+/* ---------- Task 11: listening sequence ---------- */
+const SEQ=[
+'The video opens by saying that doing well at work takes more than just technical know-how.',
+'It defines hard skills as specific, teachable abilities you can prove and measure, like coding or using a particular tool.',
+'It gives examples of hard skills, including technical, IT-related abilities.',
+'It defines soft skills as personal qualities that shape how you work with other people, like communication and teamwork.',
+'It explains that employers increasingly look for a balance of both hard and soft skills, not just one or the other.',
+'It ends by encouraging viewers to keep developing both kinds of skills to grow their career.'
+];
+
+/* ---------- Task 3: dialogue with missing replies ---------- */
+const DLG=[
+{who:'Alex',t:'Priya, why did we miss yesterday’s deploy window?'},
+{who:'Priya',t:'Honestly? Nobody told me QA {{hadn’t finished}} testing.'},
+{who:'Alex',gap:true,k:'0',
+ o:['That’s strange. If QA {{isn’t}} done, the release process always {{stops}} automatically.',
+    'That’s strange. If QA {{wasn’t}} done, the release process {{would}} always {{stop}}.',
+    'That’s strange. If QA {{hadn’t been}} done, the release process {{would have stopped}}.',
+    'That’s strange. If QA {{doesn’t finish}}, the release process {{will}} always {{stop}}.'],
+ a:0,e:'A general, automatic rule about the pipeline → Zero Conditional: isn’t … stops.'},
+{who:'Priya',t:'It should, but someone must have skipped a step this time.'},
+{who:'Alex',gap:true,k:'1',
+ o:['Next time, if QA {{isn’t}} ready, I {{will check}} with them myself before the deploy.',
+    'Next time, if QA {{wasn’t}} ready, I {{would check}} with them myself.',
+    'Next time, if QA {{isn’t}} ready, I {{would have checked}} with them myself.',
+    'Next time, if QA {{won’t be}} ready, I {{will check}} with them myself.'],
+ a:0,e:'A real, realistic plan for the future → First Conditional: isn’t … will check.'},
+{who:'Priya',t:'Good idea. Actually, that raises a bigger question about our process.'},
+{who:'Alex',gap:true,k:'2',
+ o:['You know, if we {{had}} a shared dashboard for QA status, we {{would}} all {{see}} problems like this immediately.',
+    'If we {{have}} a shared dashboard, we {{will}} all {{see}} problems like this immediately.',
+    'If we {{had had}} a shared dashboard, we {{would have seen}} problems like this immediately.',
+    'If we {{would have}} a shared dashboard, we {{would}} all {{see}} problems.'],
+ a:0,e:'An imagined, unreal-now improvement (we don’t have one) → Second Conditional: had … would see.'},
+{who:'Priya',t:'True. If I’m honest, I {{noticed}} something felt off yesterday morning.'},
+{who:'Priya',gap:true,k:'3',
+ o:['If I {{had asked}} QA directly yesterday, I {{wouldn’t have found out}} about this so late.',
+    'If I {{asked}} QA directly yesterday, I {{wouldn’t find out}} about this so late.',
+    'If I {{ask}} QA directly yesterday, I {{won’t find out}} about this so late.',
+    'If I {{had asked}} QA directly yesterday, I {{wouldn’t find out}} about this so late.'],
+ a:0,e:'A specific, finished past event and its unreal past result → Third Conditional: had asked … wouldn’t have found out.'},
+{who:'Alex',t:'No harm done — we caught it today. Let’s set up that dashboard this week.'},
+{who:'Priya',t:'Deal. And I {{will ping}} QA directly from now on, every single sprint.'}
+];
+
+/* ---------- task engines ---------- */
+function mcTask(root,items,opt={}){
+  const st={first:new Set(),done:new Set(),wrong:new Set()};
+  const data=items.map(it=>{const idx=it.o.map((_,i)=>i);return {...it,ord:opt.keep?idx:shuffle(idx)};});
+  root.innerHTML=data.map((it,i)=>`<div class="q" data-i="${i}"><div class="txt">${i+1}. ${mk(it.q).replace('___','<span class="gap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>')}</div><div class="opts">${it.ord.map(j=>`<button type="button" class="opt" data-j="${j}">${it.o[j]}</button>`).join('')}</div><div class="exp" hidden></div></div>`).join('')+`<div class="tfoot"><span class="score" aria-live="polite"></span><button type="button" class="btn ghost sm rst">Try again</button></div>`;
+  const sc=$('.score',root);
+  const upd=()=>{sc.textContent=`Correct at the first try: ${st.first.size} / ${data.length}`+(st.done.size===data.length?'. All done!':'');};
+  root.onclick=e=>{
+    if(e.target.closest('.rst')){mcTask(root,items,opt);return;}
+    const b=e.target.closest('.opt');if(!b||b.disabled)return;
+    const q=b.closest('.q'),i=+q.dataset.i,j=+b.dataset.j,it=data[i];
+    if(j===it.a){
+      b.classList.add('ok');$$('.opt',q).forEach(x=>{x.disabled=true;});
+      if(!st.wrong.has(i))st.first.add(i);st.done.add(i);
+      const g=$('.gap',q);if(g)g.textContent=it.o[j];
+      const ex=$('.exp',q);ex.hidden=false;ex.textContent=it.e||'';
+    }else{b.classList.add('bad');b.disabled=true;st.wrong.add(i);}
+    upd();
+  };
+  upd();
+}
+function sortTask(root,items,cats){
+  let sel=null;
+  root.innerHTML=`<div class="pool" data-pool></div><div class="buckets">${cats.map(c=>`<div class="bucket" tabindex="0" data-c="${c.id}"><h4>${c.t}</h4><div class="in"></div></div>`).join('')}</div><div class="tfoot"><span class="score" aria-live="polite"></span><button type="button" class="btn ghost sm rst">Start again</button><button type="button" class="btn sm chk">Check</button></div>`;
+  const pool=$('[data-pool]',root),sc=$('.score',root);
+  shuffle(items.map((_,i)=>i)).forEach(i=>{const b=document.createElement('button');b.type='button';b.className='tok';b.dataset.i=i;b.textContent=items[i][0];pool.appendChild(b);});
+  const place=bk=>{if(!sel)return;$('.in',bk).appendChild(sel);sel.classList.remove('sel','ok','bad');sel=null;};
+  root.onclick=e=>{
+    if(e.target.closest('.rst')){sortTask(root,items,cats);return;}
+    if(e.target.closest('.chk')){
+      let ok=0;$$('.bucket',root).forEach(b=>$$('.tok',b).forEach(t=>{const g=items[+t.dataset.i][1]===b.dataset.c;t.classList.toggle('ok',g);t.classList.toggle('bad',!g);if(g)ok++;}));
+      const left=$$('.tok',pool).length;sc.textContent=`${ok} correct out of ${items.length}`+(left?`. ${left} still to place.`:'');return;
+    }
+    const t=e.target.closest('.tok'),bk=e.target.closest('.bucket');
+    if(t){
+      if(t.closest('.bucket')){pool.appendChild(t);t.classList.remove('ok','bad','sel');return;}
+      if(sel===t){t.classList.remove('sel');sel=null;return;}
+      if(sel)sel.classList.remove('sel');sel=t;t.classList.add('sel');return;
+    }
+    if(bk)place(bk);
+  };
+  root.onkeydown=e=>{if((e.key==='Enter'||e.key===' ')&&e.target.classList.contains('bucket')){e.preventDefault();place(e.target);}};
+}
+function matchTask(root,pairs){
+  const n=pairs.length,R=shuffle(pairs.map((_,i)=>i)),map=Array(n).fill(null);let sel=null,checked=false;
+  const PC=['#0f6e8c','#b26a00','#2f7d4f','#7a4fa0','#2b6cb0','#5b6b7d','#0a4c62','#8a5a44'];
+  const draw=()=>{
+    let good=0,paired=0;
+    const left=pairs.map((p,i)=>{const m=map[i]!==null;if(m)paired++;const ok=checked&&m&&map[i]===i,bad=checked&&m&&map[i]!==i;if(ok)good++;return `<button type="button" class="mit L${m?' paired':''}${sel===i?' sel':''}${ok?' ok':''}${bad?' bad':''}" data-l="${i}" style="--pc:${PC[i%8]}"><span class="bd">${i+1}</span>${p[0]}</button>`;}).join('');
+    const right=R.map(r=>{const li=map.indexOf(r);const ok=checked&&li===r,bad=checked&&li>=0&&li!==r;return `<button type="button" class="mit R${li>=0?' paired':''}${ok?' ok':''}${bad?' bad':''}" data-r="${r}" style="--pc:${li>=0?PC[li%8]:'#b7c4d4'}">${li>=0?`<span class="bd">${li+1}</span>`:''}${pairs[r][1]}</button>`;}).join('');
+    root.innerHTML=`<div class="mwrap"><div class="mcol">${left}</div><div class="mcol">${right}</div></div><div class="tfoot"><span class="score" aria-live="polite">${checked?`${good} / ${n} correct`:`${paired} / ${n} paired`}</span><button type="button" class="btn ghost sm rst">Start again</button><button type="button" class="btn sm chk">Check</button></div>`;
+  };
+  root.onclick=e=>{
+    if(e.target.closest('.rst')){map.fill(null);sel=null;checked=false;draw();return;}
+    if(e.target.closest('.chk')){checked=true;draw();return;}
+    const L=e.target.closest('.L'),Rb=e.target.closest('.R');
+    if(L){const i=+L.dataset.l;if(map[i]!==null)map[i]=null;else sel=(sel===i?null:i);checked=false;draw();return;}
+    if(Rb){const r=+Rb.dataset.r,li=map.indexOf(r);if(li>=0)map[li]=null;else if(sel!==null){map[sel]=r;sel=null;}checked=false;draw();}
+  };
+  draw();
+}
+function gapTask(root,items){
+  root.innerHTML=items.map((it,i)=>`<div class="gapl"><span>${i+1}. ${it[0]}</span><input type="text" data-i="${i}" aria-label="Answer ${i+1}" autocomplete="off" autocapitalize="off" spellcheck="false"><span>${it[1]}</span></div>`).join('')+`<div class="tfoot"><span class="score" aria-live="polite"></span><button type="button" class="btn ghost sm shw">Show answers</button><button type="button" class="btn sm chk">Check</button></div>`;
+  const sc=$('.score',root);
+  const check=()=>{let ok=0;$$('input',root).forEach(inp=>{const g=items[+inp.dataset.i][2].map(nz).includes(nz(inp.value));inp.classList.toggle('ok',g);inp.classList.toggle('bad',!g&&inp.value.trim()!=='');if(g)ok++;});sc.textContent=`${ok} / ${items.length} correct`;};
+  root.onclick=e=>{
+    if(e.target.closest('.chk'))check();
+    if(e.target.closest('.shw')){$$('input',root).forEach(inp=>{inp.value=items[+inp.dataset.i][2][0];});check();}
+  };
+  root.onkeydown=e=>{if(e.key==='Enter'&&e.target.tagName==='INPUT')check();};
+}
+function transTask(root,items){
+  root.innerHTML=items.map((it,i)=>`<div class="tr" data-i="${i}"><div class="uk">${i+1}. ${it.uk}</div><input type="text" class="tin" aria-label="English translation ${i+1}" autocomplete="off" spellcheck="false"><div class="row" style="margin-top:8px"><button type="button" class="btn sm chk">Check</button><button type="button" class="btn ghost sm hint">Hint</button><button type="button" class="btn ghost sm ans">Show answer</button></div><p class="fb" hidden></p></div>`).join('')+`<div class="tfoot"><span class="score" aria-live="polite"></span></div>`;
+  const solved=new Set(),sc=$('.score',root);
+  const fbk=(fb,cls,txt)=>{fb.hidden=false;fb.className='fb '+cls;fb.textContent=txt;};
+  const run=box=>{
+    const i=+box.dataset.i,it=items[i],inp=$('.tin',box),fb=$('.fb',box),v=nz(inp.value);
+    if(!v){fbk(fb,'mid','Write your translation first.');return;}
+    const vs=it.a.map(nz);
+    if(vs.includes(v)){inp.classList.remove('bad');inp.classList.add('ok');fbk(fb,'ok','Correct!');solved.add(i);}
+    else{
+      const best=Math.max(...vs.map(x=>sim(v,x)));inp.classList.remove('ok');solved.delete(i);
+      if(best>=.86){inp.classList.remove('bad');fbk(fb,'mid','Almost! Check small words and spelling. Model answer: '+it.a[0]);}
+      else{inp.classList.add('bad');fbk(fb,'bad','Not yet. Use the hint and try again.');}
+    }
+    sc.textContent=`Correct: ${solved.size} / ${items.length}`;
+  };
+  root.onclick=e=>{
+    const b=e.target.closest('button');if(!b)return;const box=b.closest('.tr');if(!box)return;
+    const it=items[+box.dataset.i],fb=$('.fb',box);
+    if(b.classList.contains('hint'))fbk(fb,'mid','Hint: '+it.h);
+    else if(b.classList.contains('ans'))fbk(fb,'mid','Model answer: '+it.a[0]);
+    else run(box);
+  };
+  root.onkeydown=e=>{if(e.key==='Enter'&&e.target.classList.contains('tin'))run(e.target.closest('.tr'));};
+}
+function predTask(root,items){
+  root.innerHTML=items.map((it,i)=>`<div class="ptask" data-i="${i}"><div class="words">${it.s.split(' ').map((w,k)=>`<button type="button" class="w" data-k="${k}">${w}</button>`).join('')}</div><p class="fb" hidden></p></div>`).join('')+`<div class="tfoot"><span class="score" aria-live="polite"></span><button type="button" class="btn ghost sm rst">Start again</button><button type="button" class="btn sm chk">Check</button></div>`;
+  const sc=$('.score',root);
+  root.onclick=e=>{
+    if(e.target.closest('.rst')){predTask(root,items);return;}
+    if(e.target.closest('.chk')){
+      let ok=0;
+      $$('.ptask',root).forEach(box=>{
+        const it=items[+box.dataset.i],ws=$$('.w',box),fb=$('.fb',box);
+        const chosen=ws.filter(w=>w.classList.contains('sel')||w.classList.contains('bad')).map(w=>+w.dataset.k);
+        const good=chosen.length===it.p.length&&it.p.every(k=>chosen.includes(k));
+        ws.forEach(w=>{const k=+w.dataset.k,on=chosen.includes(k),need=it.p.includes(k);w.classList.remove('sel','ok','miss','bad');if(on&&need)w.classList.add('ok');else if(on)w.classList.add('bad');else if(need)w.classList.add('miss');});
+        const words=it.s.split(' ');
+        fb.hidden=false;fb.className='fb '+(good?'ok':'bad');
+        fb.innerHTML=good?'Correct!':'The predicate is: '+it.p.map(k=>`<u>${words[k].replace(/[?.!,]/g,'')}</u>`).join(' … ');
+        if(good)ok++;
+      });
+      sc.textContent=`${ok} / ${items.length} correct`;return;
+    }
+    const w=e.target.closest('.w');
+    if(w){w.classList.remove('ok','miss');if(w.classList.contains('bad')){w.classList.remove('bad');}else w.classList.toggle('sel');}
+  };
+}
+
+function orderTask(root,items){
+  const solved=new Set();
+  root.innerHTML=items.map((it,i)=>`<div class="ord" data-i="${i}"><div class="otxt">${i+1}. <span class="kind">${it.h}</span></div><div class="built" data-built><span class="ph0">Click the words in the right order…</span><span class="endm">${it.end}</span></div><div class="pool" data-pool></div><div class="row"><button type="button" class="btn sm chk">Check</button><button type="button" class="btn ghost sm clr">Clear</button><button type="button" class="btn ghost sm ans">Show answer</button></div><p class="fb" hidden></p></div>`).join('')+`<div class="tfoot"><span class="score" aria-live="polite"></span></div>`;
+  const sc=$('.score',root);
+  const refresh=box=>{
+    const it=items[+box.dataset.i],built=$('[data-built]',box),pool=$('[data-pool]',box),toks=$$('.tok',built);
+    toks.forEach((t,p)=>{const w=it.w[+t.dataset.k];t.textContent=p===0?cap(w):(w.toLowerCase()==='i'?'I':w);});
+    $$('.tok',pool).forEach(t=>{const w=it.w[+t.dataset.k];t.textContent=w.toLowerCase()==='i'?'I':w;});
+    $('.ph0',built).hidden=toks.length>0;
+  };
+  const state=(box,c)=>{const b=$('[data-built]',box);b.classList.remove('ok','bad');if(c)b.classList.add(c);};
+  const fbk=(box,c,t)=>{const f=$('.fb',box);f.hidden=false;f.className='fb '+c;f.textContent=t;};
+  const score=()=>{sc.textContent=`Correct: ${solved.size} / ${items.length}`;};
+  const clear=box=>{const pool=$('[data-pool]',box);$$('.tok',$('[data-built]',box)).forEach(t=>pool.appendChild(t));};
+  items.forEach((it,i)=>{
+    const box=$(`.ord[data-i="${i}"]`,root),pool=$('[data-pool]',box);
+    let idx=it.w.map((_,k)=>k),tries=0;
+    do{idx=shuffle(idx);tries++;}while(tries<10&&idx.every((v,k)=>v===k));
+    idx.forEach(k=>{const b=document.createElement('button');b.type='button';b.className='tok';b.dataset.k=k;b.textContent=it.w[k].toLowerCase()==='i'?'I':it.w[k];pool.appendChild(b);});
+  });
+  root.onclick=e=>{
+    const box=e.target.closest('.ord');if(!box)return;
+    const i=+box.dataset.i,it=items[i],built=$('[data-built]',box),pool=$('[data-pool]',box),endm=$('.endm',built);
+    const t=e.target.closest('.tok');
+    if(t){
+      if(t.parentNode===pool)built.insertBefore(t,endm);else pool.appendChild(t);
+      state(box,null);$('.fb',box).hidden=true;solved.delete(i);refresh(box);score();t.focus();return;
+    }
+    const b=e.target.closest('button');if(!b)return;
+    if(b.classList.contains('clr')){clear(box);state(box,null);$('.fb',box).hidden=true;solved.delete(i);refresh(box);score();return;}
+    if(b.classList.contains('ans')){
+      clear(box);
+      it.a[0].split(' ').forEach(w=>{const tk=$$('.tok',pool).find(x=>it.w[+x.dataset.k].replace(/[,.!?]/g,'').toLowerCase()===w.toLowerCase());if(tk)built.insertBefore(tk,endm);});
+      state(box,null);solved.delete(i);refresh(box);fbk(box,'mid','Model answer shown. Press Clear and try it yourself.');score();return;
+    }
+    if(b.classList.contains('chk')){
+      const toks=$$('.tok',built);
+      if(!toks.length){fbk(box,'mid','Click the words first.');return;}
+      if(toks.length<it.w.length){state(box,null);fbk(box,'mid','Use all the words.');return;}
+      const got=nz(toks.map(x=>it.w[+x.dataset.k]).join(' '));
+      if(it.a.map(nz).includes(got)){state(box,'ok');fbk(box,'ok','Correct!');solved.add(i);}
+      else{state(box,'bad');fbk(box,'bad','Not yet. Check the helper verb and the word order.');solved.delete(i);}
+      score();
+    }
+  };
+}
+function editTask(root,items,o={}){
+  root.innerHTML=items.map((it,i)=>`<div class="tr" data-i="${i}">${it.p?`<div class="ptxt">${i+1}. ${it.p}</div>`:''}${it.t?`<div class="kind">${it.t}</div>`:''}<div class="editrow">${it.p?'':`<span class="ptxt">${i+1}.</span>`}<input type="text" class="tin" value="${esc(it.s||'')}" aria-label="${o.prefill?'Corrected sentence':'Your sentence'} ${i+1}" autocomplete="off" autocapitalize="off" spellcheck="false"></div><div class="row" style="margin-top:8px"><button type="button" class="btn sm chk">Check</button><button type="button" class="btn ghost sm hint">Hint</button><button type="button" class="btn ghost sm ans">Show answer</button></div><p class="fb" hidden></p></div>`).join('')+`<div class="tfoot"><span class="score" aria-live="polite"></span></div>`;
+  const solved=new Set(),sc=$('.score',root);
+  const fbk=(fb,cls,txt)=>{fb.hidden=false;fb.className='fb '+cls;fb.textContent=txt;};
+  const upd=()=>{sc.textContent=`Correct: ${solved.size} / ${items.length}`;};
+  const run=box=>{
+    const i=+box.dataset.i,it=items[i],inp=$('.tin',box),fb=$('.fb',box),v=nz(inp.value);
+    if(!v){fbk(fb,'mid','Write your answer first.');return;}
+    if(o.prefill&&v===nz(it.s)){inp.classList.remove('ok','bad');solved.delete(i);fbk(fb,'mid','Nothing has changed yet. Find the mistake and correct it.');upd();return;}
+    const vs=it.a.map(nz);
+    if(vs.includes(v)){inp.classList.remove('bad');inp.classList.add('ok');fbk(fb,'ok','Correct! '+(it.e||''));solved.add(i);}
+    else{
+      const best=Math.max(...vs.map(x=>sim(v,x)));inp.classList.remove('ok');solved.delete(i);
+      if(best>=.86){inp.classList.remove('bad');fbk(fb,'mid','Almost! Check the verb form, the helper verb and the spelling.');}
+      else{inp.classList.add('bad');fbk(fb,'bad','Not yet. Press Hint and try again.');}
+    }
+    upd();
+  };
+  root.onclick=e=>{
+    const b=e.target.closest('button');if(!b)return;const box=b.closest('.tr');if(!box)return;
+    const it=items[+box.dataset.i],fb=$('.fb',box);
+    if(b.classList.contains('hint'))fbk(fb,'mid','Hint: '+it.h);
+    else if(b.classList.contains('ans'))fbk(fb,'mid','Model answer: '+it.a[0]+(it.e?'  ('+it.e+')':''));
+    else run(box);
+  };
+  root.onkeydown=e=>{if(e.key==='Enter'&&e.target.classList.contains('tin'))run(e.target.closest('.tr'));};
+}
+function clozeTask(root,text,ans){
+  root.innerHTML=`<div class="cloze">${text.replace(/%(\d+)%/g,(m,n)=>`<span class="gp"><span class="gn" aria-hidden="true">${n}</span><input type="text" data-n="${+n-1}" aria-label="Gap ${n}" autocomplete="off" autocapitalize="off" spellcheck="false"></span>`)}</div><div class="tfoot"><span class="score" aria-live="polite"></span><button type="button" class="btn ghost sm shw">Show answers</button><button type="button" class="btn sm chk">Check</button></div>`;
+  const sc=$('.score',root);
+  const check=()=>{let ok=0;$$('input',root).forEach(inp=>{const v=nz(inp.value),g=ans[+inp.dataset.n].map(nz).includes(v);inp.classList.toggle('ok',g);inp.classList.toggle('bad',!g&&v!=='');if(g)ok++;});sc.textContent=`${ok} / ${ans.length} correct`;};
+  root.onclick=e=>{
+    if(e.target.closest('.chk'))check();
+    if(e.target.closest('.shw')){$$('input',root).forEach(inp=>{inp.value=ans[+inp.dataset.n][0];});check();}
+  };
+  root.onkeydown=e=>{if(e.key==='Enter'&&e.target.tagName==='INPUT')check();};
+}
+
+/* ---------- new engine: dropdown-select cloze ---------- */
+function dropTask(root,story){
+  let out='',gapN=0;const corrects=[];
+  let i=0;
+  while(i<story.segs.length){
+    const seg=story.segs[i];
+    if(Array.isArray(seg)){
+      const opts=seg,correctIdx=story.segs[i+1];i+=2;
+      const order=shuffle(opts.map((_,idx)=>idx));
+      const n=gapN++;corrects[n]=opts[correctIdx];
+      out+=`<select class="dsel" data-n="${n}" aria-label="Gap ${n+1}"><option value="">choose…</option>`+order.map(idx=>`<option value="${esc(opts[idx])}">${esc(opts[idx])}</option>`).join('')+'</select>';
+    }else{out+=seg.replace(/\n\n/g,'</p><p>');i++;}
+  }
+  root.innerHTML=`<div class="dropstory"><h4>${esc(story.title)}</h4><p>${out}</p></div><div class="tfoot"><span class="score" aria-live="polite"></span><button type="button" class="btn ghost sm shw">Show answers</button><button type="button" class="btn sm chk">Check</button></div>`;
+  const check=()=>{
+    let ok=0;
+    $$('.dsel',root).forEach(sel=>{
+      const n=+sel.dataset.n,v=sel.value,good=v===corrects[n];
+      sel.classList.toggle('ok',good&&v!=='');sel.classList.toggle('bad',!good&&v!=='');
+      if(good&&v!=='')ok++;
+    });
+    $('.score',root).textContent=`${ok} / ${corrects.length} correct`;
+  };
+  root.onclick=e=>{if(e.target.closest('.chk'))check();if(e.target.closest('.shw')){$$('.dsel',root).forEach(sel=>{sel.value=corrects[+sel.dataset.n];});check();}};
+  root.onchange=e=>{if(e.target.classList.contains('dsel'))check();};
+}
+
+/* ---------- new engine: complete with your own idea ---------- */
+function ownTask(root,items){
+  const TB={0:'var(--c0)',1:'var(--c1)',2:'var(--c2)',3:'var(--c3)'};
+  root.innerHTML=items.map((it,i)=>`<div class="ownrow" data-i="${i}"><p class="ptxt2"><span class="tb" style="--tc:${TB[it.k]}">${it.k}</span> ${mk(it.p)} <span class="k s">…</span></p><textarea class="own-in" rows="2" placeholder="Write your own ending here…" aria-label="Your ending for sentence ${i+1}"></textarea><div class="row"><button type="button" class="btn ghost sm reveal">Show a model idea</button></div><p class="fb model" hidden></p></div>`).join('')+`<div class="tfoot"><span class="score" aria-live="polite"></span></div>`;
+  const upd=()=>{const n=$$('.own-in',root).filter(t=>t.value.trim()).length;$('.score',root).textContent=`${n} / ${items.length} written`;};
+  root.addEventListener('input',e=>{if(e.target.classList.contains('own-in'))upd();});
+  root.addEventListener('click',e=>{
+    const b=e.target.closest('.reveal');if(!b)return;
+    const row=b.closest('.ownrow'),i=+row.dataset.i,fb=$('.model',row);
+    fb.hidden=!fb.hidden;
+    if(!fb.hidden){fb.innerHTML='<b>A model idea:</b> '+mk(plain(items[i].p)+' '+items[i].model);b.textContent='Hide the model idea';}
+    else b.textContent='Show a model idea';
+  });
+  upd();
+}
+
+/* ---------- new engine: dialogue with missing replies (multiple choice) ---------- */
+function dlgGapTask(root,turns){
+  const st={first:new Set(),done:new Set(),wrong:new Set()};
+  const side=w=>w==='Priya'?' r':'';
+  const av=w=>w[0];
+  const row=(t,i)=>{
+    if(!t.gap){
+      return `<div class="turn${side(t.who)}"><div class="avatar" data-who="${t.who}">${av(t.who)}</div><div class="bubble"><div class="who">${t.who}</div><div>${mk(t.t)}</div></div></div>`;
+    }
+    return `<div class="turn${side(t.who)} gapturn" data-i="${i}"><div class="avatar" data-who="${t.who}">${av(t.who)}</div><div class="bubble gapbubble"><div class="who">${t.who} <span class="tb" style="--tc:var(--c${t.k})">${t.k}</span> <span class="small gaplbl">— choose the reply that fits</span></div><div class="opts">${t.o.map((opt,j)=>`<button type="button" class="opt" data-j="${j}">${mk(opt)}</button>`).join('')}</div><div class="exp" hidden></div></div></div>`;
+  };
+  root.innerHTML=`<div class="dlg">${turns.map(row).join('')}</div><div class="tfoot"><span class="score" aria-live="polite"></span><button type="button" class="btn ghost sm rst">Start again</button></div>`;
+  const gaps=turns.map((t,i)=>t.gap?i:null).filter(i=>i!==null);
+  const sc=$('.score',root);
+  const upd=()=>{sc.textContent=`Correct at the first try: ${st.first.size} / ${gaps.length}`+(st.done.size===gaps.length?'. All done!':'');};
+  root.onclick=e=>{
+    if(e.target.closest('.rst')){dlgGapTask(root,turns);return;}
+    const b=e.target.closest('.opt');if(!b||b.disabled)return;
+    const turnEl=b.closest('.gapturn'),i=+turnEl.dataset.i,j=+b.dataset.j,t=turns[i];
+    if(j===t.a){
+      b.classList.add('ok');$$('.opt',turnEl).forEach(x=>{x.disabled=true;});
+      turnEl.classList.add('answered');
+      if(!st.wrong.has(i))st.first.add(i);st.done.add(i);
+      const ex=$('.exp',turnEl);ex.hidden=false;ex.textContent=t.e||'';
+    }else{b.classList.add('bad');b.disabled=true;st.wrong.add(i);}
+    upd();
+  };
+  upd();
+}
+
+/* ---------- grammar timelines + cards ---------- */
+function TLg(k){
+  const g=GR.find(x=>x.k===k),tc=g.c;
+  const ax=`<line class="ax" x1="8" y1="52" x2="304" y2="52"/><path class="ah" d="M312 52 l-10 -5 v10z"/>`;
+  const now=`<line class="now" x1="200" y1="22" x2="200" y2="84"/><text class="nowl" x="200" y="98" text-anchor="middle">now</text><text class="nowl" x="30" y="98" text-anchor="middle">past</text><text class="nowl" x="286" y="98" text-anchor="middle">future</text>`;
+  let mkr='';
+  if(k==='0')mkr=[36,84,132,180,228,276].map(x=>`<circle cx="${x}" cy="52" r="6" style="fill:var(--tc)"/>`).join('')+`<text x="160" y="34" text-anchor="middle" class="tll">always true</text>`;
+  if(k==='1')mkr=`<circle cx="256" cy="52" r="8" style="fill:var(--tc)"/><text x="256" y="34" text-anchor="middle" class="tll">a real future event</text>`;
+  if(k==='2')mkr=`<circle cx="200" cy="52" r="9" style="fill:var(--card);stroke:var(--tc);stroke-width:3;stroke-dasharray:3 3"/><text x="200" y="34" text-anchor="middle" class="tll">imagined now</text>`;
+  if(k==='3')mkr=`<circle cx="66" cy="52" r="9" style="fill:var(--card);stroke:var(--tc);stroke-width:3;stroke-dasharray:3 3"/><text x="66" y="34" text-anchor="middle" class="tll">imagined past</text>`;
+  return `<svg class="tlsvg" style="--tc:${tc}" viewBox="0 0 320 108" role="img" aria-label="Timeline: ${g.n}">${ax}${now}${mkr}</svg>`;
+}
+function gcard(k){
+  const g=GR.find(x=>x.k===k);
+  const rows=[['Statement','st'],['Negative','ng'],['Question','yn']].map(([l,q])=>`<div class="frow"><span class="lbl">${l}</span><div class="fx">${mk(g.f[q])}</div></div>`).join('');
+  const points=g.points.map(p=>`<li>${p}</li>`).join('');
+  const examples=g.ex.map(e=>`<p class="eg">${mk(e)}</p>`).join('');
+  return `<article class="tcard" style="--tc:${g.c}"><header><h3>${g.n}</h3></header><div class="tlw">${TLg(g.k)}</div><h4>Structure</h4>${rows}<h4>When do we use it?</h4><ul class="uses2">${points}</ul><h4>Examples</h4>${examples}<h4>Time markers</h4><div>${g.mk.map(m=>`<span class="chip tm">${m}</span>`).join('')}</div></article>`;
+}
+
+/* ---------- new engine: sequence the statements you heard ---------- */
+function seqTask(root,items){
+  const order=shuffle(items.map((_,i)=>i));
+  root.innerHTML=`<div class="seqwrap"><div class="seqlist" data-list aria-label="Your order"></div><div class="pool" data-pool></div></div><div class="tfoot"><span class="score" aria-live="polite"></span><button type="button" class="btn ghost sm rst">Start again</button><button type="button" class="btn ghost sm shw">Show correct order</button><button type="button" class="btn sm chk">Check</button></div>`;
+  const pool=$('[data-pool]',root),list=$('[data-list]',root);
+  let picked=[];
+  const draw=()=>{
+    pool.innerHTML=order.filter(i=>!picked.includes(i)).map(i=>`<button type="button" class="tok seqtok" data-i="${i}">${esc(items[i])}</button>`).join('');
+    list.innerHTML=picked.length?picked.map((i,pos)=>`<div class="seqrow" data-i="${i}"><span class="sn">${pos+1}</span><span class="st">${esc(items[i])}</span></div>`).join(''):`<p class="ph0">Click the sentences below in order — they will appear here.</p>`;
+  };
+  draw();
+  root.addEventListener('click',e=>{
+    const t=e.target.closest('.seqtok');
+    if(t){picked.push(+t.dataset.i);draw();return;}
+    const r=e.target.closest('.seqrow');
+    if(r){picked=picked.filter(i=>i!==+r.dataset.i);draw();return;}
+    if(e.target.closest('.rst')){picked=[];$$('.seqrow',list).forEach(x=>x.classList.remove('ok','bad'));draw();return;}
+    if(e.target.closest('.shw')){picked=items.map((_,i)=>i);draw();$$('.seqrow',list).forEach((row,pos)=>row.classList.add('ok'));$('.score',root).textContent=`${items.length} / ${items.length} in the correct order`;return;}
+    if(e.target.closest('.chk')){
+      let ok=0;
+      $$('.seqrow',list).forEach((row,pos)=>{
+        const good=picked[pos]===pos;
+        row.classList.toggle('ok',good);row.classList.toggle('bad',!good);
+        if(good)ok++;
+      });
+      $('.score',root).textContent=picked.length<items.length?`Place all ${items.length} sentences first (${picked.length} / ${items.length} placed).`:`${ok} / ${items.length} in the correct order`;
+    }
+  });
+}
+
+/* ---------- page ---------- */
+function init(){
+  /* navigation */
+  const slides=$$('.slide'),pills=$('#pills');let cur=0;
+  const desc=['','Discuss hard skills vs soft skills, rank what matters most','Structure and use of all four conditionals, with red predicates','26 ways to introduce a condition, beyond just “if”','Test how well you know the rules','Find and correct the mistake','Complete a dialogue about a missed deadline','Finish sentences with your own ideas','Choose the right verb form from a list','Sort sentences by conditional type','Put the words in the right order','Choose the sentence that fits the situation','Fill in the gaps in a short story','Describe a picture and answer a final question','Watch a video, sequence what you hear, then discuss with conditionals'];
+  slides.forEach((s,i)=>{const b=document.createElement('button');b.type='button';b.className='pill';b.textContent=`${i+1} ${s.dataset.title}`;b.onclick=()=>go(i);pills.appendChild(b);});
+  $('#map').innerHTML=slides.slice(1).map((s,i)=>`<button type="button" data-go="${i+2}"><b>${i+2}. ${s.dataset.title}</b>${desc[i+1]||''}</button>`).join('');
+  function go(i,noScroll){
+    cur=Math.max(0,Math.min(slides.length-1,i));
+    slides.forEach((s,k)=>s.classList.toggle('on',k===cur));
+    $$('.pill').forEach((p,k)=>{p.classList.toggle('on',k===cur);if(k===cur)p.scrollIntoView({block:'nearest',inline:'center'});});
+    $('#prog').style.width=((cur+1)/slides.length*100)+'%';
+    $('#where').textContent=`${cur+1} of ${slides.length}: ${slides[cur].dataset.title}`;
+    $('#prev').disabled=cur===0;$('#next').disabled=cur===slides.length-1;
+    if(!noScroll)window.scrollTo(0,0);
+    try{history.replaceState(null,'','#'+(cur+1));}catch(e){}
+  }
+  $('#prev').onclick=()=>go(cur-1);$('#next').onclick=()=>go(cur+1);
+  document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g)go(+g.dataset.go-1);});
+  document.addEventListener('keydown',e=>{
+    if(/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName))return;
+    if(e.key==='ArrowRight')go(cur+1);if(e.key==='ArrowLeft')go(cur-1);
+  });
+  window.addEventListener('hashchange',()=>{const n=parseInt(location.hash.slice(1),10);if(n&&n-1!==cur)go(n-1);});
+  let start=0;try{start=Math.max(0,(parseInt(location.hash.slice(1),10)||1)-1);}catch(e){}
+  go(start,true);
+
+  /* warm-up */
+  let last='';
+  $$('[data-rq]').forEach(b=>b.onclick=()=>{
+    const k=b.dataset.rq==='any'?(Math.random()<.5?'hard':'soft'):b.dataset.rq;
+    let q;do{q=RQ[k][Math.floor(Math.random()*RQ[k].length)];}while(q===last);last=q;$('#rq').textContent=q;
+  });
+  let tv=60,ti=null;const tout=$('#tval');
+  $('#tstart').onclick=()=>{if(ti)return;if(tv<=0)tv=60;ti=setInterval(()=>{tv--;tout.textContent=tv>0?tv:'Time!';if(tv<=0){clearInterval(ti);ti=null;}},1000);};
+  $('#treset').onclick=()=>{clearInterval(ti);ti=null;tv=60;tout.textContent=60;};
+  $('#rank').innerHTML=RANK.map(s=>`<button type="button" class="chipbtn" data-s="${esc(s)}" aria-pressed="false">${s}</button>`).join('');
+  let order=[];
+  const renderRank=()=>{$('#rankOut').textContent=order.length?order.map((s,i)=>`${i+1}. ${s}`).join('   ·   '):'Tap the skills to build your ranking.';};
+  $('#rank').onclick=e=>{
+    const b=e.target.closest('button');if(!b)return;const s=b.dataset.s,idx=order.indexOf(s);
+    if(idx>=0){order.splice(idx,1);b.setAttribute('aria-pressed','false');}else{order.push(s);b.setAttribute('aria-pressed','true');}
+    renderRank();
+  };
+
+  /* grammar */
+  $('#gr48').innerHTML=GR.map(g=>gcard(g.k)).join('');
+  $('#chart').innerHTML=`<tr><th>Conditional</th><th>Structure</th><th>We use it for</th><th>Example</th></tr>`+CH.map(c=>`<tr style="--tc:${c.c}"><td><span class="tsw"></span>${c.n}</td><td class="fx" data-l="Structure">${mk(c.f)}</td><td data-l="We use it for">${c.use}</td><td class="eg" data-l="Example">${mk(c.ex)}</td></tr>`).join('');
+
+  /* introductory words */
+  const TBw={'0':['0','Zero Conditional','var(--c0)'],'1':['1','First Conditional','var(--c1)'],'2':['2','Second Conditional','var(--c2)'],'3':['3','Third Conditional','var(--c3)'],'–':['–','not a conditional','var(--muted)']};
+  $('#iw').innerHTML=INTRO.map(v=>`<article class="vcard iwc" data-g="${v.g}" tabindex="0"><div class="vbody"><h4>${v.w} <button type="button" class="say" data-say="${esc(plain(v.ex))}" aria-label="Listen to an example with ${esc(v.w)}">🔊</button></h4><div class="badges">${v.t.split(' ').map(t=>`<span class="tb" title="${TBw[t][1]}" style="--tc:${TBw[t][2]}">${TBw[t][0]}</span>`).join('')}</div><p class="vd">${v.m}</p><p class="ex eg">${mk(v.ex)}</p>${v.nt?`<p class="small nt">${v.nt}</p>`:''}<span class="tag">${IG[v.g]}</span></div></article>`).join('');
+  $('#wfilter').innerHTML=`<button type="button" data-f="all" aria-pressed="true">All (${INTRO.length})</button>`+Object.keys(IG).map(g=>`<button type="button" data-f="${g}" aria-pressed="false">${IG[g]} (${INTRO.filter(x=>x.g===g).length})</button>`).join('');
+  $('#wfilter').onclick=e=>{const b=e.target.closest('button');if(!b)return;$$('#wfilter button').forEach(x=>x.setAttribute('aria-pressed',x===b));$$('.iwc').forEach(c=>{c.hidden=b.dataset.f!=='all'&&c.dataset.g!==b.dataset.f;});};
+  $('#hideM').onchange=e=>$('#iw').classList.toggle('hide-def',e.target.checked);
+  $('#iw').addEventListener('click',e=>{const c=e.target.closest('.iwc');if(c&&!e.target.closest('.say'))c.classList.toggle('open');});
+  $('#iw').addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.classList.contains('iwc')){e.preventDefault();e.target.classList.toggle('open');}});
+  document.addEventListener('click',e=>{const s=e.target.closest('[data-say]');if(s)say(s.dataset.say);});
+
+  /* practice */
+  mcTask($('#t-rules'),RULES);
+  editTask($('#t-fix'),FIX,{prefill:true});
+  dlgGapTask($('#t-dlg'),DLG);
+  ownTask($('#t-own'),OWN);
+  dropTask($('#t-drop'),DROP);
+  sortTask($('#t-sort'),SORT.items,SORT.cats);
+  orderTask($('#t-ord'),ORD);
+  mcTask($('#t-mc'),MC1.map(it=>({...it,o:it.o.map(mk)})));
+  clozeTask($('#t-cloze'),CLOZE.t,CLOZE.a);
+  seqTask($('#t-seq'),SEQ);
+
+  /* final task */
+  $('#finalCopy').onclick=async()=>{
+    const t=$('#finalA').value.trim();
+    $('#finalMsg').textContent=!t?'Write something first.':(await copyText(t))?'Copied. Paste it into a message or a document.':'Copying is blocked here. Select the text and copy it by hand.';
+  };
+}
+init();
+
+})();
+</script>
+</body>
+</html>
