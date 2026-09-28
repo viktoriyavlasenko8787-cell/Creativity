@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Past repeated actions and states</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FCE4EE; --surface:#FFF6FA; --ink:#3A1830; --muted:#7A4E68; --line:#E6A9C3;
+  --usedto:#2F5AA8; --would:#8A2E8F; --past:#0F7A6B;
+  --hi:#F48FB8; --ok:#237A4B; --bad:#C2413A; --red:#D7191C;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#2A1320; --surface:#3A1B2D; --ink:#FCE8F1; --muted:#D3A9BF; --line:#5C3048;
+    --usedto:#8EB0F0; --would:#E39BE6; --past:#5CCFBB;
+    --hi:#D8628F; --ok:#5CC48E; --bad:#F07D74; --red:#FF6B6B;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#2A1320; --surface:#3A1B2D; --ink:#FCE8F1; --muted:#D3A9BF; --line:#5C3048;
+  --usedto:#8EB0F0; --would:#E39BE6; --past:#5CCFBB;
+  --hi:#D8628F; --ok:#5CC48E; --bad:#F07D74; --red:#FF6B6B;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px);font-size:200%}
+@media (max-width:700px){html{font-size:130%}}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Atkinson Hyperlegible","Segoe UI",system-ui,-apple-system,sans-serif;font-size:1.0625rem;line-height:1.55;-webkit-text-size-adjust:100%}
+h1,h2,h3{font-family:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;line-height:1.15;margin:0 0 .45em;letter-spacing:-.01em}
+h2{font-size:clamp(1.5rem,3.6vw,2.1rem);font-weight:800}
+h3{font-size:1.2rem;font-weight:700}
+p{margin:0 0 .9em}
+i{font-style:italic}
+s{color:var(--bad);text-decoration-thickness:2px}
+button{font:inherit}
+:focus-visible{outline:3px solid var(--usedto);outline-offset:2px}
+
+/* top bar */
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--paper);border-bottom:1px solid var(--line)}
+.topbar-inner{max-width:1500px;margin:0 auto;padding:12px 20px 8px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:700;font-size:1rem}
+.scorechip{font-weight:700;font-size:.95rem;background:var(--hi);color:#3A1830;padding:4px 12px;border-radius:999px;white-space:nowrap}
+.tabs{max-width:1500px;margin:0 auto;padding:4px 20px 12px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:thin}
+.tab{flex:0 0 auto;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 13px;font-size:.88rem;cursor:pointer}
+.tab[aria-current="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.tab.done::after{content:" ✓";color:var(--ok);font-weight:700}
+.tab.done[aria-current="true"]::after{color:var(--hi)}
+
+main{max-width:1500px;margin:0 auto;padding:28px 20px 24px}
+.slide{display:none}
+.slide.active{display:block}
+.lead{color:var(--muted);max-width:64ch;font-size:1.05rem}
+.narrow{max-width:72ch}
+
+/* form colour code */
+.f{display:inline;font-weight:700;padding:0 .2em;border-radius:4px;white-space:nowrap}
+.f-u{color:var(--usedto);background:color-mix(in srgb,var(--usedto) 13%,transparent)}
+.f-w{color:var(--would);background:color-mix(in srgb,var(--would) 13%,transparent)}
+.f-p{color:var(--past);background:color-mix(in srgb,var(--past) 13%,transparent)}
+
+/* hero */
+.hero{padding:8px 0 28px;border-bottom:1px solid var(--line);margin-bottom:32px}
+.hero-level{display:inline-block;font-weight:700;font-size:.9rem;color:var(--muted);margin-bottom:14px}
+.hero-lines{font-size:clamp(1.9rem,5.6vw,3.4rem);font-weight:800;line-height:1.12;margin:0 0 18px}
+.hero-lines > span{display:block}
+.hero-lines .f{padding:0;background:none;text-decoration:underline;text-decoration-thickness:.14em;text-underline-offset:.14em}
+.hero-lines .f-u{text-decoration-color:color-mix(in srgb,var(--usedto) 45%,transparent)}
+.hero-lines .f-w{text-decoration-color:color-mix(in srgb,var(--would) 45%,transparent)}
+.hero-lines .f-p{text-decoration-color:color-mix(in srgb,var(--past) 45%,transparent)}
+
+section.block{margin:0 0 40px}
+.forms3{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,14rem),1fr));gap:16px;margin-top:14px}
+.formcard{background:var(--surface);border-radius:10px;padding:18px 18px 8px;border-top:5px solid var(--line)}
+.formcard.u{border-top-color:var(--usedto)}
+.formcard.w{border-top-color:var(--would)}
+.formcard.p{border-top-color:var(--past)}
+.formcard ul{padding-left:1.1em;margin:0 0 10px}
+.formcard li{margin-bottom:.45em}
+
+.table-wrap{overflow-x:auto;background:var(--surface);border-radius:10px;margin:12px 0 8px}
+table{border-collapse:collapse;width:100%;min-width:38rem;font-size:.97rem}
+th,td{padding:11px 14px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+thead th{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:700;border-bottom:2px solid var(--ink)}
+tbody tr:last-child td{border-bottom:none}
+td.c{text-align:center;white-space:nowrap}
+.y{color:var(--ok);font-weight:700}
+.n{color:var(--bad);font-weight:700}
+
+.callout{background:var(--surface);border-left:6px solid var(--hi);border-radius:0 10px 10px 0;padding:16px 20px;margin:16px 0}
+.callout p:last-child{margin-bottom:0}
+.twocol{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,18rem),1fr));gap:16px}
+.ex-list{list-style:none;padding:0;margin:0}
+.ex-list li{padding:6px 0;border-bottom:1px dashed var(--line)}
+.ex-list li:last-child{border-bottom:none}
+.mark{font-weight:700;display:inline-block;width:1.4em}
+
+/* exercises */
+.task{background:var(--surface);border-radius:12px;padding:6px 20px 18px}
+.ex-item{padding:14px 0;border-bottom:1px solid var(--line)}
+.ex-item:last-child{border-bottom:none}
+.q{display:flex;gap:12px;align-items:flex-start;margin-bottom:10px}
+.num{flex:0 0 auto;width:1.75rem;height:1.75rem;border-radius:50%;background:var(--paper);color:var(--ink);font-weight:700;font-size:.85rem;display:grid;place-items:center;margin-top:1px}
+.ex-item.right .num{background:var(--ok);color:#fff}
+.ex-item.wrong .num{background:var(--bad);color:#fff}
+.opts{display:flex;flex-wrap:wrap;gap:8px;padding-left:2.5rem}
+.opt{font-size:.95rem;padding:.45em .9em;min-height:2.5rem;border-radius:8px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.opt:hover{border-color:var(--muted)}
+.opt[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.opt.is-right{background:color-mix(in srgb,var(--ok) 18%,var(--surface));color:var(--ink);border-color:var(--ok)}
+.opt.is-right::before{content:"✓ ";color:var(--ok);font-weight:700}
+.opt.is-wrong{background:color-mix(in srgb,var(--bad) 15%,var(--surface));color:var(--ink);border-color:var(--bad);text-decoration:line-through}
+.opt.is-wrong::before{content:"✗ ";color:var(--bad);font-weight:700}
+.opt.is-missed{border-style:dashed;border-color:var(--ok);background:var(--surface);color:var(--ink)}
+.opt.is-missed::before{content:"+ ";color:var(--ok);font-weight:700}
+.checked .opt{cursor:default}
+.fb{display:none;margin:10px 0 0 2.5rem;font-size:.95rem;color:var(--muted)}
+.checked .fb{display:block}
+.fb b{color:var(--ink)}
+.blank{display:inline-block;min-width:4.5em;border-bottom:2px solid var(--ink);height:1em;vertical-align:baseline}
+.hint{color:var(--muted);font-style:italic}
+
+.instr{margin:0 0 14px;max-width:70ch}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.btn{border:none;border-radius:8px;padding:.5em 1em;font-weight:700;cursor:pointer;min-height:2.75rem}
+.btn.primary{background:var(--ink);color:var(--surface)}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.result{display:none;margin-top:16px;padding:14px 18px;border-radius:10px;background:color-mix(in srgb,var(--hi) 35%,var(--surface));font-weight:700}
+.result.show{display:block}
+
+/* typed */
+.typed-line{line-height:2.4;padding-left:2.5rem}
+.tin{font:inherit;font-size:1rem;padding:5px 9px;border-radius:6px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);width:15em;max-width:100%}
+.tin.ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 14%,var(--surface))}
+.tin.bad{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,var(--surface))}
+
+/* story */
+.story{background:var(--surface);border-radius:12px;padding:22px 24px;font-size:1.05rem;line-height:2.35;max-width:78ch}
+.story h3{line-height:1.3;margin-bottom:.3em}
+.story p{margin:0 0 .6em}
+.gap{white-space:nowrap}
+.gap sup{font-weight:700;color:var(--muted);font-size:.72em;margin-right:2px}
+.gap select{font:inherit;font-size:.95rem;padding:3px 6px;border-radius:6px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);max-width:100%;cursor:pointer}
+.gap select.ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 14%,var(--surface))}
+.gap select.bad{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,var(--surface))}
+.gap select.shown{border-color:var(--usedto);border-style:dashed}
+.story-notes{margin-top:14px;padding:0;list-style:none}
+.story-notes li{padding:6px 0;border-bottom:1px dashed var(--line);font-size:.95rem}
+.story-notes li:last-child{border-bottom:none}
+@media (max-width:520px){.gap{white-space:normal}.story{padding:18px 16px}}
+
+/* picture match */
+.bank{display:flex;flex-wrap:wrap;gap:8px;padding:14px;background:var(--surface);border-radius:12px;margin-bottom:16px;min-height:66px;align-items:center}
+.bank:empty::before{content:"All words are on the pictures. Press Check answers.";color:var(--muted);font-size:.95rem}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(9.5rem,1fr));gap:12px}
+@media (max-width:420px){.pgrid{grid-template-columns:1fr 1fr}}
+.pcard{position:relative;background:var(--surface);border:2px solid var(--line);border-radius:12px;padding:10px 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--ink);font:inherit}
+.pcard svg{width:100%;max-width:8.5rem;height:auto;display:block}
+.pcard .pn{position:absolute;top:8px;left:8px;width:1.5rem;height:1.5rem;border-radius:50%;background:var(--paper);font-weight:700;font-size:.8rem;display:grid;place-items:center}
+.plabel{font-weight:700;min-height:1.6em;text-align:center;line-height:1.3}
+.plabel.empty{color:var(--muted);font-weight:400;font-size:.9rem}
+.pcard.active{border-color:var(--usedto);border-style:dashed}
+.pcard.ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 10%,var(--surface))}
+.pcard.bad{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 8%,var(--surface))}
+.pcard.ok .pn{background:var(--ok);color:#fff}
+.pcard.bad .pn{background:var(--bad);color:#fff}
+.pfix{font-size:.85rem;color:var(--muted);text-align:center}
+.checked-grid .pcard{cursor:default}
+
+/* title slide */
+.title-slide{text-align:center;padding:10px 0 20px}
+.title-slide .kicker{font-weight:700;color:var(--muted);font-size:1rem;margin-bottom:.4em}
+.title-slide h1{font-size:clamp(2.6rem,6vw,4.4rem);font-weight:800;color:var(--red);line-height:1.05;margin:0 auto .5em;max-width:18ch}
+.title-slide img{display:block;width:100%;max-width:1200px;height:auto;margin:0 auto 28px;border-radius:14px}
+.title-slide .btn{font-size:1.1rem}
+
+/* writing */
+textarea{width:100%;min-height:12rem;font:inherit;font-size:1rem;padding:14px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);resize:vertical;line-height:1.6}
+.wcheck{margin-top:14px}
+.wcheck li{margin-bottom:.5em}
+.results-table td:last-child,.results-table th:last-child{text-align:right}
+
+.pager{max-width:1500px;margin:0 auto;padding:4px 20px 36px;display:flex;justify-content:space-between;gap:12px}
+.pager .btn{max-width:48%}
+@media (max-width:520px){
+  .opts,.fb,.typed-line{padding-left:0;margin-left:0}
+  .task{padding:4px 14px 16px}
+}
+@media (prefers-reduced-motion: reduce){*{scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">Past repeated actions and states</div>
+    <div class="scorechip" aria-live="polite">Score <span id="score">0 / 0</span></div>
+  </div>
+  <nav class="tabs" id="tabs" aria-label="Lesson parts"></nav>
+</div>
+
+<main>
+
+<!-- ============ SLIDE: TITLE ============ -->
+<section class="slide active" data-tab="Start">
+  <div class="title-slide">
+    <p class="kicker">B1 grammar lesson</p>
+    <h1>Past repeated actions and states</h1>
+    <img src="data:image/webp;base64,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" alt="Fifteen illustrated portraits of different people">
+    <button class="btn primary" type="button" id="startBtn">Start the lesson</button>
+  </div>
+</section>
+
+<!-- ============ SLIDE: RULES ============ -->
+<section class="slide" data-tab="Rules">
+  <header class="hero">
+    <span class="hero-level">B1 grammar lesson</span>
+    <h1 class="hero-lines">
+      <span>I <span class="f f-u">used to walk</span> to school.</span>
+      <span>I <span class="f f-w">would walk</span> to school.</span>
+      <span>I <span class="f f-p">walked</span> to school.</span>
+    </h1>
+    <p class="lead">Three ways to talk about the past. In these sentences they mean the same thing. In other sentences, only one or two of them are correct. Let's find out when and why.</p>
+  </header>
+
+  <section class="block">
+    <h2>Three forms, three jobs</h2>
+    <div class="forms3">
+      <div class="formcard u">
+        <h3><span class="f f-u">used to</span> + verb</h3>
+        <p>Something happened again and again, or was true, in the past. <b>It is not true now.</b></p>
+        <ul>
+          <li><b>Habits</b> (repeated actions): <i>I used to play football every weekend.</i></li>
+          <li><b>States</b> (situations, feelings): <i>I used to have long hair. There used to be a cinema here.</i></li>
+          <li>Negative: <i>I <b>didn't use to</b> like tea.</i> (no -d!)</li>
+          <li>Question: <i><b>Did</b> you <b>use to</b> live here?</i></li>
+          <li>Only for the past. For habits now, say <i>usually</i>: <i>I usually get up at 7.</i></li>
+        </ul>
+      </div>
+      <div class="formcard w">
+        <h3><span class="f f-w">would</span> + verb</h3>
+        <p>An action we did again and again in the past. It sounds like a memory or a story.</p>
+        <ul>
+          <li><b>Only habits</b>: <i>Every summer we would go to the sea.</i></li>
+          <li><b>Never states</b>: <s>I would have long hair.</s></li>
+          <li>Usually we first say <b>when</b>: <i>When I was a kid, I would…</i></li>
+          <li>Short form: <i>We'd swim every day.</i></li>
+          <li>It doesn't have a special negative or question form for habits. Use <i>didn't use to</i> or the past simple.</li>
+        </ul>
+      </div>
+      <div class="formcard p">
+        <h3><span class="f f-p">past simple</span> (went, had, played)</h3>
+        <p>The most general past form. It works almost everywhere.</p>
+        <ul>
+          <li><b>One action</b>: <i>I broke my arm in 2015.</i></li>
+          <li><b>Habits and states</b> too: <i>I played football every weekend. I had long hair.</i></li>
+          <li><b>How many times</b>: <i>I visited Paris three times.</i></li>
+          <li><b>How long</b>: <i>I lived there for five years.</i></li>
+          <li>It doesn't show if things are different now. <i>Used to</i> shows the change.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>When can I use it?</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>What we talk about</th><th>Example</th><th>Time markers</th><th class="c"><span class="f f-u">used to</span></th><th class="c"><span class="f f-w">would</span></th><th class="c"><span class="f f-p">past simple</span></th></tr></thead>
+        <tbody>
+          <tr><td><b>A repeated action</b> (habit)</td><td><i>walk to school every day</i></td><td><i>every day / week / summer, often, always, usually, sometimes, never, when I was a child, as a teenager, in those days, back then</i></td><td class="c y">✓</td><td class="c y">✓</td><td class="c y">✓</td></tr>
+          <tr><td><b>A past state</b> (feeling, owning, being)</td><td><i>be shy, have a car, love cartoons</i></td><td><i>when I was young, as a child, in the past, back then, in those days; but now…, not any more, not any longer</i></td><td class="c y">✓</td><td class="c n">✗</td><td class="c y">✓</td></tr>
+          <tr><td><b>One action</b> at a specific time</td><td><i>go to the dentist yesterday</i></td><td><i>yesterday, last week / year, two days ago, in 2015, on Monday, when I met him, that summer</i></td><td class="c n">✗</td><td class="c n">✗</td><td class="c y">✓</td></tr>
+          <tr><td><b>How many times</b></td><td><i>visit London three times</i></td><td><i>once, twice, three times, many times, a few times</i></td><td class="c n">✗</td><td class="c n">✗</td><td class="c y">✓</td></tr>
+          <tr><td><b>How long</b> (for + time)</td><td><i>work there for ten years</i></td><td><i>for ten years, for a long time, from 2010 to 2015, all my childhood</i></td><td class="c n">✗</td><td class="c n">✗</td><td class="c y">✓</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout narrow">
+      <p><b>Tip:</b> <span class="f f-u">used to</span> often goes with words that show change: <i>but now…, not any more, not any longer</i>. <i>I used to smoke, but I don't any more.</i></p>
+      <p><span class="f f-w">would</span> needs a time context first: <i>when I was a child, every summer, in those days</i>. <i>In those days we would walk everywhere.</i></p>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>Same sentence, three forms</h2>
+    <p class="lead">Look at each line. Which forms are possible?</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Sentence</th><th><span class="f f-u">used to</span></th><th><span class="f f-w">would</span></th><th><span class="f f-p">past simple</span></th></tr></thead>
+        <tbody>
+          <tr><td>When I was a kid, I ___ to school on foot. <span class="hint">(walk)</span></td><td><span class="y">✓</span> used to walk</td><td><span class="y">✓</span> would walk</td><td><span class="y">✓</span> walked</td></tr>
+          <tr><td>Every evening my mum ___ us a story. <span class="hint">(read)</span></td><td><span class="y">✓</span> used to read</td><td><span class="y">✓</span> would read</td><td><span class="y">✓</span> read</td></tr>
+          <tr><td>My dad ___ a beard. <span class="hint">(have)</span></td><td><span class="y">✓</span> used to have</td><td><span class="n">✗</span> <s>would have</s></td><td><span class="y">✓</span> had</td></tr>
+          <tr><td>I ___ all my neighbours. <span class="hint">(know)</span></td><td><span class="y">✓</span> used to know</td><td><span class="n">✗</span> <s>would know</s></td><td><span class="y">✓</span> knew</td></tr>
+          <tr><td>I ___ my leg in 2015. <span class="hint">(break)</span></td><td><span class="n">✗</span> <s>used to break</s></td><td><span class="n">✗</span> <s>would break</s></td><td><span class="y">✓</span> broke</td></tr>
+          <tr><td>We ___ to Italy twice. <span class="hint">(go)</span></td><td><span class="n">✗</span> <s>used to go</s></td><td><span class="n">✗</span> <s>would go</s></td><td><span class="y">✓</span> went</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="block twocol">
+    <div class="callout">
+      <h3>How are they similar?</h3>
+      <p>All three talk about the <b>past</b>.</p>
+      <p>All three can describe a <b>past habit</b>. For habits, you can change one for another and the meaning stays the same.</p>
+      <p>The <b>past simple</b> can almost always replace <i>used to</i> and <i>would</i>.</p>
+      <p><i>Used to</i> and <i>would</i> are the same <b>only for repeated actions</b>.</p>
+    </div>
+    <div class="callout">
+      <h3>The difference in three lines</h3>
+      <p><span class="f f-u">used to</span> habits and states that are not true now.</p>
+      <p><span class="f f-w">would</span> habits only, often in stories and memories.</p>
+      <p><span class="f f-p">past simple</span> everything, including one-time actions, numbers of times and periods of time.</p>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="callout narrow">
+      <h3>Tip: how people tell stories</h3>
+      <p>People often start with <i>used to</i> (to set the scene) and then continue with <i>would</i>:</p>
+      <p><i>My grandma <span class="f f-u">used to live</span> in a small village. Every morning she <span class="f f-w">would feed</span> the chickens, and then she<span class="f f-w">'d make</span> breakfast for everyone.</i></p>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>State verbs: never with would</h2>
+    <p class="narrow">State verbs describe <b>feelings, thoughts, owning and being</b>. They are not actions, so we can't "repeat" them. With state verbs, use <span class="f f-u">used to</span> or the <span class="f f-p">past simple</span>. Never <span class="f f-w">would</span>.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Group</th><th>Verbs</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td><b>Feelings</b></td><td>like, love, hate, prefer, want</td><td><i>I used to hate vegetables.</i></td></tr>
+          <tr><td><b>Thinking</b></td><td>know, believe, understand, remember, think (= have an opinion)</td><td><i>I used to believe in Santa Claus.</i></td></tr>
+          <tr><td><b>Having and being</b></td><td>be, have (= own), own, belong, seem</td><td><i>We used to have a big dog.</i></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="twocol" style="margin-top:16px">
+      <div class="callout">
+        <h3>Right and wrong</h3>
+        <ul class="ex-list">
+          <li><span class="mark y">✓</span><i>He used to be very shy.</i></li>
+          <li><span class="mark y">✓</span><i>He was very shy.</i></li>
+          <li><span class="mark n">✗</span><s>He would be very shy.</s></li>
+          <li><span class="mark y">✓</span><i>She used to love chocolate.</i></li>
+          <li><span class="mark n">✗</span><s>She would love chocolate.</s> (This means she wants it now!)</li>
+        </ul>
+      </div>
+      <div class="callout">
+        <h3>Watch out: some verbs have two meanings</h3>
+        <p><b>have</b>: <i>We used to have a car.</i> (own, a state, no would)<br><i>We would have lunch at two o'clock.</i> (eat, an action, would is OK)</p>
+        <p><b>think</b>: <i>I used to think maths was boring.</i> (opinion, no would)<br><i>At night I would think about my future.</i> (an activity in your head, would is OK)</p>
+        <p><b>live</b>: a long situation, so treat it like a state.<br><i>I used to live in Odesa.</i> ✓ <s>I would live in Odesa.</s></p>
+      </div>
+    </div>
+
+    <div class="callout narrow">
+      <h3>Don't confuse</h3>
+      <p><i>I <b>used to work</b> at night.</i> = I did it in the past. I don't do it now.</p>
+      <p><i>I'<b>m used to working</b> at night.</i> = It's normal for me now. It's not strange or difficult. (be used to + -ing)</p>
+    </div>
+  </section>
+</section>
+
+<!-- ============ EX 1: TRUE / FALSE ============ -->
+<section class="slide" data-tab="1 True or false" data-ex="rules">
+  <h2>1. Do you know the rules?</h2>
+  <p class="instr">Read each sentence about the grammar. Is it <b>true</b> or <b>false</b>? Then press <b>Check answers</b>.</p>
+  <div class="task" id="rules"><div class="items"></div>
+    <div class="actions"><button class="btn primary" data-check type="button">Check answers</button><button class="btn ghost" data-reset type="button">Try again</button></div>
+    <div class="result" aria-live="polite"></div>
+  </div>
+</section>
+
+<!-- ============ EX 2: WOULD OR NOT ============ -->
+<section class="slide" data-tab="2 Would or not?" data-ex="would">
+  <h2>2. Can we use would?</h2>
+  <p class="instr">Imagine the sentence <i>"When I was a child, I would …"</i>. Does it work with these words? Actions: yes. States: no.</p>
+  <div class="task" id="would"><div class="items"></div>
+    <div class="actions"><button class="btn primary" data-check type="button">Check answers</button><button class="btn ghost" data-reset type="button">Try again</button></div>
+    <div class="result" aria-live="polite"></div>
+  </div>
+</section>
+
+<!-- ============ EX 3: WHICH FORMS FIT ============ -->
+<section class="slide" data-tab="3 Which forms fit?" data-ex="forms">
+  <h2>3. Which forms fit?</h2>
+  <p class="instr">Choose <b>all</b> the correct forms. Sometimes one is correct, sometimes two, sometimes all three.</p>
+  <div class="task" id="forms"><div class="items"></div>
+    <div class="actions"><button class="btn primary" data-check type="button">Check answers</button><button class="btn ghost" data-reset type="button">Try again</button></div>
+    <div class="result" aria-live="polite"></div>
+  </div>
+</section>
+
+<!-- ============ EX 4: BEST CHOICE ============ -->
+<section class="slide" data-tab="4 Best choice" data-ex="best">
+  <h2>4. Choose the correct answer</h2>
+  <p class="instr">Only <b>one</b> answer is correct in each sentence.</p>
+  <div class="task" id="best"><div class="items"></div>
+    <div class="actions"><button class="btn primary" data-check type="button">Check answers</button><button class="btn ghost" data-reset type="button">Try again</button></div>
+    <div class="result" aria-live="polite"></div>
+  </div>
+</section>
+
+<!-- ============ EX 5: RIGHT OR WRONG ============ -->
+<section class="slide" data-tab="5 Right or wrong?" data-ex="judge">
+  <h2>5. Is the sentence correct?</h2>
+  <p class="instr">Find the mistakes. After you check, read how to fix each wrong sentence.</p>
+  <div class="task" id="judge"><div class="items"></div>
+    <div class="actions"><button class="btn primary" data-check type="button">Check answers</button><button class="btn ghost" data-reset type="button">Try again</button></div>
+    <div class="result" aria-live="polite"></div>
+  </div>
+</section>
+
+<!-- ============ EX 6: MAKE IT WITH USED TO ============ -->
+<section class="slide" data-tab="6 Make it with used to" data-ex="make">
+  <h2>6. Write the correct form of used to</h2>
+  <p class="instr">Use the words in brackets. Write positive sentences, negatives (<i>didn't use to</i>) and questions (<i>Did … use to …?</i>).</p>
+  <div class="task" id="make"><div class="items"></div>
+    <div class="actions"><button class="btn primary" data-check type="button">Check answers</button><button class="btn ghost" data-show type="button">Show answers</button><button class="btn ghost" data-reset type="button">Try again</button></div>
+    <div class="result" aria-live="polite"></div>
+  </div>
+</section>
+
+<!-- ============ EX 7: STORY DROPDOWN ============ -->
+<section class="slide" data-tab="7 A summer story" data-ex="story">
+  <h2>7. Read the story and choose</h2>
+  <p class="instr">Choose a form in each gap. Be careful: in some gaps, more than one answer is correct. Think: is it a habit, a state, or one action?</p>
+  <div id="story">
+    <div class="story"></div>
+    <div class="actions"><button class="btn primary" data-check type="button">Check answers</button><button class="btn ghost" data-show type="button">Show answers</button><button class="btn ghost" data-reset type="button">Try again</button></div>
+    <div class="result" aria-live="polite"></div>
+    <ul class="story-notes"></ul>
+  </div>
+</section>
+
+<!-- ============ EX 8: APPEARANCE PICTURES ============ -->
+<section class="slide" data-tab="8 Appearance pictures" data-ex="pics">
+  <h2>8. Appearance: match the words and pictures</h2>
+  <p class="instr">Tap a word, then tap the picture it describes. To move a word back, tap it on the picture.</p>
+  <div id="pics">
+    <div class="bank" aria-label="Words"></div>
+    <div class="pgrid"></div>
+    <div class="actions"><button class="btn primary" data-check type="button">Check answers</button><button class="btn ghost" data-show type="button">Show answers</button><button class="btn ghost" data-reset type="button">Try again</button></div>
+    <div class="result" aria-live="polite"></div>
+  </div>
+  <div class="callout narrow" style="margin-top:24px">
+    <h3>Speak: then and now</h3>
+    <p>Choose two pictures. Imagine the first person is your friend 20 years ago and the second is the same friend today. Describe the changes.</p>
+    <p><i>My friend <span class="f f-u">used to have</span> curly hair, but now he's bald.</i><br><i>She <span class="f f-u">didn't use to wear</span> glasses. Now she wears them every day.</i><br><i>He <span class="f f-w">would shave</span> every morning, but now he's got a beard.</i></p>
+  </div>
+</section>
+
+<!-- ============ EX 9: THEN AND NOW ============ -->
+<section class="slide" data-tab="9 Then and now" data-ex="now">
+  <h2>9. Then and now: character and appearance</h2>
+  <p class="instr">Past or present? Choose the correct answer. Remember:</p>
+  <div class="table-wrap" style="margin-bottom:18px">
+    <table>
+      <thead><tr><th>Form</th><th>We use it for…</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr><td><b>present simple</b></td><td>facts and character now, things that are always true</td><td><i>She is kind. He wears glasses.</i></td></tr>
+        <tr><td><b>present continuous</b></td><td>right now, today, temporary behaviour, things that are changing</td><td><i>She's wearing a red dress today. He's being rude. My son is growing fast.</i></td></tr>
+        <tr><td><span class="f f-u">used to</span> / <span class="f f-w">would</span> / <span class="f f-p">past simple</span></td><td>the past (see the rules)</td><td><i>I used to be shy. At school he would tell jokes.</i></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="task" id="now"><div class="items"></div>
+    <div class="actions"><button class="btn primary" data-check type="button">Check answers</button><button class="btn ghost" data-reset type="button">Try again</button></div>
+    <div class="result" aria-live="polite"></div>
+  </div>
+</section>
+
+<!-- ============ EX 10: YOUR TURN ============ -->
+<section class="slide" data-tab="10 Your turn">
+  <h2>10. Your turn: when I was a child</h2>
+  <div class="narrow">
+    <p>Think about your life when you were 10 to 12 years old. Write <b>six sentences</b>:</p>
+    <ul>
+      <li>two sentences with <span class="f f-u">used to</span> about <b>states</b> (where you lived, what you had, what you liked);</li>
+      <li>two sentences with <span class="f f-w">would</span> about things you <b>did again and again</b>;</li>
+      <li>one sentence with <span class="f f-u">didn't use to</span>;</li>
+      <li>one sentence in the <span class="f f-p">past simple</span> about <b>one special event</b>.</li>
+    </ul>
+    <p class="hint">Example: I used to live in a small town. Every weekend my dad would take me fishing. I didn't use to like school. In 2008 we moved to a new flat.</p>
+  </div>
+  <label for="writing" class="brand" style="display:block;margin:14px 0 8px">Your sentences</label>
+  <textarea id="writing" placeholder="When I was ten, I used to…"></textarea>
+  <div class="actions"><button class="btn primary" id="wbtn" type="button">Check for common mistakes</button></div>
+  <div class="wcheck" id="wout" aria-live="polite"></div>
+
+  <section class="block" style="margin-top:36px">
+    <h2>Your results</h2>
+    <div class="table-wrap">
+      <table class="results-table">
+        <thead><tr><th>Exercise</th><th>Score</th></tr></thead>
+        <tbody id="rtable"></tbody>
+      </table>
+    </div>
+    <div class="actions"><button class="btn ghost" id="resetAll" type="button">Start all exercises again</button></div>
+  </section>
+</section>
+
+</main>
+
+<div class="pager">
+  <button class="btn ghost" id="prev" type="button">Back</button>
+  <button class="btn primary" id="next" type="button">Next</button>
+</div>
+
+<script>
+(function(){
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+const G=v=>`<span class="blank"></span> <span class="hint">(${v})</span>`;
+
+const NAMES={rules:"1. True or false",would:"2. Can we use would?",forms:"3. Which forms fit?",best:"4. Choose the correct answer",judge:"5. Is the sentence correct?",make:"6. Form of used to",story:"7. Summer story",pics:"8. Appearance pictures",now:"9. Then and now"};
+const TOTALS={}; const scores={}; const resetters=[];
+
+function feedbackMsg(s,t){
+  if(s===t) return "Perfect! Every answer is correct.";
+  if(s/t>=.7) return "Good work. Read the explanations for the red answers.";
+  return "Go back to the rules slide, then press Try again.";
+}
+function showResult(root,s,t){const r=$('.result',root);r.textContent=`You got ${s} out of ${t}. ${feedbackMsg(s,t)}`;r.classList.add('show');}
+function setScore(id,s,t){scores[id]={s,t};updateScore();}
+function clearScore(id){delete scores[id];updateScore();}
+function updateScore(){
+  let s=0;Object.values(scores).forEach(v=>s+=v.s);
+  const total=Object.values(TOTALS).reduce((a,b)=>a+b,0);
+  $('#score').textContent=`${s} / ${total}`;
+  const rt=$('#rtable');
+  rt.innerHTML=Object.keys(NAMES).map(k=>`<tr><td>${NAMES[k]}</td><td>${scores[k]?`<b>${scores[k].s}</b> / ${scores[k].t}`:`<span class="hint">not checked yet</span>`}</td></tr>`).join('')+`<tr><td><b>Total</b></td><td><b>${s} / ${total}</b></td></tr>`;
+  $$('.slide').forEach((sl,i)=>{const id=sl.dataset.ex;const tab=$$('.tab')[i];if(tab&&id)tab.classList.toggle('done',!!scores[id]);});
+}
+
+/* ---------- single choice engine ---------- */
+function singleChoice(id,items,{shuffleOpts=false}={}){
+  const root=document.getElementById(id),list=$('.items',root);
+  TOTALS[id]=items.length; let rows=[];
+  function build(){
+    list.innerHTML='';rows=[];
+    items.forEach((it,i)=>{
+      const row=document.createElement('div');row.className='ex-item';
+      row.innerHTML=`<div class="q"><span class="num">${i+1}</span><div>${it.q}</div></div><div class="opts" role="group" aria-label="Question ${i+1}"></div><p class="fb"></p>`;
+      const box=$('.opts',row);
+      (shuffleOpts?shuffle(it.opts):it.opts).forEach(o=>{
+        const b=document.createElement('button');b.type='button';b.className='opt';b.textContent=o;b.setAttribute('aria-pressed','false');
+        b.addEventListener('click',()=>{if(row.classList.contains('checked'))return;$$('.opt',box).forEach(x=>x.setAttribute('aria-pressed',String(x===b)));row.dataset.pick=o;});
+        box.append(b);
+      });
+      list.append(row);rows.push({row,it});
+    });
+    $('.result',root).classList.remove('show');
+  }
+  build();
+  $('[data-check]',root).addEventListener('click',()=>{
+    let s=0;
+    rows.forEach(({row,it})=>{
+      const pick=row.dataset.pick,ok=pick===it.a; if(ok)s++;
+      row.classList.add('checked');row.classList.toggle('right',ok);row.classList.toggle('wrong',!ok);
+      $$('.opt',row).forEach(b=>{b.setAttribute('aria-pressed','false');if(b.textContent===it.a)b.classList.add('is-right');else if(b.textContent===pick)b.classList.add('is-wrong');});
+      $('.fb',row).innerHTML=(ok?'<b>Correct.</b> ':pick?`<b>Not quite. Answer: ${it.a}.</b> `:`<b>No answer. Answer: ${it.a}.</b> `)+it.why;
+    });
+    setScore(id,s,items.length);showResult(root,s,items.length);
+  });
+  const reset=()=>{build();clearScore(id);};
+  $('[data-reset]',root).addEventListener('click',reset);resetters.push(reset);
+}
+
+/* ---------- multi choice engine ---------- */
+function multiChoice(id,items){
+  const root=document.getElementById(id),list=$('.items',root);
+  TOTALS[id]=items.length; let rows=[];
+  function build(){
+    list.innerHTML='';rows=[];
+    items.forEach((it,i)=>{
+      const row=document.createElement('div');row.className='ex-item';
+      row.innerHTML=`<div class="q"><span class="num">${i+1}</span><div>${it.q}</div></div><div class="opts" role="group" aria-label="Question ${i+1}"></div><p class="fb"></p>`;
+      const box=$('.opts',row);
+      it.opts.forEach(o=>{
+        const b=document.createElement('button');b.type='button';b.className='opt';b.textContent=o;b.setAttribute('aria-pressed','false');
+        b.addEventListener('click',()=>{if(row.classList.contains('checked'))return;b.setAttribute('aria-pressed',String(b.getAttribute('aria-pressed')!=='true'));});
+        box.append(b);
+      });
+      list.append(row);rows.push({row,it});
+    });
+    $('.result',root).classList.remove('show');
+  }
+  build();
+  $('[data-check]',root).addEventListener('click',()=>{
+    let s=0;
+    rows.forEach(({row,it})=>{
+      const btns=$$('.opt',row);
+      const picked=btns.filter(b=>b.getAttribute('aria-pressed')==='true').map(b=>b.textContent);
+      const ok=picked.length===it.ok.length&&it.ok.every(x=>picked.includes(x)); if(ok)s++;
+      row.classList.add('checked');row.classList.toggle('right',ok);row.classList.toggle('wrong',!ok);
+      btns.forEach(b=>{
+        const good=it.ok.includes(b.textContent),sel=picked.includes(b.textContent);
+        b.setAttribute('aria-pressed','false');
+        if(good&&sel)b.classList.add('is-right');else if(good)b.classList.add('is-missed');else if(sel)b.classList.add('is-wrong');
+      });
+      $('.fb',row).innerHTML=`<b>${ok?'Correct.':'Not quite.'} Correct: ${it.ok.join(', ')}.</b> ${it.why}`;
+    });
+    setScore(id,s,items.length);showResult(root,s,items.length);
+  });
+  const reset=()=>{build();clearScore(id);};
+  $('[data-reset]',root).addEventListener('click',reset);resetters.push(reset);
+}
+
+/* ---------- typed engine ---------- */
+const norm=s=>s.toLowerCase().replace(/[’‘`´]/g,"'").replace(/[.?!,]+/g,'').replace(/\s+/g,' ').trim();
+function variants(list){const out=new Set();list.forEach(a=>{const n=norm(a);out.add(n);out.add(n.replace(/didn't/g,'did not'));});return out;}
+function typed(id,items){
+  const root=document.getElementById(id),list=$('.items',root);
+  TOTALS[id]=items.length; let rows=[];
+  function build(){
+    list.innerHTML='';rows=[];
+    items.forEach((it,i)=>{
+      const row=document.createElement('div');row.className='ex-item';
+      row.innerHTML=`<div class="q" style="margin-bottom:0"><span class="num">${i+1}</span><div class="typed-line" style="padding-left:0">${it.pre?it.pre+' ':''}<input class="tin" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Answer ${i+1}"> <span class="hint">(${it.hint})</span> ${it.post}</div></div><p class="fb"></p>`;
+      list.append(row);rows.push({row,it,ok:variants(it.ans)});
+    });
+    $('.result',root).classList.remove('show');
+  }
+  build();
+  $('[data-check]',root).addEventListener('click',()=>{
+    let s=0;
+    rows.forEach(({row,it,ok})=>{
+      const inp=$('.tin',row),good=ok.has(norm(inp.value)); if(good)s++;
+      inp.classList.toggle('ok',good);inp.classList.toggle('bad',!good);
+      row.classList.add('checked');row.classList.toggle('right',good);row.classList.toggle('wrong',!good);
+      $('.fb',row).innerHTML=good?'<b>Correct.</b>':`<b>Answer: ${it.ans[0]}.</b> ${it.why||''}`;
+    });
+    setScore(id,s,items.length);showResult(root,s,items.length);
+  });
+  $('[data-show]',root).addEventListener('click',()=>{
+    rows.forEach(({row,it})=>{const inp=$('.tin',row);if(!inp.classList.contains('ok')){inp.value=it.ans[0];inp.classList.remove('bad');}});
+  });
+  const reset=()=>{build();clearScore(id);};
+  $('[data-reset]',root).addEventListener('click',reset);resetters.push(reset);
+}
+
+/* ---------- story engine ---------- */
+function story(id,title,paras){
+  const root=document.getElementById(id),box=$('.story',root),notes=$('.story-notes',root);
+  const gaps=[];paras.forEach(p=>p.forEach(x=>{if(typeof x!=='string')gaps.push(x);}));
+  TOTALS[id]=gaps.length;
+  function build(){
+    let n=0;
+    box.innerHTML=`<h3>${title}</h3>`+paras.map(p=>'<p>'+p.map(x=>{
+      if(typeof x==='string')return x;
+      n++;
+      const opts=shuffle(x.opts).map(o=>`<option value="${o}">${o}</option>`).join('');
+      return `<span class="gap"><sup>${n}</sup><select data-g="${n-1}" aria-label="Gap ${n}"><option value="">choose…</option>${opts}</select></span>`;
+    }).join('')+'</p>').join('');
+    notes.innerHTML='';$('.result',root).classList.remove('show');
+  }
+  build();
+  $('[data-check]',root).addEventListener('click',()=>{
+    let s=0;const wrong=[];
+    $$('select',box).forEach(sel=>{
+      const g=gaps[+sel.dataset.g],good=g.ok.includes(sel.value); if(good)s++;
+      sel.classList.remove('shown');sel.classList.toggle('ok',good);sel.classList.toggle('bad',!good);
+      if(!good)wrong.push(`<li><b>Gap ${+sel.dataset.g+1}:</b> correct: ${g.ok.join(' / ')}. ${g.why}</li>`);
+    });
+    notes.innerHTML=wrong.join('');
+    setScore(id,s,gaps.length);showResult(root,s,gaps.length);
+  });
+  $('[data-show]',root).addEventListener('click',()=>{
+    $$('select',box).forEach(sel=>{const g=gaps[+sel.dataset.g];if(!g.ok.includes(sel.value)){sel.value=g.ok[0];sel.classList.remove('bad');sel.classList.add('shown');}});
+    notes.innerHTML=gaps.map((g,i)=>`<li><b>Gap ${i+1}:</b> ${g.ok.join(' / ')}. ${g.why}</li>`).join('');
+  });
+  const reset=()=>{build();clearScore(id);};
+  $('[data-reset]',root).addEventListener('click',reset);resetters.push(reset);
+}
+
+/* ================= DATA ================= */
+const TF=["True","False"];
+singleChoice('rules',[
+  {q:"<i>Would</i> can describe past states, for example <i>I would have a car</i>.",opts:TF,a:"False",why:"<i>Would</i> is only for repeated actions. Say <i>I used to have a car</i> or <i>I had a car</i>."},
+  {q:"<i>Used to</i> can describe past habits and past states.",opts:TF,a:"True",why:"<i>I used to swim every day</i> (habit). <i>I used to be shy</i> (state)."},
+  {q:"The past simple can describe a habit in the past.",opts:TF,a:"True",why:"<i>I walked to school every day</i> is correct."},
+  {q:"We use <i>used to</i> for an action that happened only once.",opts:TF,a:"False",why:"For one action, use the past simple: <i>I went to Rome last year.</i>"},
+  {q:"The negative form is <i>didn't use to</i>, without -d.",opts:TF,a:"True",why:"After <i>did / didn't</i> we use the base form <i>use</i>."},
+  {q:"<i>I use to get up at 6</i> is a good way to talk about a habit now.",opts:TF,a:"False",why:"<i>Used to</i> has no present form. Say <i>I usually get up at 6.</i>"},
+  {q:"With <i>for + a period of time</i> (for five years), we use the past simple.",opts:TF,a:"True",why:"<i>I lived there for five years.</i> Not <s>I used to live there for five years.</s>"},
+  {q:"<i>Know</i>, <i>love</i> and <i>believe</i> are state verbs, so we don't use them with <i>would</i>.",opts:TF,a:"True",why:"Use <i>used to know / knew</i>, not <s>would know</s>."},
+  {q:"In stories, we often say <i>when</i> first and then continue with <i>would</i>.",opts:TF,a:"True",why:"<i>When I was ten, we lived by the sea. Every morning I would run to the beach.</i>"},
+  {q:"<i>Used to</i> shows that the situation is different now.",opts:TF,a:"True",why:"<i>I used to smoke</i> = I don't smoke now."},
+  {q:"<i>I'm used to working at night</i> means I worked at night in the past.",opts:TF,a:"False",why:"It means working at night is normal for me now (be used to + -ing)."},
+  {q:"<i>We'd play chess every evening</i> means <i>we would play chess</i> (a past habit).",opts:TF,a:"True",why:"Here <i>'d</i> = <i>would</i>."}
+]);
+
+const WO=["Yes, would works","No, not with would"];
+singleChoice('would',[
+  {q:"<b>play</b> football",opts:WO,a:WO[0],why:"An action. You can do it again and again."},
+  {q:"<b>be</b> happy",opts:WO,a:WO[1],why:"<i>Be</i> is a state. Say <i>I used to be happy</i>."},
+  {q:"<b>have</b> a dog",opts:WO,a:WO[1],why:"Here <i>have</i> = own, a state."},
+  {q:"<b>have</b> breakfast at 7",opts:WO,a:WO[0],why:"Here <i>have</i> = eat, an action."},
+  {q:"<b>know</b> the answer",opts:WO,a:WO[1],why:"<i>Know</i> is a thinking verb, a state."},
+  {q:"<b>visit</b> my grandma",opts:WO,a:WO[0],why:"An action."},
+  {q:"<b>love</b> cartoons",opts:WO,a:WO[1],why:"<i>Love</i> is a feeling, a state."},
+  {q:"<b>believe</b> in Santa Claus",opts:WO,a:WO[1],why:"<i>Believe</i> is a state."},
+  {q:"<b>cook</b> dinner",opts:WO,a:WO[0],why:"An action."},
+  {q:"<b>own</b> a car",opts:WO,a:WO[1],why:"<i>Own</i> is a state."},
+  {q:"<b>swim</b> in the river",opts:WO,a:WO[0],why:"An action."},
+  {q:"<b>understand</b> the rules",opts:WO,a:WO[1],why:"<i>Understand</i> is a thinking verb, a state."},
+  {q:"<b>live</b> in a village",opts:WO,a:WO[1],why:"A long situation, like a state. Use <i>used to live</i> or <i>lived</i>."},
+  {q:"<b>get up</b> early",opts:WO,a:WO[0],why:"An action."}
+]);
+
+multiChoice('forms',[
+  {q:`When I was little, I ${G('hide')} under the bed during storms.`,opts:["used to hide","would hide","hid"],ok:["used to hide","would hide","hid"],why:"A repeated action in the past: all three work."},
+  {q:`My grandfather ${G('have')} a big black dog.`,opts:["used to have","would have","had"],ok:["used to have","had"],why:"<i>Have</i> = own, a state: no <i>would</i>."},
+  {q:`Last Saturday we ${G('watch')} a great film.`,opts:["used to watch","would watch","watched"],ok:["watched"],why:"One action at a specific time: past simple only."},
+  {q:`As a teenager, she ${G('be')} very shy.`,opts:["used to be","would be","was"],ok:["used to be","was"],why:"<i>Be</i> is a state verb: no <i>would</i>."},
+  {q:`Every evening my dad ${G('read')} us a story.`,opts:["used to read","would read","read"],ok:["used to read","would read","read"],why:"A repeated action: all three work."},
+  {q:`I ${G('visit')} my aunt in Poland three times.`,opts:["used to visit","would visit","visited"],ok:["visited"],why:"How many times: past simple only."},
+  {q:`We ${G('live')} in a small flat near the station.`,opts:["used to live","would live","lived"],ok:["used to live","lived"],why:"<i>Live</i> is a long situation: no <i>would</i>."},
+  {q:`Every summer they ${G('go')} camping in the mountains.`,opts:["used to go","would go","went"],ok:["used to go","would go","went"],why:"A repeated action: all three work."},
+  {q:`He ${G('know')} the names of all the students.`,opts:["used to know","would know","knew"],ok:["used to know","knew"],why:"<i>Know</i> is a state verb: no <i>would</i>."},
+  {q:`I ${G('break')} my arm when I was nine.`,opts:["used to break","would break","broke"],ok:["broke"],why:"One event: past simple only."},
+  {q:`Back then, I ${G('not / like')} coffee.`,opts:["didn't use to like","wouldn't like","didn't like"],ok:["didn't use to like","didn't like"],why:"<i>Like</i> is a state verb: no <i>would</i>."},
+  {q:`Every morning our teacher ${G('open')} all the windows.`,opts:["used to open","would open","opened"],ok:["used to open","would open","opened"],why:"A repeated action: all three work."}
+]);
+
+singleChoice('best',[
+  {q:"I ___ my keys yesterday, so I couldn't get into the house.",opts:["lost","used to lose","would lose"],a:"lost",why:"<i>Yesterday</i> = one action: past simple."},
+  {q:"___ you ___ play any sports at school?",opts:["Did … use to","Did … used to","Would … use to"],a:"Did … use to",why:"Question: <i>Did + use to</i> (no -d)."},
+  {q:"There ___ a small shop on this corner, but now it's a café.",opts:["used to be","would be","was being"],a:"used to be",why:"<i>Be</i> is a state, and it's different now: <i>used to be</i>."},
+  {q:"She ___ like vegetables, but now she loves them.",opts:["didn't use to","didn't used to","wouldn't"],a:"didn't use to",why:"Negative: <i>didn't use to</i>. <i>Like</i> is a state, so no <i>would</i>."},
+  {q:"I ___ in this company for twelve years before I retired.",opts:["worked","used to work","would work"],a:"worked",why:"<i>For twelve years</i>: past simple."},
+  {q:"When we were students, we ___ stay up all night talking.",opts:["would","use to","were"],a:"would",why:"A repeated action in a memory: <i>would + verb</i>. (<i>Use to</i> without -d is wrong.)"},
+  {q:"I ___ getting up early now. I do it every day, so it's easy.",opts:["am used to","used to","would"],a:"am used to",why:"<i>Be used to + -ing</i> = it's normal for me."},
+  {q:"My brother ___ a moustache when he was young.",opts:["used to have","would have","was having"],a:"used to have",why:"<i>Have</i> = own, a state: <i>used to have</i>."},
+  {q:"Where ___ when you were a child?",opts:["did you use to live","would you live","did you used to live"],a:"did you use to live",why:"Question: <i>did you use to</i>. <i>Live</i> doesn't go with <i>would</i>."},
+  {q:"In 2019 I ___ to Canada for the first time.",opts:["flew","used to fly","would fly"],a:"flew",why:"One event, a specific year: past simple."}
+],{shuffleOpts:true});
+
+const CI=["Correct","Incorrect"];
+singleChoice('judge',[
+  {q:"I would have a red bicycle when I was ten.",opts:CI,a:"Incorrect",why:"<i>Have</i> = own, a state. Say: <i>I used to have / I had a red bicycle.</i>"},
+  {q:"We would play hide-and-seek in the garden after school.",opts:CI,a:"Correct",why:"A repeated action: <i>would</i> is fine."},
+  {q:"Did you used to go to the cinema a lot?",opts:CI,a:"Incorrect",why:"Say: <i>Did you use to go…?</i>"},
+  {q:"I used to go to the gym three times last week.",opts:CI,a:"Incorrect",why:"Specific time and number: <i>I went to the gym three times last week.</i>"},
+  {q:"My mum used to make pancakes every Sunday.",opts:CI,a:"Correct",why:"A past habit: <i>used to</i> is fine."},
+  {q:"She would believe in ghosts when she was a girl.",opts:CI,a:"Incorrect",why:"<i>Believe</i> is a state. Say: <i>She used to believe / She believed in ghosts.</i>"},
+  {q:"I use to drink tea every morning.",opts:CI,a:"Incorrect",why:"Now: <i>I usually drink tea.</i> Past: <i>I used to drink tea.</i>"},
+  {q:"They lived in Kharkiv when I was a child.",opts:CI,a:"Correct",why:"The past simple works for past states."},
+  {q:"He didn't used to smoke.",opts:CI,a:"Incorrect",why:"Say: <i>He didn't use to smoke.</i>"},
+  {q:"There would be a lot of trees in this street.",opts:CI,a:"Incorrect",why:"<i>Be</i> is a state. Say: <i>There used to be a lot of trees.</i>"},
+  {q:"In the evenings my grandpa would tell us stories about his childhood.",opts:CI,a:"Correct",why:"A repeated action in a memory: <i>would</i> is perfect."},
+  {q:"I used to living in a big city.",opts:CI,a:"Incorrect",why:"Say: <i>I used to live</i> (the past) or <i>I'm used to living</i> (it's normal for me)."}
+]);
+
+typed('make',[
+  {pre:"My sister",hint:"have",post:"very long hair, but now it's short.",ans:["used to have"]},
+  {pre:"I",hint:"not / eat",post:"fish, but now I love it.",ans:["didn't use to eat","never used to eat"],why:"Negative: didn't + use to (no -d)."},
+  {pre:"",hint:"you / walk",post:"to school when you were a child?",ans:["Did you use to walk"],why:"Question: Did + subject + use to + verb."},
+  {pre:"We",hint:"not / have",post:"a TV at home when I was small.",ans:["didn't use to have","never used to have"]},
+  {pre:"This building",hint:"be",post:"a hospital. Now it's a hotel.",ans:["used to be"]},
+  {pre:"",hint:"your dad / work",post:"at night?",ans:["Did your dad use to work"]},
+  {pre:"He",hint:"not / like",post:"sports at school, but now he runs every day.",ans:["didn't use to like","never used to like"]},
+  {pre:"",hint:"where / you / live",post:"before you moved here?",ans:["Where did you use to live"],why:"Question word + did + subject + use to."}
+]);
+
+const all3=(a,b,c,why)=>({opts:[a,b,c],ok:[a,b,c],why});
+story('story',"Summers at my grandparents' house",[
+  ["When I was a child, my grandparents ",{opts:["used to live","would live","lived"],ok:["used to live","lived"],why:"<i>Live</i> is a long situation: no <i>would</i>."},
+   " in a small village near a river. Their house ",{opts:["used to have","would have","had"],ok:["used to have","had"],why:"<i>Have</i> = own, a state: no <i>would</i>."},
+   " a big garden with apple trees. Every summer my parents ",all3("used to send","would send","sent","A repeated action: all three work."),
+   " me there for the whole of July."],
+  ["My grandma ",all3("used to get up","would get up","got up","A repeated action: all three work."),
+   " very early. She ",all3("used to feed","would feed","fed","A repeated action: all three work."),
+   " the chickens, and then she ",all3("used to make","would make","made","A repeated action: all three work."),
+   " pancakes for everyone. My grandpa ",{opts:["used to be","would be","was"],ok:["used to be","was"],why:"<i>Be</i> is a state verb: no <i>would</i>."},
+   " a quiet man, but he ",{opts:["used to know","would know","knew"],ok:["used to know","knew"],why:"<i>Know</i> is a state verb: no <i>would</i>."},
+   " the name of every bird in the forest."],
+  ["One summer, something unusual ",{opts:["happened","used to happen","would happen"],ok:["happened"],why:"One event: past simple only."},
+   ". A storm ",{opts:["destroyed","used to destroy","would destroy"],ok:["destroyed"],why:"One event: past simple only."},
+   " the old bridge, and for three days nobody ",{opts:["visited","used to visit","would visit"],ok:["visited"],why:"A specific period (three days): past simple only."},
+   " the village."],
+  ["I ",{opts:["didn't use to like","didn't used to like","wouldn't like"],ok:["didn't use to like"],why:"Negative: <i>didn't use to</i> (no -d). <i>Like</i> is a state: no <i>would</i>."},
+   " fishing, but that summer my grandpa ",{opts:["taught","used to teach","would teach"],ok:["taught"],why:"One summer, one event: past simple."},
+   " me, and now I love it. After I grew up, I ",{opts:["went","used to go","would go"],ok:["went"],why:"How many times: past simple only."},
+   " back to the village only three times."],
+  ["Now the house is empty, but I often remember how we ",all3("used to sit","would sit","sat","A repeated action: all three work."),
+   " on the porch every evening, watching the sunset. I ",{opts:["used to think","would think","thought"],ok:["used to think","thought"],why:"<i>Think</i> = have an opinion, a state: no <i>would</i>."},
+   " those summers would never end."]
+]);
+
+singleChoice('now',[
+  {q:"My brother ___ very shy as a child, but now he's the most talkative person I know.",opts:["used to be","would be","is being","is"],a:"used to be",why:"A past state that is different now. <i>Be</i> is a state verb, so no <i>would</i>."},
+  {q:"Look at Anna! She ___ a beautiful red dress today.",opts:["is wearing","wears","used to wear","would wear"],a:"is wearing",why:"<i>Look!</i> and <i>today</i>: it's happening now. Present continuous."},
+  {q:"My grandfather ___ glasses. He can't read without them.",opts:["wears","is wearing","used to wear","would wear"],a:"wears",why:"A permanent fact about him now: present simple."},
+  {q:"When I was a teenager, I ___ my hair a different colour every month.",opts:["would dye","used to dying","am dyeing","dye"],a:"would dye",why:"A repeated action in the past: <i>would + verb</i> (or <i>used to dye</i>)."},
+  {q:"Tom ___ very rude today. That's strange, he's usually so polite.",opts:["is being","is","used to be","would be"],a:"is being",why:"Behaviour that is temporary, only today: <i>is being</i>. His real character is polite."},
+  {q:"She ___ long curly hair, but last year she cut it short.",opts:["used to have","would have","has","is having"],a:"used to have",why:"<i>Have</i> = a state (appearance), and it's different now: <i>used to have</i>."},
+  {q:"My sister ___ everyone. She's a really kind and generous person.",opts:["helps","is helping","used to help","would help"],a:"helps",why:"Her character now, something she always does: present simple."},
+  {q:"At school, Mark ___ jokes in every lesson. He was the class clown.",opts:["would tell","is telling","tells","used to telling"],a:"would tell",why:"A repeated action in the past: <i>would tell</i>. (<i>Used to telling</i> is wrong.)"},
+  {q:"My son ___ taller every month! His clothes are always too small.",opts:["is growing","grows","used to grow","would grow"],a:"is growing",why:"A situation that is changing now: present continuous."},
+  {q:"My mum ___ a very patient person. She never shouts.",opts:["is","is being","used to be","would be"],a:"is",why:"Her character now: present simple. <i>Used to be</i> would mean she isn't patient any more."},
+  {q:"When I first met him in 2015, he ___ a beard.",opts:["had","would have","is having","has"],a:"had",why:"A past state at a specific moment (2015): past simple."},
+  {q:"___ curly when you were a child?",opts:["Did your hair use to be","Would your hair be","Was your hair being","Does your hair be"],a:"Did your hair use to be",why:"A question about a past state: <i>Did … use to be…?</i>"}
+],{shuffleOpts:true});
+
+/* ---------- appearance pictures ---------- */
+function face({skin="#F2C9A5",hair="#4A3222",shirt="#5B7DB1",back="",front="",extra="",brow="#3A2A20"}){
+  return `<svg viewBox="0 0 120 120" aria-hidden="true">
+  <circle cx="60" cy="60" r="58" fill="var(--paper)"/>
+  ${back}
+  <rect x="52" y="82" width="16" height="18" fill="${skin}"/>
+  <path d="M16 120 Q18 96 60 94 Q102 96 104 120Z" fill="${shirt}"/>
+  <circle cx="34" cy="64" r="5" fill="${skin}"/><circle cx="86" cy="64" r="5" fill="${skin}"/>
+  <ellipse cx="60" cy="62" rx="26" ry="30" fill="${skin}"/>
+  ${front}
+  <path d="M45 53 Q50 50 55 53" stroke="${brow}" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  <path d="M65 53 Q70 50 75 53" stroke="${brow}" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  <circle cx="50" cy="60" r="2.6" fill="#2A2A2A"/><circle cx="70" cy="60" r="2.6" fill="#2A2A2A"/>
+  <path d="M60 62 Q57.5 70 61 71" stroke="rgba(0,0,0,.35)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <path d="M52 78 Q60 84 68 78" stroke="#8A3B3B" stroke-width="2" fill="none" stroke-linecap="round"/>
+  ${extra}
+  </svg>`;
+}
+const cap=c=>`<path d="M33 60 Q31 28 60 27 Q89 28 87 60 Q84 42 72 38 Q60 34 48 38 Q36 42 33 60Z" fill="${c}"/>`;
+const sleek=c=>`<path d="M33 58 Q32 28 60 27 Q88 28 87 58 Q84 38 60 34 Q36 38 33 58Z" fill="${c}"/>`;
+function curls(c){
+  let back='',front='';
+  for(let a=200;a>=-20;a-=18){const r=a*Math.PI/180;back+=`<circle cx="${(60+33*Math.cos(r)).toFixed(1)}" cy="${(58-36*Math.sin(r)).toFixed(1)}" r="8.5" fill="${c}"/>`;}
+  for(let x=37;x<=83;x+=7.6){const y=35+Math.pow((x-60)/23,2)*9;front+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="6.5" fill="${c}"/>`;}
+  return {back,front};
+}
+const stitchScar=()=>{let s=`<path d="M40 66 L52 74" stroke="#B04A40" stroke-width="2" stroke-linecap="round"/>`;[[43,68],[46,70],[49,72]].forEach(([x,y])=>{s+=`<path d="M${x+1.7} ${y-2.5} L${x-1.7} ${y+2.5}" stroke="#B04A40" stroke-width="1.4" stroke-linecap="round"/>`;});return s;};
+const cu=curls("#2B1E16");
+const FACES=[
+  {w:"curly hair",svg:face({skin:"#8D5A3B",hair:"#2B1E16",shirt:"#D98A3D",back:cu.back,front:cu.front,brow:"#1E1510"})},
+  {w:"straight hair",svg:face({skin:"#F2C9A5",shirt:"#8A3B8F",back:`<path d="M26 60 Q26 20 60 20 Q94 20 94 60 L96 110 L24 110Z" fill="#E2B659"/>`,front:`<path d="M33 58 Q32 28 60 27 Q88 28 87 58 Q82 40 62 33 L58 33 Q38 40 33 58Z" fill="#E2B659"/><path d="M60 27 L60 34" stroke="#B88A36" stroke-width="1.5"/>`,brow:"#A67C35"})},
+  {w:"bald",svg:face({skin:"#E0AC84",shirt:"#3E6B5A",front:`<path d="M33 60 Q31 50 36 45 L38 60Z" fill="#6B5344"/><path d="M87 60 Q89 50 84 45 L82 60Z" fill="#6B5344"/>`,extra:`<path d="M49 38 Q56 34 64 36" stroke="#fff" stroke-opacity=".55" stroke-width="2.5" fill="none" stroke-linecap="round"/>`})},
+  {w:"a beard",svg:face({skin:"#F2C9A5",shirt:"#4B5563",front:cap("#5A3A22"),extra:`<path d="M34 64 Q36 97 60 98 Q84 97 86 64 Q83 80 72 80 Q66 74 60 76 Q54 74 48 80 Q37 80 34 64Z" fill="#5A3A22"/><path d="M53 81 Q60 85 67 81" stroke="#D9967F" stroke-width="2" fill="none" stroke-linecap="round"/>`})},
+  {w:"a moustache",svg:face({skin:"#C68A62",shirt:"#B8483E",front:cap("#1F1A17"),extra:`<path d="M46 75 Q53 68 60 72.5 Q67 68 74 75 Q67 77.5 60 75.5 Q53 77.5 46 75Z" fill="#1F1A17"/>`,brow:"#1F1A17"})},
+  {w:"glasses",svg:face({skin:"#F2C9A5",shirt:"#2F5AA8",front:cap("#7A4A2A"),extra:`<circle cx="50" cy="60" r="7.5" fill="rgba(255,255,255,.15)" stroke="#222" stroke-width="2"/><circle cx="70" cy="60" r="7.5" fill="rgba(255,255,255,.15)" stroke="#222" stroke-width="2"/><path d="M57.5 60 Q60 57 62.5 60" stroke="#222" stroke-width="2" fill="none"/><path d="M42.5 59 L34 57 M77.5 59 L86 57" stroke="#222" stroke-width="2"/>`})},
+  {w:"freckles",svg:face({skin:"#F7D6BC",shirt:"#3E8E6B",front:cap("#C8642D"),brow:"#A04E22",extra:[[42,67],[45,70],[48,66],[44,73],[50,71],[78,67],[75,70],[72,66],[76,73],[70,71],[58,66],[62,67]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="1.3" fill="#B5693A"/>`).join('')})},
+  {w:"a ponytail",svg:face({skin:"#E0AC84",shirt:"#D1497A",back:`<path d="M80 36 Q106 32 105 60 Q104 84 92 96 Q99 70 91 52 Q86 43 78 41Z" fill="#3A2418"/>`,front:sleek("#3A2418")+`<ellipse cx="84" cy="38" rx="3.5" ry="4.5" fill="#F5D547"/>`})},
+  {w:"wrinkles",svg:face({skin:"#EBC3A0",shirt:"#6D5A8E",front:cap("#C9C9C9"),brow:"#9A9A9A",extra:`<g stroke="#A87B5E" stroke-width="1.3" fill="none" stroke-linecap="round"><path d="M49 43 Q60 41 71 43"/><path d="M47 47 Q60 45 73 47"/><path d="M40 57 L36.5 55.5 M40 61 L36.5 62.5 M80 57 L83.5 55.5 M80 61 L83.5 62.5"/><path d="M49 71 Q46 77 49 82 M71 71 Q74 77 71 82"/></g>`})},
+  {w:"a fringe",svg:face({skin:"#F2C9A5",shirt:"#0F7A6B",back:`<path d="M27 58 Q27 22 60 22 Q93 22 93 58 L93 88 L27 88Z" fill="#141414"/>`,front:`<path d="M33 54 L33 44 Q34 25 60 25 Q86 25 87 44 L87 54 L33 54Z" fill="#141414"/>`})},
+  {w:"a scar",svg:face({skin:"#C68A62",shirt:"#56637D",front:cap("#2B1E16"),brow:"#1E1510",extra:stitchScar()})},
+  {w:"earrings",svg:face({skin:"#8D5A3B",shirt:"#F0B429",back:`<circle cx="60" cy="22" r="12" fill="#1E1510"/>`,front:sleek("#1E1510"),brow:"#1E1510",extra:`<circle cx="34" cy="74" r="4.5" fill="none" stroke="#E0B040" stroke-width="2.4"/><circle cx="86" cy="74" r="4.5" fill="none" stroke="#E0B040" stroke-width="2.4"/>`})}
+];
+(function pictureMatch(){
+  const id='pics',root=document.getElementById(id),grid=$('.pgrid',root),bank=$('.bank',root);
+  TOTALS[id]=FACES.length;
+  let order=[],words=[],assign={},sel=null,activeCard=null,checked=false;
+  function build(){
+    order=shuffle(FACES.map((_,i)=>i));words=shuffle(FACES.map(f=>f.w));assign={};sel=null;activeCard=null;checked=false;
+    grid.classList.remove('checked-grid');$('.result',root).classList.remove('show');render();
+  }
+  function place(card,word){
+    Object.keys(assign).forEach(k=>{if(assign[k]===word)delete assign[k];});
+    assign[card]=word;sel=null;activeCard=null;render();
+  }
+  function render(){
+    const used=new Set(Object.values(assign));
+    bank.innerHTML='';
+    words.filter(w=>!used.has(w)).forEach(w=>{
+      const b=document.createElement('button');b.type='button';b.className='opt';b.textContent=w;b.setAttribute('aria-pressed',String(sel===w));
+      b.addEventListener('click',()=>{if(checked)return;if(activeCard!==null){place(activeCard,w);return;}sel=sel===w?null:w;render();});
+      bank.append(b);
+    });
+    grid.innerHTML='';
+    order.forEach((fi,pos)=>{
+      const c=document.createElement('button');c.type='button';c.className='pcard';
+      const w=assign[fi];
+      if(activeCard===fi)c.classList.add('active');
+      c.setAttribute('aria-label',`Picture ${pos+1}${w?': '+w:''}`);
+      c.innerHTML=`<span class="pn">${pos+1}</span>${FACES[fi].svg}<span class="plabel${w?'':' empty'}">${w||'tap to add a word'}</span>`;
+      if(checked){const ok=w===FACES[fi].w;c.classList.add(ok?'ok':'bad');if(!ok)c.insertAdjacentHTML('beforeend',`<span class="pfix">Answer: <b>${FACES[fi].w}</b></span>`);}
+      c.addEventListener('click',()=>{
+        if(checked)return;
+        if(sel){place(fi,sel);return;}
+        if(assign[fi]){delete assign[fi];render();return;}
+        activeCard=activeCard===fi?null:fi;render();
+      });
+      grid.append(c);
+    });
+  }
+  build();
+  $('[data-check]',root).addEventListener('click',()=>{
+    checked=true;grid.classList.add('checked-grid');sel=null;activeCard=null;
+    const s=FACES.reduce((n,f,i)=>n+(assign[i]===f.w?1:0),0);
+    render();setScore(id,s,FACES.length);showResult(root,s,FACES.length);
+  });
+  $('[data-show]',root).addEventListener('click',()=>{
+    FACES.forEach((f,i)=>{assign[i]=f.w;});checked=true;grid.classList.add('checked-grid');render();
+  });
+  const reset=()=>{build();clearScore(id);};
+  $('[data-reset]',root).addEventListener('click',reset);resetters.push(reset);
+})();
+
+/* ---------- writing check ---------- */
+const STATES="be|am|is|are|have|own|know|love|like|hate|prefer|want|believe|understand|remember|belong|seem|live";
+$('#wbtn').addEventListener('click',()=>{
+  const t=$('#writing').value,out=$('#wout');
+  if(!t.trim()){out.innerHTML='<p>Write your sentences in the box first.</p>';return;}
+  const issues=[];
+  const add=(re,msg)=>{let m;const r=new RegExp(re,'gi');while((m=r.exec(t))!==null)issues.push(`<li><b>"${m[0]}"</b>: ${msg}</li>`);};
+  add(`\\b(would|'d)\\s+(${STATES})\\b`,"this is a state verb. Use <i>used to</i> or the past simple.");
+  add(`\\b(didn't|did not)\\s+used\\s+to\\b`,"write <i>didn't use to</i> (no -d).");
+  add(`\\bdid\\s+\\w+(\\s+\\w+)?\\s+used\\s+to\\b`,"in questions, write <i>Did … use to …?</i> (no -d).");
+  add(`\\b(i|you|we|they|he|she|it)\\s+use\\s+to\\b`,"for the past, write <i>used to</i>. For habits now, use <i>usually</i>.");
+  add(`\\bused\\s+to\\s+(\\w+ing)\\b(?<!(bring|sing|swing|ring|sting|wing|string|thing))`,"after <i>used to</i> use the base verb (used to play). Or did you mean <i>be used to + -ing</i>?");
+  const cu=(t.match(/\bused to\b/gi)||[]).length,cw=(t.match(/\bwould\b|\b\w+'d\b/gi)||[]).length;
+  out.innerHTML=`<p>You used <span class="f f-u">used to</span> ${cu} time${cu===1?'':'s'} and <span class="f f-w">would / 'd</span> ${cw} time${cw===1?'':'s'}.</p>`+
+    (issues.length?`<p><b>Check these:</b></p><ul>${issues.join('')}</ul>`:`<p><b>No common mistakes found.</b> Now read your sentences aloud to your teacher.</p>`);
+});
+
+/* ---------- navigation ---------- */
+const slides=$$('.slide'),tabs=$('#tabs');let cur=0;
+slides.forEach((s,i)=>{const b=document.createElement('button');b.type='button';b.className='tab';b.textContent=s.dataset.tab;b.addEventListener('click',()=>go(i));tabs.append(b);});
+function go(i){
+  cur=Math.max(0,Math.min(slides.length-1,i));
+  slides.forEach((s,k)=>s.classList.toggle('active',k===cur));
+  $$('.tab').forEach((t,k)=>t.setAttribute('aria-current',String(k===cur)));
+  $$('.tab')[cur].scrollIntoView({block:'nearest',inline:'nearest'});
+  $('#prev').disabled=cur===0;
+  const nx=$('#next');
+  if(cur<slides.length-1){nx.style.visibility='visible';nx.textContent='Next: '+slides[cur+1].dataset.tab.replace(/^\d+\s/,'');}else nx.style.visibility='hidden';
+  window.scrollTo(0,0);
+}
+$('#prev').addEventListener('click',()=>go(cur-1));
+$('#startBtn').addEventListener('click',()=>go(1));
+$('#next').addEventListener('click',()=>go(cur+1));
+$('#resetAll').addEventListener('click',()=>{resetters.forEach(f=>f());$('#writing').value='';$('#wout').innerHTML='';go(2);});
+updateScore();go(0);
+})();
+</script>
+</body>
+</html>
