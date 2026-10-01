@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Brush or pixel? Past Simple, Present Perfect, Present Perfect Continuous</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF1F5; --surface:#FFFFFF; --ink:#151B2E; --muted:#5A6275; --line:#D5DAE3;
+  --ps:#A86F00; --pp:#2F4BFF; --ppc:#7B3FE4;
+  --pred:#FF1414; --ok:#0B8457; --bad:#C25A00; --soft:#E3E8F0;
+  --display:"Unbounded", "Arial Black", system-ui, sans-serif;
+  --body:"Source Serif 4", Georgia, "Times New Roman", serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10141F; --surface:#1A2030; --ink:#E8ECF4; --muted:#9AA3B5; --line:#2C3446;
+    --ps:#E2AA3C; --pp:#8494FF; --ppc:#B48FFF; --pred:#FF4545; --ok:#3CC98F; --bad:#FF9D52; --soft:#232A3C;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10141F; --surface:#1A2030; --ink:#E8ECF4; --muted:#9AA3B5; --line:#2C3446;
+  --ps:#E2AA3C; --pp:#8494FF; --ppc:#B48FFF; --pred:#FF4545; --ok:#3CC98F; --bad:#FF9D52; --soft:#232A3C;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 70px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:1.1rem;line-height:1.6;-webkit-text-size-adjust:100%}
+img,svg{max-width:100%}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+h1,h2,h3{font-family:var(--display);font-weight:700;line-height:1.15;margin:0}
+p{margin:0 0 .8em}
+b.p, .p{color:var(--pred);font-weight:700}
+button,select,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--pp);outline-offset:2px}
+
+/* score bar */
+.scorebar{position:sticky;top:0;z-index:10;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
+.scorebar .wrap{display:flex;align-items:center;gap:16px;justify-content:space-between;min-height:54px;flex-wrap:wrap}
+.scorebar nav{display:flex;gap:6px;flex-wrap:wrap}
+.scorebar nav a{font-family:var(--display);font-size:.72rem;text-decoration:none;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 9px}
+.scorebar nav a.done{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.score{font-family:var(--display);font-size:.9rem;white-space:nowrap}
+.score span{font-size:1.15rem}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.05fr 1fr;gap:40px;align-items:center;padding:48px 0 40px}
+.hero h1{font-size:clamp(2.6rem,7vw,5.2rem);letter-spacing:-.02em}
+.hero h1 .brush{font-family:var(--body);font-style:italic;font-weight:400;letter-spacing:0}
+.hero .lede{font-size:1.2rem;color:var(--muted);max-width:34em;margin-top:18px}
+.hero .note{margin-top:14px;font-size:1rem}
+.art{border-radius:6px;overflow:hidden;box-shadow:0 1px 0 var(--line)}
+.art svg{display:block;width:100%;height:auto}
+.art-cap{display:flex;justify-content:space-between;font-size:.9rem;color:var(--muted);margin-top:8px;font-style:italic}
+
+/* grammar card */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:28px;margin:10px 0 28px}
+.card > h2{font-size:1.6rem;margin-bottom:6px}
+.card > .sub{color:var(--muted);margin-bottom:22px}
+.tenses{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.tense{padding:20px 20px 12px;background:color-mix(in srgb,var(--c) 9%,var(--surface));border:1.5px solid color-mix(in srgb,var(--c) 40%,transparent);border-top:8px solid var(--c);border-radius:12px}
+.tense h3{font-size:1.1rem;color:var(--c)}
+.tense .formula{background:color-mix(in srgb,var(--c) 14%,var(--surface))}
+.tense .ex li{border-bottom-color:color-mix(in srgb,var(--c) 35%,transparent)}
+.tense[data-t="ps"]{--c:var(--ps)} .tense[data-t="pp"]{--c:var(--pp)} .tense[data-t="ppc"]{--c:var(--ppc)}
+.formula{font-family:var(--display);font-size:.82rem;font-weight:500;background:var(--soft);border-radius:8px;padding:10px 12px;margin:14px 0;line-height:1.7}
+.formula em{font-style:normal;color:var(--c)}
+.tl{margin:6px 0 4px}
+.tl svg{width:100%;height:auto;display:block}
+.tense h4{font-family:var(--display);font-size:.78rem;font-weight:500;color:var(--muted);margin:16px 0 6px}
+.tense ul{margin:0;padding-left:1.1em}
+.tense li{margin-bottom:4px}
+.markers{display:flex;flex-wrap:wrap;gap:6px}
+.markers span{font-size:.95rem;border:1.5px solid var(--c);border-radius:999px;padding:1px 10px;background:color-mix(in srgb,var(--c) 9%,transparent)}
+.ex{list-style:none;padding:0 !important}
+.ex li{padding:6px 0;border-bottom:1px dashed var(--line)}
+.ex li:last-child{border-bottom:0}
+
+.contrast{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:26px}
+.pair{border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+.pair h3{font-size:.92rem;margin-bottom:10px}
+.pair .row{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:baseline;margin-bottom:8px}
+.pair .tag{font-family:var(--display);font-size:.7rem;font-weight:500;color:#fff;border-radius:5px;padding:2px 7px;white-space:nowrap}
+.tag.ps{background:var(--ps)} .tag.pp{background:var(--pp)} .tag.ppc{background:var(--ppc)}
+:root[data-theme="dark"] .tag{color:#10141F}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .tag{color:#10141F}}
+.pair .why{grid-column:2;color:var(--muted);font-size:.95rem;font-style:italic}
+.guide{margin-top:22px;background:var(--soft);border-radius:10px;padding:16px 20px}
+.guide h3{font-size:.92rem;margin-bottom:8px}
+.guide ol{margin:0;padding-left:1.3em}
+.warn{margin-top:14px;font-size:1rem}
+
+/* state verbs */
+.sv-rule{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:22px}
+.sv-rule .box{border:1px solid var(--line);border-radius:10px;padding:14px 18px}
+.sv-rule .box h3{font-size:.9rem;margin-bottom:8px}
+.sv-rule .no{color:var(--muted)}
+.sv-rule .no s{text-decoration-thickness:2px}
+.sv-groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:26px}
+.sv-group{--g:#0F8B8D;background:color-mix(in srgb,var(--g) 12%,var(--surface));border:1.5px solid color-mix(in srgb,var(--g) 45%,transparent);border-top:6px solid var(--g);border-radius:10px;padding:12px 14px}
+.sv-group:nth-child(1){--g:#0F8B8D}
+.sv-group:nth-child(2){--g:#D63384}
+.sv-group:nth-child(3){--g:#D98E04}
+.sv-group:nth-child(4){--g:#3F8F29}
+.sv-group:nth-child(5){--g:#5B5FC7}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]) .sv-group:nth-child(1){--g:#3CC4C6}
+  :root:not([data-theme="light"]) .sv-group:nth-child(2){--g:#F06AAE}
+  :root:not([data-theme="light"]) .sv-group:nth-child(3){--g:#F2B23A}
+  :root:not([data-theme="light"]) .sv-group:nth-child(4){--g:#6CC456}
+  :root:not([data-theme="light"]) .sv-group:nth-child(5){--g:#9296F5}
+}
+:root[data-theme="dark"] .sv-group:nth-child(1){--g:#3CC4C6}
+:root[data-theme="dark"] .sv-group:nth-child(2){--g:#F06AAE}
+:root[data-theme="dark"] .sv-group:nth-child(3){--g:#F2B23A}
+:root[data-theme="dark"] .sv-group:nth-child(4){--g:#6CC456}
+:root[data-theme="dark"] .sv-group:nth-child(5){--g:#9296F5}
+.sv-group h4{font-family:var(--display);font-size:.82rem;font-weight:700;color:var(--g);margin:0 0 8px}
+.sv-group p{margin:0;font-size:1rem;line-height:1.55}
+.exc{border-top:1px solid var(--line)}
+.exc .r{display:grid;grid-template-columns:7em 1fr 1fr;gap:6px 18px;padding:12px 0;border-bottom:1px solid var(--line);align-items:start}
+.exc .r.head{font-family:var(--display);font-size:.75rem;color:var(--muted);padding:8px 0}
+.exc .verb{font-family:var(--display);font-size:.9rem;font-weight:700}
+.exc .m{display:block;font-size:.88rem;color:var(--muted);font-style:italic}
+@media (max-width:700px){
+  .sv-rule{grid-template-columns:1fr}
+  .exc .r{grid-template-columns:1fr}
+  .exc .r.head{display:none}
+  .exc .r > div::before{content:attr(data-l);display:block;font-family:var(--display);font-size:.7rem;color:var(--muted)}
+}
+
+/* tasks */
+.tasks-head{max-width:760px;margin:40px auto 10px}
+.tasks-head h2{font-size:1.9rem}
+.tasks-head p{color:var(--muted)}
+.task{max-width:760px;margin:0 auto 22px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:24px 26px}
+.task header{display:flex;gap:14px;align-items:flex-start;margin-bottom:12px}
+.task .num{font-family:var(--display);font-weight:700;font-size:1.4rem;min-width:2ch;color:var(--muted)}
+.task h3{font-size:1.1rem}
+.task .instr{color:var(--muted);margin:4px 0 0;font-size:1rem}
+.task .result{font-family:var(--display);font-size:.85rem;margin-left:auto;white-space:nowrap;padding-top:4px}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.btn{border:1.5px solid var(--ink);background:var(--ink);color:var(--bg);border-radius:999px;padding:7px 18px;cursor:pointer;font-family:var(--display);font-size:.8rem;font-weight:500}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn:hover{opacity:.88}
+
+.item{padding:10px 0;border-bottom:1px dashed var(--line)}
+.item:last-child{border-bottom:0}
+.item.ok{box-shadow:inset 4px 0 0 var(--ok);padding-left:12px}
+.item.bad{box-shadow:inset 4px 0 0 var(--bad);padding-left:12px}
+.blank{display:inline-block;min-width:5.5em;border-bottom:2px solid var(--muted);text-align:center;padding:0 4px}
+.blank.filled{color:var(--pred);font-weight:700;border-color:var(--pred)}
+.opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.opt{border:1.5px solid var(--line);background:transparent;border-radius:999px;padding:3px 14px;cursor:pointer}
+.opt[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.opt.right{border-color:var(--ok);box-shadow:0 0 0 2px var(--ok)}
+
+/* sort task */
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:.95rem;margin-bottom:8px}
+.legend span b{font-family:var(--display);font-size:.75rem}
+.sort-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.sort-row .m{font-weight:600}
+.seg{display:inline-flex;border:1.5px solid var(--line);border-radius:999px;overflow:hidden}
+.seg button{border:0;background:transparent;padding:4px 12px;cursor:pointer;font-family:var(--display);font-size:.72rem;border-right:1px solid var(--line)}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"][data-v="0"]{background:var(--ps);color:#fff}
+.seg button[aria-pressed="true"][data-v="1"]{background:var(--pp);color:#fff}
+.seg button[aria-pressed="true"][data-v="2"]{background:var(--ppc);color:#fff}
+
+input.gap{border:0;border-bottom:2px solid var(--muted);background:var(--soft);border-radius:4px 4px 0 0;padding:1px 6px;width:13ch;max-width:100%}
+input.gap.wide{width:20ch}
+input.gap.ok{border-color:var(--ok)} input.gap.bad{border-color:var(--bad)}
+input.gap.shown{color:var(--pred);font-weight:700}
+.hint{color:var(--muted);font-style:italic;font-size:.95rem}
+.ans{color:var(--pred);font-weight:700;margin-left:6px}
+.wrong{text-decoration:underline wavy var(--bad);text-underline-offset:4px}
+.fix{display:flex;align-items:center;gap:8px;margin-top:6px;flex-wrap:wrap;font-size:.98rem}
+
+.words{display:flex;flex-wrap:wrap;gap:4px}
+.word{border:1.5px solid transparent;background:transparent;border-radius:6px;padding:1px 5px;cursor:pointer}
+.word:hover{border-color:var(--line)}
+.word[aria-pressed="true"]{border-color:var(--ink);background:var(--soft)}
+.word.red{color:var(--pred);font-weight:700}
+
+select{border:1.5px solid var(--line);background:var(--surface);border-radius:8px;padding:3px 6px;max-width:100%}
+select.ok{border-color:var(--ok)} select.bad{border-color:var(--bad)}
+select.shown{color:var(--pred);font-weight:700}
+.match{display:grid;grid-template-columns:1fr 1.2fr;gap:8px 14px;align-items:center}
+
+.dialogue .line{display:grid;grid-template-columns:4.5em 1fr;gap:10px;padding:8px 0}
+.dialogue .who{font-family:var(--display);font-size:.78rem;padding-top:5px;color:var(--muted)}
+.dialogue select{margin:2px 0}
+
+.build .answer{min-height:42px;border:1.5px dashed var(--line);border-radius:8px;padding:6px;display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.build .bank{display:flex;flex-wrap:wrap;gap:6px}
+.tile{border:1.5px solid var(--line);background:var(--soft);border-radius:6px;padding:2px 10px;cursor:pointer}
+.build .answer .tile{background:var(--surface);border-color:var(--ink)}
+.build .answer.ok .tile{color:var(--pred);font-weight:600}
+
+textarea{width:100%;min-height:80px;border:1.5px solid var(--line);border-radius:8px;background:var(--soft);padding:8px 10px;resize:vertical}
+.q{font-weight:600;margin-bottom:6px}
+.spot{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;font-size:.9rem}
+.spot span{border-radius:999px;padding:1px 10px;border:1.5px solid var(--line);color:var(--muted)}
+.spot span.on.ps{border-color:var(--ps);color:var(--ink)} .spot span.on.pp{border-color:var(--pp);color:var(--ink)} .spot span.on.ppc{border-color:var(--ppc);color:var(--ink)}
+.model{display:none;margin-top:8px;padding:10px 14px;border-left:4px solid var(--pred);background:var(--soft);border-radius:0 8px 8px 0;font-size:1rem}
+.model.open{display:block}
+
+footer{max-width:760px;margin:30px auto 50px;color:var(--muted);font-size:.95rem;text-align:center}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:1fr;padding-top:28px}
+  .tenses{grid-template-columns:1fr}
+
+  .contrast{grid-template-columns:1fr}
+}
+@media (max-width:560px){
+  .card,.task{padding:18px 16px}
+  .match{grid-template-columns:1fr}
+  .dialogue .line{grid-template-columns:1fr;gap:2px}
+  .task .result{display:block;margin-left:0}
+  .task header{flex-wrap:wrap}
+  .scorebar nav{display:none}
+}
+@media (prefers-reduced-motion:no-preference){
+  .art .px rect{transition:opacity .4s}
+}
+</style>
+</head>
+<body>
+
+<div class="scorebar">
+  <div class="wrap">
+    <nav id="nav" aria-label="Tasks"></nav>
+    <div class="score" aria-live="polite">Score <span id="sc">0</span> / <span id="tot">0</span></div>
+  </div>
+</div>
+
+<main class="wrap">
+
+<section class="hero">
+  <div>
+    <h1><span class="brush">Brush</span> or pixel?</h1>
+    <p class="lede">Past Simple, Present Perfect and Present Perfect Continuous: a grammar card and ten practice tasks about digital art and traditional art. Level B2.</p>
+    <p class="note">In every example the predicate <b class="p">is shown</b> in red.</p>
+  </div>
+  <div>
+    <div class="art"><svg id="art" viewBox="0 0 480 320" role="img" aria-label="One landscape: the left half painted with a brush, the right half made of pixels"></svg></div>
+    <div class="art-cap"><span>painted on canvas</span><span>drawn on a screen</span></div>
+  </div>
+</section>
+
+<!-- ============ GRAMMAR CARD ============ -->
+<section class="card" id="card">
+  <h2>Grammar card</h2>
+  <p class="sub">Three tenses, one question: how does the past connect to now?</p>
+
+  <div class="tenses">
+    <!-- PAST SIMPLE -->
+    <div class="tense" data-t="ps">
+      <h3>Past Simple</h3>
+      <div class="tl"><svg viewBox="0 0 240 64" aria-hidden="true">
+        <line x1="8" y1="34" x2="232" y2="34" stroke="currentColor" stroke-width="2" opacity=".35"/>
+        <line x1="196" y1="22" x2="196" y2="46" stroke="currentColor" stroke-width="2"/>
+        <text x="196" y="60" font-size="11" text-anchor="middle" fill="currentColor">now</text>
+        <g stroke="var(--ps)" stroke-width="4" stroke-linecap="round"><line x1="62" y1="25" x2="80" y2="43"/><line x1="80" y1="25" x2="62" y2="43"/></g>
+        <text x="71" y="15" font-size="11" text-anchor="middle" fill="var(--ps)">finished</text>
+        <text x="132" y="28" font-size="10" text-anchor="middle" fill="currentColor" opacity=".6">no link to now</text>
+      </svg></div>
+      <div class="formula">+ V<em>-ed</em> / V2<br>− did not + V<br>? <em>Did</em> + subject + V?</div>
+      <h4>When we use it</h4>
+      <ul>
+        <li>A finished action at a definite time in the past.</li>
+        <li>A sequence of past events (a story, a biography).</li>
+        <li>The time is over, or the person is dead.</li>
+        <li>Questions with <i>when?</i> and <i>what time?</i></li>
+      </ul>
+      <h4>Time markers</h4>
+      <div class="markers"><span>yesterday</span><span>the day before yesterday</span><span>last week / month / year</span><span>last night</span><span>two days ago</span><span>long ago</span><span>in 2021</span><span>in the 19th century</span><span>on Monday</span><span>at 5 o'clock</span><span>when I was a child</span><span>then</span><span>after that</span><span>the other day</span><span>just now</span><span>once (= at one time)</span><span>in the past</span><span>during the war</span><span>for 3 years (finished)</span></div>
+      <h4>Examples</h4>
+      <ul class="ex">
+        <li>Leonardo da Vinci <b class="p">painted</b> the Mona Lisa in the early 16th century.</li>
+        <li>Beeple's digital collage <b class="p">sold</b> for $69 million in 2021.</li>
+        <li>When <b class="p">did</b> you <b class="p">buy</b> your first graphics tablet?</li>
+        <li>Van Gogh <b class="p">did not sell</b> many paintings during his life.</li>
+      </ul>
+    </div>
+
+    <!-- PRESENT PERFECT -->
+    <div class="tense" data-t="pp">
+      <h3>Present Perfect</h3>
+      <div class="tl"><svg viewBox="0 0 240 64" aria-hidden="true">
+        <line x1="8" y1="34" x2="232" y2="34" stroke="currentColor" stroke-width="2" opacity=".35"/>
+        <line x1="196" y1="22" x2="196" y2="46" stroke="currentColor" stroke-width="2"/>
+        <text x="196" y="60" font-size="11" text-anchor="middle" fill="currentColor">now</text>
+        <g stroke="var(--pp)" stroke-width="4" stroke-linecap="round"><line x1="62" y1="25" x2="80" y2="43"/><line x1="80" y1="25" x2="62" y2="43"/></g>
+        <path d="M80 22 Q138 -6 190 22" fill="none" stroke="var(--pp)" stroke-width="2" stroke-dasharray="4 4"/>
+        <path d="M184 15 L191 23 L181 25" fill="none" stroke="var(--pp)" stroke-width="2"/>
+        <text x="136" y="50" font-size="10" text-anchor="middle" fill="currentColor" opacity=".6">result / experience now</text>
+      </svg></div>
+      <div class="formula">+ <em>have / has</em> + V3<br>− have / has <em>not</em> + V3<br>? <em>Have / Has</em> + subject + V3?</div>
+      <h4>When we use it</h4>
+      <ul>
+        <li>Life experience, time not mentioned (<i>ever, never</i>).</li>
+        <li>A past action with a result that is important now.</li>
+        <li>Recent news (<i>just, already, yet</i>).</li>
+        <li>An unfinished period of time (<i>today, this year</i>).</li>
+        <li>How much / how many up to now (<i>three works so far</i>).</li>
+        <li>States that continue up to now (<i>know, be, have, own</i>) with <i>for / since</i>.</li>
+      </ul>
+      <h4>Time markers</h4>
+      <div class="markers"><span>ever</span><span>never</span><span>already</span><span>yet</span><span>just</span><span>still (negative)</span><span>so far</span><span>up to now</span><span>until now</span><span>recently</span><span>lately</span><span>today</span><span>this week / month / year</span><span>in the last few years</span><span>over the past decade</span><span>before (= ever before)</span><span>once / twice / three times</span><span>how many times</span><span>it's the first time</span><span>for</span><span>since</span><span>how long (states)</span></div>
+      <h4>Examples</h4>
+      <ul class="ex">
+        <li>I <b class="p">have</b> never <b class="p">seen</b> a real Van Gogh.</li>
+        <li>AI tools <b class="p">have changed</b> the art market.</li>
+        <li>She <b class="p">has</b> just <b class="p">finished</b> her first animation.</li>
+        <li><b class="p">Have</b> you ever <b class="p">drawn</b> on an iPad?</li>
+        <li>I <b class="p">have known</b> this street artist since 2015.</li>
+      </ul>
+    </div>
+
+    <!-- PRESENT PERFECT CONTINUOUS -->
+    <div class="tense" data-t="ppc">
+      <h3>Present Perfect Continuous</h3>
+      <div class="tl"><svg viewBox="0 0 240 64" aria-hidden="true">
+        <line x1="8" y1="34" x2="232" y2="34" stroke="currentColor" stroke-width="2" opacity=".35"/>
+        <line x1="196" y1="22" x2="196" y2="46" stroke="currentColor" stroke-width="2"/>
+        <text x="196" y="60" font-size="11" text-anchor="middle" fill="currentColor">now</text>
+        <path d="M58 34 q7 -12 14 0 t14 0 t14 0 t14 0 t14 0 t14 0 t14 0 t14 0 t14 0 t14 0" fill="none" stroke="var(--ppc)" stroke-width="3"/>
+        <path d="M200 34 l14 0" stroke="var(--ppc)" stroke-width="3" stroke-dasharray="3 3"/>
+        <text x="126" y="14" font-size="10" text-anchor="middle" fill="currentColor" opacity=".6">process / duration up to now</text>
+      </svg></div>
+      <div class="formula">+ <em>have / has been</em> + V<em>-ing</em><br>− have / has <em>not</em> been + V-ing<br>? <em>Have / Has</em> + subject + <em>been</em> + V-ing?</div>
+      <h4>When we use it</h4>
+      <ul>
+        <li>An action that started in the past and is still going on; we focus on duration.</li>
+        <li>An action that has just stopped and we can see the result (<i>paint on your hands</i>).</li>
+        <li>Repeated actions over a period up to now.</li>
+        <li>Questions with <i>how long?</i></li>
+      </ul>
+      <h4>Time markers</h4>
+      <div class="markers"><span>for (+ period)</span><span>since (+ point)</span><span>how long</span><span>all day / all morning / all week</span><span>the whole day</span><span>lately</span><span>recently</span><span>these days</span><span>for ages</span><span>since + Past Simple clause</span><span>over the last few months</span></div>
+      <h4>Examples</h4>
+      <ul class="ex">
+        <li>He <b class="p">has been painting</b> this portrait for three months.</li>
+        <li>I <b class="p">have been learning</b> Procreate since September.</li>
+        <li>Why are your hands blue? I <b class="p">have been mixing</b> oil paints.</li>
+        <li>How long <b class="p">have</b> you <b class="p">been working</b> on this animation?</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="contrast">
+    <div class="pair">
+      <h3>Past Simple vs Present Perfect</h3>
+      <div class="row"><span class="tag ps">PS</span><span>I <b class="p">visited</b> the Louvre in 2019.</span><span class="why">When? The time is stated and finished.</span></div>
+      <div class="row"><span class="tag pp">PP</span><span>I <b class="p">have visited</b> the Louvre twice.</span><span class="why">Experience. When is not important.</span></div>
+      <div class="row"><span class="tag ps">PS</span><span>Picasso <b class="p">created</b> over 20,000 works.</span><span class="why">His life is finished.</span></div>
+      <div class="row"><span class="tag pp">PP</span><span>This artist <b class="p">has created</b> 300 NFTs.</span><span class="why">She is alive and still working.</span></div>
+    </div>
+    <div class="pair">
+      <h3>Present Perfect vs Present Perfect Continuous</h3>
+      <div class="row"><span class="tag pp">PP</span><span>She <b class="p">has painted</b> three portraits this month.</span><span class="why">Result: how many? The work is complete.</span></div>
+      <div class="row"><span class="tag ppc">PPC</span><span>She <b class="p">has been painting</b> portraits all month.</span><span class="why">Process: how long? Maybe not finished.</span></div>
+      <div class="row"><span class="tag pp">PP</span><span>I <b class="p">have read</b> the book about Banksy.</span><span class="why">Finished: I know the ending.</span></div>
+      <div class="row"><span class="tag ppc">PPC</span><span>I <b class="p">have been reading</b> the book about Banksy.</span><span class="why">In progress: I am still reading it.</span></div>
+    </div>
+  </div>
+
+  <div class="guide">
+    <h3>Quick decision guide</h3>
+    <ol>
+      <li>Is the past time stated, finished, or asked with <i>when</i>? Use <b>Past Simple</b>.</li>
+      <li>Is the result, the experience or the number important now? Use <b>Present Perfect</b>.</li>
+      <li>Is the process or the duration up to now important? Use <b>Present Perfect Continuous</b>.</li>
+    </ol>
+    <p class="warn">Careful: state verbs (<i>know, like, love, believe, own, belong, understand, be</i>) are not used in the continuous form. We say I <b class="p">have known</b> her for years, not <s>I have been knowing</s>. More in <a href="#state">State verbs</a> below.</p>
+  </div>
+</section>
+
+<!-- ============ STATE VERBS ============ -->
+<section class="card" id="state">
+  <h2>State verbs</h2>
+  <p class="sub">Some verbs describe a state, not an action: what we think, feel, want, own or are. A state has no process, so these verbs are normally not used in continuous forms, including Present Perfect Continuous.</p>
+
+  <div class="sv-rule">
+    <div class="box">
+      <h3>Duration up to now? Use Present Perfect</h3>
+      <p>When a state verb goes with <i>for, since</i> or <i>how long</i>, replace Present Perfect Continuous with Present Perfect.</p>
+      <p>I <b class="p">have wanted</b> a graphics tablet since I was twelve.<br><span class="no">not <s>I have been wanting</s></span></p>
+      <p>This sculpture <b class="p">has belonged</b> to the museum for seventy years.<br><span class="no">not <s>has been belonging</s></span></p>
+    </div>
+    <div class="box">
+      <h3>Right now? Use Present Simple</h3>
+      <p>The same rule works in the present: a state verb stays simple even when we mean “at this moment”.</p>
+      <p>I <b class="p">understand</b> this installation now.<br><span class="no">not <s>I am understanding</s></span></p>
+      <p>How long <b class="p">have</b> you <b class="p">known</b> about NFTs?<br><span class="no">not <s>have you been knowing</s></span></p>
+    </div>
+  </div>
+
+  <div class="sv-groups">
+    <div class="sv-group"><h4>Thinking and opinion</h4><p>know, believe, think (= have an opinion), understand, remember, forget, mean, realise, recognise, suppose, doubt, agree, disagree, imagine (= suppose)</p></div>
+    <div class="sv-group"><h4>Feelings and wishes</h4><p>like, love, hate, dislike, prefer, adore, want, wish, need, mind, appreciate, care</p></div>
+    <div class="sv-group"><h4>Senses and appearance</h4><p>see, hear, smell, taste, feel, seem, look (= seem), appear (= seem), sound, recognise</p></div>
+    <div class="sv-group"><h4>Possession</h4><p>have (= own), own, possess, belong, include, contain, consist of, lack</p></div>
+    <div class="sv-group"><h4>Being and measuring</h4><p>be, cost, weigh, measure, fit, depend, deserve, matter, resemble, involve, equal</p></div>
+  </div>
+
+  <h3 style="font-size:1.1rem;margin-bottom:6px">Exceptions: when a state verb becomes an action</h3>
+  <p class="sub" style="margin-bottom:12px">Some of these verbs have a second meaning that is a real action or process. In that meaning, the continuous form is correct.</p>
+  <div class="exc">
+    <div class="r head"><span>Verb</span><span>State (no continuous)</span><span>Action (continuous is fine)</span></div>
+    <div class="r"><span class="verb">think</span>
+      <div data-l="State"><span class="m">opinion</span>I <b class="p">think</b> digital art is real art.</div>
+      <div data-l="Action"><span class="m">consider, plan</span>I <b class="p">have been thinking</b> about my next project all week.</div></div>
+    <div class="r"><span class="verb">have</span>
+      <div data-l="State"><span class="m">own, possess</span>She <b class="p">has had</b> her own studio since 2019.</div>
+      <div data-l="Action"><span class="m">experience, eat, take part</span>She <b class="p">has been having</b> problems with her tablet lately.</div></div>
+    <div class="r"><span class="verb">see</span>
+      <div data-l="State"><span class="m">understand, notice</span>I <b class="p">see</b> what the artist means.</div>
+      <div data-l="Action"><span class="m">meet, date</span>He <b class="p">has been seeing</b> a sculptor for a year.</div></div>
+    <div class="r"><span class="verb">look</span>
+      <div data-l="State"><span class="m">seem</span>This painting <b class="p">looks</b> very old.</div>
+      <div data-l="Action"><span class="m">watch, direct your eyes</span>I <b class="p">have been looking</b> at it for ten minutes.</div></div>
+    <div class="r"><span class="verb">taste / smell</span>
+      <div data-l="State"><span class="m">have a taste or smell</span>The old canvas <b class="p">smells</b> of linseed oil.</div>
+      <div data-l="Action"><span class="m">test on purpose</span>The restorer <b class="p">has been smelling</b> the varnish to check it.</div></div>
+    <div class="r"><span class="verb">feel</span>
+      <div data-l="State"><span class="m">opinion</span>I <b class="p">feel</b> that NFTs <b class="p">are</b> just a trend.</div>
+      <div data-l="Action"><span class="m">physical or emotional condition</span>I <b class="p">have been feeling</b> really inspired lately.</div></div>
+    <div class="r"><span class="verb">be</span>
+      <div data-l="State"><span class="m">permanent quality</span>He <b class="p">is</b> a talented painter.</div>
+      <div data-l="Action"><span class="m">behave, temporarily</span>He <b class="p">is being</b> very rude to the critics today.</div></div>
+    <div class="r"><span class="verb">weigh / measure</span>
+      <div data-l="State"><span class="m">have a weight or size</span>The bronze statue <b class="p">weighs</b> two tonnes.</div>
+      <div data-l="Action"><span class="m">find the weight or size</span>The workers <b class="p">have been measuring</b> the hall all morning.</div></div>
+    <div class="r"><span class="verb">appear</span>
+      <div data-l="State"><span class="m">seem</span>The artist <b class="p">appears</b> tired.</div>
+      <div data-l="Action"><span class="m">perform, take part in</span>She <b class="p">has been appearing</b> at art festivals all summer.</div></div>
+  </div>
+  <p class="warn">In informal English you may also hear <i>love</i> or <i>like</i> in the continuous to show enjoyment at the moment: I <b class="p">am loving</b> this exhibition! It is fine in speech, but avoid it in exams and formal writing.</p>
+</section>
+
+<!-- ============ TASKS ============ -->
+<div class="tasks-head" id="tasks">
+  <h2>Practice</h2>
+  <p>Do the tasks in order. Press Check after each one; your score is at the top of the page.</p>
+</div>
+
+<section class="task" id="t1"><header><span class="num">1</span><div><h3>Sort the time markers</h3><p class="instr">Which tense does each marker usually go with? Think of actions connected to now when you see <i>for</i> and <i>since</i>.</p></div><span class="result"></span></header>
+  <div class="legend"><span><b style="color:var(--ps)">PS</b> Past Simple</span><span><b style="color:var(--pp)">PP</b> Present Perfect</span><span><b style="color:var(--ppc)">PP/PPC</b> both perfect tenses</span></div>
+  <div class="body"></div></section>
+
+<section class="task" id="t2"><header><span class="num">2</span><div><h3>Choose the correct form</h3><p class="instr">Tap the best option for each gap.</p></div><span class="result"></span></header><div class="body"></div></section>
+
+<section class="task" id="t3"><header><span class="num">3</span><div><h3>Open the brackets</h3><p class="instr">Write the verb in Past Simple, Present Perfect or Present Perfect Continuous. Short forms (<i>I've, hasn't</i>) are fine.</p></div><span class="result"></span></header><div class="body"></div></section>
+
+<section class="task" id="t4"><header><span class="num">4</span><div><h3>Find and correct the mistake</h3><p class="instr">The underlined verb is wrong. Write the correct form.</p></div><span class="result"></span></header><div class="body"></div></section>
+
+<section class="task" id="t5"><header><span class="num">5</span><div><h3>For or since?</h3><p class="instr"><i>For</i> + a period of time, <i>since</i> + a starting point.</p></div><span class="result"></span></header><div class="body"></div></section>
+
+<section class="task" id="t6"><header><span class="num">6</span><div><h3>Find the predicate</h3><p class="instr">Tap every word of the verb (auxiliaries and the main verb). Do not tap adverbs like <i>ever</i> or <i>already</i>. Correct predicates turn red.</p></div><span class="result"></span></header><div class="body"></div></section>
+
+<section class="task" id="t7"><header><span class="num">7</span><div><h3>Match the halves</h3><p class="instr">Choose the ending that fits the tense of each beginning.</p></div><span class="result"></span></header><div class="body"></div></section>
+
+<section class="task" id="t8"><header><span class="num">8</span><div><h3>Interview with a digital artist</h3><p class="instr">Choose the correct verb forms in the dialogue.</p></div><span class="result"></span></header><div class="body dialogue"></div></section>
+
+<section class="task" id="t9"><header><span class="num">9</span><div><h3>Build the sentence</h3><p class="instr">Tap the words in the right order. Tap a word in your answer to send it back.</p></div><span class="result"></span></header><div class="body build"></div></section>
+
+<section class="task" id="t10"><header><span class="num">10</span><div><h3>Your turn: brush or pixel?</h3><p class="instr">Answer in 2–3 sentences, using the tense the question needs. Then check which tenses you used and compare with a model answer. Discuss your answers with your teacher.</p></div><span class="result"></span></header><div class="body"></div></section>
+
+<footer>Brush or pixel? English grammar practice, B2.</footer>
+</main>
+
+<script>
+/* ---------- hero art: painted left half, pixel right half ---------- */
+(function(){
+  const svg=document.getElementById('art'); const NS='http://www.w3.org/2000/svg';
+  const W=480,H=320,HALF=240;
+  const sun={x:240,y:118,r:62};
+  const hill1=x=>214+22*Math.sin(x/46)+10*Math.sin(x/17);
+  const hill2=x=>252+16*Math.sin(x/33+1.8);
+  function sky(y){const t=y/H;const a=[47,75,255],b=[255,196,140];return a.map((v,i)=>Math.round(v+(b[i]-v)*Math.min(1,t*1.25)));}
+  function col(x,y){
+    if(y>hill2(x)) return '#151B2E';
+    if(y>hill1(x)) return '#2B3A6B';
+    const dx=x-sun.x,dy=y-sun.y; if(dx*dx+dy*dy<sun.r*sun.r) return '#F2A31B';
+    const c=sky(y); return `rgb(${c[0]},${c[1]},${c[2]})`;
+  }
+  let h=`<defs>
+    <linearGradient id="sk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgb(47,75,255)"/><stop offset=".8" stop-color="rgb(255,196,140)"/><stop offset="1" stop-color="rgb(255,196,140)"/></linearGradient>
+    <filter id="paint" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.018 0.05" numOctaves="3" seed="7"/><feDisplacementMap in="SourceGraphic" scale="14"/></filter>
+    <clipPath id="left"><rect x="0" y="0" width="${HALF}" height="${H}"/></clipPath>
+  </defs>`;
+  let p1=`M0 ${H} `, p2=`M0 ${H} `;
+  for(let x=0;x<=HALF+10;x+=6){p1+=`L${x} ${hill1(x).toFixed(1)} `;p2+=`L${x} ${hill2(x).toFixed(1)} `;}
+  p1+=`L${HALF+10} ${H} Z`; p2+=`L${HALF+10} ${H} Z`;
+  let strokes='';
+  for(let i=0;i<26;i++){const y=12+i*8, x=(i*37)%120;strokes+=`<path d="M${x} ${y} q40 -6 ${80+(i%3)*30} 2" stroke="rgba(255,255,255,${0.06+0.04*(i%3)})" stroke-width="${3+i%4}" fill="none" stroke-linecap="round"/>`;}
+  h+=`<g clip-path="url(#left)"><g filter="url(#paint)">
+    <rect x="-10" y="-10" width="${HALF+20}" height="${H+20}" fill="url(#sk)"/>${strokes}
+    <circle cx="${sun.x}" cy="${sun.y}" r="${sun.r}" fill="#F2A31B"/>
+    <path d="${p1}" fill="#2B3A6B"/><path d="${p2}" fill="#151B2E"/></g></g>`;
+  const S=16; let px='<g class="px">';
+  for(let y=0;y<H;y+=S){for(let x=HALF;x<W;x+=S){px+=`<rect x="${x}" y="${y}" width="${S}" height="${S}" fill="${col(x+S/2,y+S/2)}"/>`;}}
+  px+='</g>';
+  h+=px+`<line x1="${HALF}" y1="0" x2="${HALF}" y2="${H}" stroke="#fff" stroke-width="3"/>`;
+  svg.innerHTML=h;
+})();
+
+/* ---------- helpers ---------- */
+const norm=s=>s.toLowerCase().replace(/[’‘`]/g,"'").trim()
+  .replace(/n't\b/g," not").replace(/'ve\b/g," have").replace(/'s\b/g," has").replace(/'m\b/g," am").replace(/'re\b/g," are").replace(/'d\b/g," had")
+  .replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ").trim();
+const match=(v,arr)=>arr.some(a=>norm(a)===norm(v));
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+const scores={}; const totals={};
+function setScore(id,c,t){scores[id]=c;totals[id]=t;const r=document.querySelector('#'+id+' .result');r.textContent=c+' / '+t;r.style.color=c===t?'var(--ok)':'var(--ink)';document.querySelector('#nav a[href="#'+id+'"]').classList.add('done');updateScore();}
+function updateScore(){let s=0;for(const k in scores)s+=scores[k];document.getElementById('sc').textContent=s;}
+function shuffle(a,seed){a=a.slice();let s=seed||7;for(let i=a.length-1;i>0;i--){s=(s*9301+49297)%233280;const j=Math.floor(s/233280*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function actions(task,{check,reveal,reset}){
+  const d=document.createElement('div');d.className='actions';
+  d.innerHTML='<button class="btn" data-a="c">Check</button><button class="btn ghost" data-a="s">Show answers</button><button class="btn ghost" data-a="r">Try again</button>';
+  d.addEventListener('click',e=>{const a=e.target.dataset.a;if(a==='c')check();if(a==='s')reveal();if(a==='r'){reset();const r=task.querySelector('.result');r.textContent='';}});
+  task.appendChild(d);
+}
+const TOTAL={};
+
+/* ---------- Task 1: sort markers ---------- */
+(function(){
+  const id='t1',T=document.getElementById(id),B=T.querySelector('.body');
+  const data=[["yesterday",0],["already",1],["for three months",2],["two years ago",0],["ever",1],["since 2020",2],["in 2021",0],["yet",1],["lately",2],["last summer",0],["never",1],["over the last few months",2],["when I was a child",0],["so far",1],["how many times",1]];
+  const st=data.map(()=>-1); const lbl=["PS","PP","PP/PPC"],full=["Past Simple","Present Perfect","Present Perfect or Present Perfect Continuous"];
+  B.innerHTML=data.map((d,i)=>`<div class="item sort-row" data-i="${i}"><span class="m">${d[0]}</span><span class="seg" role="group" aria-label="${d[0]}">${lbl.map((l,v)=>`<button data-v="${v}" aria-pressed="false" aria-label="${full[v]}">${l}</button>`).join('')}</span></div>`).join('');
+  B.addEventListener('click',e=>{const b=e.target.closest('.seg button');if(!b)return;const row=b.closest('.item'),i=+row.dataset.i;st[i]=+b.dataset.v;row.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));row.classList.remove('ok','bad');});
+  const rows=()=>B.querySelectorAll('.item');
+  actions(T,{check(){let c=0;rows().forEach((r,i)=>{const ok=st[i]===data[i][1];r.classList.toggle('ok',ok);r.classList.toggle('bad',!ok);if(ok)c++;});setScore(id,c,data.length);},
+    reveal(){rows().forEach((r,i)=>{st[i]=data[i][1];r.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',+x.dataset.v===st[i]));r.classList.remove('bad');});},
+    reset(){rows().forEach((r,i)=>{st[i]=-1;r.classList.remove('ok','bad');r.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed','false'));});}});
+  TOTAL[id]=data.length;
+})();
+
+/* ---------- Task 2: multiple choice ---------- */
+(function(){
+  const id='t2',T=document.getElementById(id),B=T.querySelector('.body');
+  const data=[
+    {q:"Beeple ___ his digital collage for $69 million in 2021.",o:["sold","has sold","has been selling"],a:0},
+    {q:"I ___ a real Rembrandt in my life.",o:["never saw","have never seen","have never been seeing"],a:1},
+    {q:"Mia looks exhausted. She ___ on her animation since 6 a.m.",o:["worked","is working","has been working"],a:2},
+    {q:"How many digital portraits ___ this month?",o:["did you sell","have you sold","have you been selling"],a:1},
+    {q:"When ___ to use Photoshop?",o:["did you start","have you started","have you been starting"],a:0},
+    {q:"Museums ___ more and more digital exhibitions over the last few years.",o:["organised","are organising","have been organising"],a:2},
+    {q:"Sorry, I ___ your painting yet. Can I see it now?",o:["didn't see","haven't seen","haven't been seeing"],a:1}];
+  const st=data.map(()=>-1);
+  B.innerHTML=data.map((d,i)=>`<div class="item" data-i="${i}"><div>${i+1}. ${d.q.replace('___','<span class="blank">&nbsp;</span>')}</div><div class="opts">${d.o.map((o,j)=>`<button class="opt" data-j="${j}" aria-pressed="false">${o}</button>`).join('')}</div></div>`).join('');
+  const fill=(it,i)=>{const bl=it.querySelector('.blank');if(st[i]<0){bl.innerHTML='&nbsp;';bl.classList.remove('filled');}else{bl.textContent=data[i].o[st[i]];bl.classList.add('filled');}};
+  B.addEventListener('click',e=>{const b=e.target.closest('.opt');if(!b)return;const it=b.closest('.item'),i=+it.dataset.i;st[i]=+b.dataset.j;it.querySelectorAll('.opt').forEach(x=>x.setAttribute('aria-pressed',x===b));it.classList.remove('ok','bad');fill(it,i);});
+  const items=()=>B.querySelectorAll('.item');
+  actions(T,{check(){let c=0;items().forEach((it,i)=>{const ok=st[i]===data[i].a;it.classList.toggle('ok',ok);it.classList.toggle('bad',!ok);if(ok)c++;});setScore(id,c,data.length);},
+    reveal(){items().forEach((it,i)=>{st[i]=data[i].a;it.querySelectorAll('.opt').forEach(x=>x.setAttribute('aria-pressed',+x.dataset.j===st[i]));it.classList.remove('bad');fill(it,i);});},
+    reset(){items().forEach((it,i)=>{st[i]=-1;it.classList.remove('ok','bad');it.querySelectorAll('.opt').forEach(x=>x.setAttribute('aria-pressed','false'));fill(it,i);});}});
+})();
+
+/* ---------- Task 3: open the brackets ---------- */
+(function(){
+  const id='t3',T=document.getElementById(id),B=T.querySelector('.body');
+  const g=(a,h,w)=>({a,h,w});
+  const data=[
+    ["Van Gogh ",g(["painted"],"paint")," around 900 works, but he ",g(["sold"],"sell")," very few of them while he was alive."],
+    ["Look at your hands! ",g(["have you been drawing"],"you / draw",1)," with charcoal?"],
+    ["AI image generators ",g(["have changed","have been changing"],"change",1)," the art world a lot since 2022."],
+    ["I ",g(["have known"],"know")," this street artist for ten years."],
+    ["My sister ",g(["has been taking"],"take",1)," oil-painting classes since January, and she ",g(["has already painted","has painted already"],"already / paint",1)," five landscapes."],
+    ["The first exhibitions of computer art ",g(["took"],"take")," place in the 1960s."],
+    ["When ",g(["did you see"],"you / see",1)," a digital art exhibition for the first time?"]];
+  const gaps=[];
+  B.innerHTML=data.map((row,i)=>'<div class="item">'+(i+1)+'. '+row.map(s=>{if(typeof s==='string')return esc(s);const k=gaps.push(s)-1;return `<input class="gap${s.w?' wide':''}" data-k="${k}" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="${s.h}"> <span class="hint">(${s.h})</span>`;}).join('')+'</div>').join('');
+  const ins=()=>B.querySelectorAll('input');
+  actions(T,{check(){let c=0;ins().forEach(inp=>{const ok=match(inp.value,gaps[+inp.dataset.k].a);inp.classList.toggle('ok',ok);inp.classList.toggle('bad',!ok);if(ok)c++;});setScore(id,c,gaps.length);},
+    reveal(){ins().forEach(inp=>{inp.value=gaps[+inp.dataset.k].a[0];inp.classList.remove('bad');inp.classList.add('shown');});},
+    reset(){ins().forEach(inp=>{inp.value='';inp.classList.remove('ok','bad','shown');});}});
+  B.addEventListener('input',e=>e.target.classList.remove('ok','bad','shown'));
+})();
+
+/* ---------- Task 4: correct the mistake ---------- */
+(function(){
+  const id='t4',T=document.getElementById(id),B=T.querySelector('.body');
+  const data=[
+    {b:"I ",w:"have seen",f:" Banksy's mural in Bristol last year.",a:["saw"]},
+    {b:"She ",w:"is drawing",f:" digital comics since 2020.",a:["has been drawing"]},
+    {b:"We ",w:"have been knowing",f:" each other since art school.",a:["have known"]},
+    {b:"How long ",w:"do you work",f:" on this sculpture?",a:["have you been working"]},
+    {b:"The museum ",w:"has bought",f:" this painting two years ago.",a:["bought"]},
+    {b:"I ",w:"paint",f:" since I was five years old.",a:["have been painting","have painted"]}];
+  B.innerHTML=data.map((d,i)=>`<div class="item">${i+1}. ${esc(d.b)}<span class="wrong">${d.w}</span>${esc(d.f)}<div class="fix"><span class="hint">Correct form:</span><input class="gap wide" data-i="${i}" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Correct form for sentence ${i+1}"></div></div>`).join('');
+  const ins=()=>B.querySelectorAll('input');
+  actions(T,{check(){let c=0;ins().forEach(inp=>{const ok=match(inp.value,data[+inp.dataset.i].a);inp.classList.toggle('ok',ok);inp.classList.toggle('bad',!ok);if(ok)c++;});setScore(id,c,data.length);},
+    reveal(){ins().forEach(inp=>{inp.value=data[+inp.dataset.i].a[0];inp.classList.remove('bad');inp.classList.add('shown');});},
+    reset(){ins().forEach(inp=>{inp.value='';inp.classList.remove('ok','bad','shown');});}});
+  B.addEventListener('input',e=>e.target.classList.remove('ok','bad','shown'));
+})();
+
+/* ---------- Task 5: for / since ---------- */
+(function(){
+  const id='t5',T=document.getElementById(id),B=T.querySelector('.body');
+  const data=[
+    ["She <b class='p'>has been designing</b> game characters ___ five years.","for"],
+    ["I <b class='p'>haven't visited</b> an art gallery ___ the summer.","since"],
+    ["They <b class='p'>have been restoring</b> the old fresco ___ last spring.","since"],
+    ["He <b class='p'>has used</b> the same set of brushes ___ ages.","for"],
+    ["Digital art <b class='p'>has existed</b> ___ the 1960s.","since"],
+    ["We <b class='p'>have been waiting</b> for the auction results ___ two hours.","for"],
+    ["___ I <b class='p'>bought</b> a tablet, I <b class='p'>haven't touched</b> my sketchbook.","Since"]];
+  const st=data.map(()=>null);
+  B.innerHTML=data.map((d,i)=>`<div class="item" data-i="${i}"><div>${i+1}. ${d[0].replace('___','<span class="blank">&nbsp;</span>')}</div><div class="opts"><button class="opt" data-v="for" aria-pressed="false">for</button><button class="opt" data-v="since" aria-pressed="false">since</button></div></div>`).join('');
+  const fill=(it,i)=>{const bl=it.querySelector('.blank');bl.textContent=st[i]?(i===6?st[i][0].toUpperCase()+st[i].slice(1):st[i]):'\u00a0';bl.style.fontWeight=st[i]?'700':'';};
+  B.addEventListener('click',e=>{const b=e.target.closest('.opt');if(!b)return;const it=b.closest('.item'),i=+it.dataset.i;st[i]=b.dataset.v;it.querySelectorAll('.opt').forEach(x=>x.setAttribute('aria-pressed',x===b));it.classList.remove('ok','bad');fill(it,i);});
+  const items=()=>B.querySelectorAll('.item');
+  actions(T,{check(){let c=0;items().forEach((it,i)=>{const ok=st[i]===data[i][1].toLowerCase();it.classList.toggle('ok',ok);it.classList.toggle('bad',!ok);if(ok)c++;});setScore(id,c,data.length);},
+    reveal(){items().forEach((it,i)=>{st[i]=data[i][1].toLowerCase();it.querySelectorAll('.opt').forEach(x=>x.setAttribute('aria-pressed',x.dataset.v===st[i]));it.classList.remove('bad');fill(it,i);});},
+    reset(){items().forEach((it,i)=>{st[i]=null;it.classList.remove('ok','bad');it.querySelectorAll('.opt').forEach(x=>x.setAttribute('aria-pressed','false'));fill(it,i);});}});
+})();
+
+/* ---------- Task 6: find the predicate ---------- */
+(function(){
+  const id='t6',T=document.getElementById(id),B=T.querySelector('.body');
+  const data=[
+    ["Many artists have moved from canvas to screen.",[2,3]],
+    ["Has your teacher ever shown you a real fresco?",[0,4]],
+    ["I have been experimenting with 3D brushes all week.",[1,2,3]],
+    ["Picasso created more than 20,000 works.",[1]],
+    ["How long have you been studying art?",[2,4,5]]];
+  B.innerHTML=data.map((d,i)=>`<div class="item" data-i="${i}"><div class="words">${i+1}.&nbsp;${d[0].split(' ').map((w,k)=>`<button class="word" data-k="${k}" aria-pressed="false">${esc(w)}</button>`).join('')}</div></div>`).join('');
+  B.addEventListener('click',e=>{const b=e.target.closest('.word');if(!b)return;b.setAttribute('aria-pressed',b.getAttribute('aria-pressed')!=='true');const it=b.closest('.item');it.classList.remove('ok','bad');it.querySelectorAll('.word').forEach(w=>w.classList.remove('red'));});
+  const items=()=>B.querySelectorAll('.item');
+  const paint=(it,i)=>it.querySelectorAll('.word').forEach(w=>w.classList.toggle('red',data[i][1].includes(+w.dataset.k)));
+  actions(T,{check(){let c=0;items().forEach((it,i)=>{const sel=[...it.querySelectorAll('.word[aria-pressed="true"]')].map(w=>+w.dataset.k).sort((a,b)=>a-b);const ok=sel.join()===data[i][1].join();it.classList.toggle('ok',ok);it.classList.toggle('bad',!ok);if(ok){c++;paint(it,i);}});setScore(id,c,data.length);},
+    reveal(){items().forEach((it,i)=>{it.querySelectorAll('.word').forEach(w=>w.setAttribute('aria-pressed',data[i][1].includes(+w.dataset.k)));paint(it,i);it.classList.remove('bad');});},
+    reset(){items().forEach(it=>{it.classList.remove('ok','bad');it.querySelectorAll('.word').forEach(w=>{w.setAttribute('aria-pressed','false');w.classList.remove('red');});});}});
+})();
+
+/* ---------- Task 7: match halves ---------- */
+(function(){
+  const id='t7',T=document.getElementById(id),B=T.querySelector('.body');
+  const data=[
+    ["I first saw “The Starry Night”","when I was in New York in 2018."],
+    ["I have seen “The Starry Night”","three times, and it still amazes me."],
+    ["I have been looking at this abstract painting","for ten minutes, and I still don't understand it."],
+    ["The artist has just","uploaded her new animation to Instagram."],
+    ["Have you ever","bought an artwork from a living artist?"],
+    ["Who painted","the ceiling of the Sistine Chapel?"]];
+  const ends=shuffle(data.map(d=>d[1]),11);
+  B.innerHTML='<div class="match">'+data.map((d,i)=>`<div>${i+1}. ${d[0]} …</div><select data-i="${i}" aria-label="Ending for sentence ${i+1}"><option value="">choose an ending</option>${ends.map(e=>`<option>${esc(e)}</option>`).join('')}</select>`).join('')+'</div>';
+  const sels=()=>B.querySelectorAll('select');
+  actions(T,{check(){let c=0;sels().forEach(s=>{const ok=s.value===data[+s.dataset.i][1];s.classList.toggle('ok',ok);s.classList.toggle('bad',!ok);if(ok)c++;});setScore(id,c,data.length);},
+    reveal(){sels().forEach(s=>{s.value=data[+s.dataset.i][1];s.classList.remove('bad');s.classList.add('shown');});},
+    reset(){sels().forEach(s=>{s.value='';s.classList.remove('ok','bad','shown');});}});
+  B.addEventListener('change',e=>e.target.classList.remove('ok','bad','shown'));
+})();
+
+/* ---------- Task 8: dialogue ---------- */
+(function(){
+  const id='t8',T=document.getElementById(id),B=T.querySelector('.body');
+  const G=[
+    [["did you work","have you been working","are you working"],1],
+    [["have started","started","have been starting"],1],
+    [["bought","have bought","have been buying"],0],
+    [["Have you ever painted","Were you ever painting","Have you ever been painting"],0],
+    [["have studied","studied","have been studying"],1],
+    [["didn't touch","haven't been touching","haven't touched"],2],
+    [["have been creating","created","am creating"],0],
+    [["finished","have finished","have been finishing"],1],
+    [["said","have said","have been saying"],0],
+    [["happened","has happened","has been happening"],1]];
+  const lines=[
+    ["Interviewer","Lina, how long {0} as a digital artist?"],
+    ["Lina","For about six years. I {1} in 2020, when I {2} my first tablet."],
+    ["Interviewer","{3} on a real canvas?"],
+    ["Lina","Of course! I {4} classical painting at art school, but I {5} oils since I graduated."],
+    ["Interviewer","And what are you working on now?"],
+    ["Lina","I {6} a series of portraits of my city for three months. So far I {7} twelve of them."],
+    ["Interviewer","Some critics say digital art isn't real art. What do you think?"],
+    ["Lina","People {8} exactly the same about photography in the 19th century, and look what {9} since then!"]];
+  B.innerHTML=lines.map(l=>`<div class="line"><span class="who">${l[0]}</span><span>${esc(l[1]).replace(/\{(\d)\}/g,(m,k)=>`<select data-k="${k}" aria-label="Gap ${+k+1}"><option value="">…</option>${G[k][0].map((o,j)=>`<option value="${j}">${esc(o)}</option>`).join('')}</select>`)}</span></div>`).join('');
+  const sels=()=>B.querySelectorAll('select');
+  actions(T,{check(){let c=0;sels().forEach(s=>{const ok=s.value!==''&&+s.value===G[+s.dataset.k][1];s.classList.toggle('ok',ok);s.classList.toggle('bad',!ok);if(ok)c++;});setScore(id,c,G.length);},
+    reveal(){sels().forEach(s=>{s.value=G[+s.dataset.k][1];s.classList.remove('bad');s.classList.add('shown');});},
+    reset(){sels().forEach(s=>{s.value='';s.classList.remove('ok','bad','shown');});}});
+  B.addEventListener('change',e=>e.target.classList.remove('ok','bad','shown'));
+})();
+
+/* ---------- Task 9: build the sentence ---------- */
+(function(){
+  const id='t9',T=document.getElementById(id),B=T.querySelector('.body');
+  const data=[
+    {t:["She has been sculpting since early morning"],end:"."},
+    {t:["Have you ever visited an art museum abroad"],end:"?"},
+    {t:["Digital artists sold millions of NFTs in 2021","In 2021 digital artists sold millions of NFTs"],end:"."},
+    {t:["I have never bought an original painting"],end:"."}];
+  const st=data.map(()=>[]);
+  const words=data.map((d,i)=>{let w=d.t[0].split(' ');let s=shuffle(w,3+i*5);if(s.join(' ')===w.join(' '))s=s.reverse();return s;});
+  function draw(){B.innerHTML=data.map((d,i)=>{const used=st[i];const bank=words[i].map((w,k)=>used.includes(k)?'':`<button class="tile" data-i="${i}" data-k="${k}" data-from="bank">${esc(w)}</button>`).join('');const ans=used.map(k=>`<button class="tile" data-i="${i}" data-k="${k}" data-from="ans">${esc(words[i][k])}</button>`).join('');return `<div class="item" data-i="${i}"><div class="answer" aria-label="Your sentence ${i+1}">${ans}${used.length===words[i].length?`<span style="align-self:center">${d.end}</span>`:''}</div><div class="bank">${bank}</div></div>`;}).join('');}
+  draw();
+  B.addEventListener('click',e=>{const b=e.target.closest('.tile');if(!b)return;const i=+b.dataset.i,k=+b.dataset.k;if(b.dataset.from==='bank')st[i].push(k);else st[i]=st[i].filter(x=>x!==k);draw();});
+  const items=()=>B.querySelectorAll('.item');
+  function mark(){let c=0;items().forEach((it,i)=>{const s=st[i].map(k=>words[i][k]).join(' ');const ok=data[i].t.some(t=>t.toLowerCase()===s.toLowerCase());it.classList.toggle('ok',ok);it.classList.toggle('bad',!ok);it.querySelector('.answer').classList.toggle('ok',ok);if(ok)c++;});return c;}
+  actions(T,{check(){setScore(id,mark(),data.length);},
+    reveal(){data.forEach((d,i)=>{const pool=words[i].map((w,k)=>k);st[i]=d.t[0].split(' ').map(w=>{const k=pool.find(k=>words[i][k]===w);pool.splice(pool.indexOf(k),1);return k;});});draw();items().forEach(it=>it.querySelector('.answer').classList.add('ok'));},
+    reset(){st.forEach((_,i)=>st[i]=[]);draw();}});
+})();
+
+/* ---------- Task 10: free writing ---------- */
+(function(){
+  const id='t10',T=document.getElementById(id),B=T.querySelector('.body');
+  const data=[
+    ["Have you ever tried to make digital art? What did you make?",
+     "Yes, I <b class='p'>have tried</b> it a few times. Last year I <b class='p'>drew</b> a portrait of my cat in Procreate, and my friends <b class='p'>loved</b> it."],
+    ["What is the most impressive artwork you have ever seen in real life? When and where did you see it?",
+     "The most impressive paintings I <b class='p'>have</b> ever <b class='p'>seen</b> are by Ivan Marchuk. I <b class='p'>saw</b> them at an exhibition in Kyiv two years ago, and I <b class='p'>stood</b> in front of one painting for twenty minutes."],
+    ["What have you been doing lately to develop your creativity? For how long?",
+     "Lately I <b class='p'>have been learning</b> to take better photos on my phone. I <b class='p'>have been practising</b> for about a month, and I <b class='p'>have</b> already <b class='p'>posted</b> twenty photos online."],
+    ["Is digital art “real” art? Give your opinion and one example.",
+     "I think it <b class='p'>is</b>. Artists <b class='p'>have</b> always <b class='p'>used</b> new tools. When photography <b class='p'>appeared</b>, many people <b class='p'>didn't accept</b> it, but today it <b class='p'>hangs</b> in every big museum."]];
+  B.innerHTML=data.map((d,i)=>`<div class="item"><p class="q">${i+1}. ${d[0]}</p><textarea data-i="${i}" aria-label="Your answer to question ${i+1}"></textarea><div class="spot"><span class="ps">Past Simple</span><span class="pp">Present Perfect</span><span class="ppc">Present Perfect Continuous</span></div><div class="model"><b>Model answer:</b> ${d[1]}</div></div>`).join('');
+  const irr="was|were|did|went|saw|made|drew|bought|took|got|began|came|felt|found|gave|knew|left|met|paid|put|said|sent|sold|spent|taught|thought|told|wrote|stood|ran|ate|won|lost|became|chose|heard|read";
+  function spot(txt){
+    const t=' '+txt.toLowerCase().replace(/[’‘]/g,"'")+' ';
+    const ppcRe=/\b(have|has|'ve|'s)(\s+(i|you|we|they|he|she|it))?\s+been\s+\w+ing\b/g;
+    const ppRe=/\b(have|has|'ve|haven't|hasn't)(\s+(i|you|we|they|he|she|it))?(\s+(never|ever|already|just|not|recently|always|still))?\s+(?!been\s+\w+ing)\w+(ed|en|wn|ght|ne|un|ung|ade|ard|eft|ost|ept|ot|ad|een|ood|ew)\b/g;
+    const ppc=ppcRe.test(t); const pp=ppRe.test(t.replace(ppcRe,' '));
+    const rest=t.replace(ppcRe,' ').replace(ppRe,' ');
+    const ps=new RegExp("\\b(\\w{2,}ed|"+irr+")\\b").test(rest.replace(/\b(was|were) \w+ing\b/g,' was '));
+    return {ps,pp,ppc};
+  }
+  T.querySelectorAll('textarea').forEach(ta=>ta.addEventListener('input',()=>{const r=spot(ta.value);const sp=ta.nextElementSibling;['ps','pp','ppc'].forEach(k=>sp.querySelector('.'+k).classList.toggle('on',r[k]));}));
+  const d=document.createElement('div');d.className='actions';
+  d.innerHTML='<button class="btn" data-a="m">Show model answers</button><button class="btn ghost" data-a="h">Hide model answers</button>';
+  d.addEventListener('click',e=>{const a=e.target.dataset.a;if(!a)return;T.querySelectorAll('.model').forEach(m=>m.classList.toggle('open',a==='m'));});
+  T.appendChild(d);
+  const n=document.createElement('p');n.className='hint';n.style.marginTop='10px';n.textContent='The tense chips light up automatically as you type. The checker is simple and can miss things, so read your answers with your teacher.';T.appendChild(n);
+})();
+
+/* ---------- nav + total ---------- */
+(function(){
+  const ids=['t1','t2','t3','t4','t5','t6','t7','t8','t9','t10'];
+  document.getElementById('nav').innerHTML=ids.map((t,i)=>`<a href="#${t}">${i+1}</a>`).join('');
+  const tot={t1:15,t2:7,t3:9,t4:6,t5:7,t6:5,t7:6,t8:10,t9:4};
+  document.getElementById('tot').textContent=Object.values(tot).reduce((a,b)=>a+b,0);
+  document.querySelector('#nav a[href="#t10"]').addEventListener('click',e=>e.currentTarget.classList.add('done'));
+})();
+</script>
+</body>
+</html>
