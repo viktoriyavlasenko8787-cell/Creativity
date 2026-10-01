@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bloom: The Article Issue</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,800;0,9..144,900;1,9..144,500;1,9..144,700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#f6edf4; --paper:#fffbfd; --ink:#3e2b3f; --muted:#8c7689; --line:#eedde8;
+  --pink:#fad0dc; --rose:#e3849f; --rose-ink:#b04d6c;
+  --lav:#e0d5f6; --lav-d:#9a85d8; --lav-ink:#6a52b8;
+  --peach:#fcdcc8; --mint:#cfeee2; --mint-d:#4fae8f; --mint-ink:#2c8667;
+  --butter:#fdf1c2; --sun:#ffd47e; --bear:#ecbf9c;
+  --good:#3b9c7b; --bad:#d4607c; --shadow:rgba(140,80,115,.16); --polaroid:#ffffff; --on-accent:#ffffff;
+  --serif:'Fraunces',Georgia,'Times New Roman',serif;
+  --sans:'Nunito',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --hand:'Caveat','Segoe Print','Comic Sans MS',cursive;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#1d1620; --paper:#281f2d; --ink:#f4e7ef; --muted:#b8a2b4; --line:#3e3144;
+    --pink:#5e3647; --rose:#ee95ae; --rose-ink:#f7b2c6;
+    --lav:#3e3360; --lav-d:#b7a5f0; --lav-ink:#cdbff9;
+    --peach:#5c3f33; --mint:#28493f; --mint-d:#77d0b0; --mint-ink:#93e3c6;
+    --butter:#4d4428; --sun:#d9ad55; --bear:#b98c6b;
+    --good:#6fd1a8; --bad:#f08aa3; --shadow:rgba(0,0,0,.45); --polaroid:#352a3b; --on-accent:#241a28;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1d1620; --paper:#281f2d; --ink:#f4e7ef; --muted:#b8a2b4; --line:#3e3144;
+  --pink:#5e3647; --rose:#ee95ae; --rose-ink:#f7b2c6;
+  --lav:#3e3360; --lav-d:#b7a5f0; --lav-ink:#cdbff9;
+  --peach:#5c3f33; --mint:#28493f; --mint-d:#77d0b0; --mint-ink:#93e3c6;
+  --butter:#4d4428; --sun:#d9ad55; --bear:#b98c6b;
+  --good:#6fd1a8; --bad:#f08aa3; --shadow:rgba(0,0,0,.45); --polaroid:#352a3b; --on-accent:#241a28;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.6;overflow-x:hidden}
+img,svg{max-width:100%}
+button{font:inherit}
+:focus-visible{outline:2.5px solid var(--rose);outline-offset:2px}
+
+/* group colours */
+.t-a{--tint:var(--pink);--accent:var(--rose);--accent-ink:var(--rose-ink)}
+.t-the{--tint:var(--lav);--accent:var(--lav-d);--accent-ink:var(--lav-ink)}
+.t-zero{--tint:var(--mint);--accent:var(--mint-d);--accent-ink:var(--mint-ink)}
+.t-mix{--tint:var(--peach);--accent:var(--rose);--accent-ink:var(--rose-ink)}
+
+/* animated background */
+.bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.blob{position:absolute;border-radius:50%;filter:blur(70px);opacity:.6;animation:drift 26s ease-in-out infinite alternate}
+.b1{width:46vmax;height:46vmax;background:var(--pink);top:-12vmax;left:-10vmax}
+.b2{width:38vmax;height:38vmax;background:var(--lav);top:18vh;right:-12vmax;animation-duration:32s;animation-delay:-8s}
+.b3{width:34vmax;height:34vmax;background:var(--peach);bottom:-14vmax;left:20vw;animation-duration:29s;animation-delay:-14s}
+.b4{width:26vmax;height:26vmax;background:var(--mint);top:48vh;left:-8vmax;animation-duration:35s;animation-delay:-4s;opacity:.45}
+@keyframes drift{0%{transform:translate(0,0) scale(1)}50%{transform:translate(6vw,4vh) scale(1.12)}100%{transform:translate(-4vw,8vh) scale(.94)}}
+.fl{position:absolute;bottom:-60px;animation:rise linear infinite;opacity:.55}
+@keyframes rise{0%{transform:translate(0,0) rotate(0)}50%{transform:translate(var(--dx),-62vh) rotate(180deg)}100%{transform:translate(0,-125vh) rotate(360deg)}}
+
+/* top bar */
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;align-items:center;gap:.7rem;padding:.55rem clamp(.75rem,3vw,1.5rem);background:rgba(255,251,253,.75);background:color-mix(in srgb,var(--paper) 74%,transparent);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.brand{font-family:var(--serif);font-weight:900;font-style:italic;font-size:1.5rem;color:var(--rose-ink);white-space:nowrap;line-height:1}
+.brand small{font-family:var(--hand);font-style:normal;font-weight:700;font-size:1.1rem;color:var(--muted);margin-left:.45rem}
+.topbar .sp{flex:1}
+.jump{font:inherit;font-size:.85rem;font-weight:700;color:var(--ink);background:var(--paper);border:1.5px solid var(--line);border-radius:999px;padding:.35rem .8rem;max-width:44vw;cursor:pointer}
+.chip{font-weight:800;font-size:.85rem;background:var(--butter);color:var(--ink);border-radius:999px;padding:.35rem .75rem;white-space:nowrap}
+@media(max-width:560px){.brand small{display:none}}
+
+/* pages */
+main{position:relative;z-index:1;max-width:1000px;margin:1.25rem auto 7rem;padding:0 clamp(.6rem,3vw,1.25rem)}
+.page{display:none;position:relative;background:var(--paper);border-radius:8px 24px 24px 8px;padding:clamp(1.1rem,4.5vw,3rem);box-shadow:0 2px 0 var(--line),0 26px 60px -12px var(--shadow),inset 16px 0 22px -18px var(--shadow)}
+.page::after{content:"";position:absolute;left:14px;right:10px;bottom:-9px;height:18px;background:var(--paper);border-radius:0 0 20px 8px;z-index:-1;box-shadow:0 10px 24px -8px var(--shadow);opacity:.85}
+.page.active{display:block}
+.page.in-next{animation:inNext .65s cubic-bezier(.2,.75,.25,1) both;transform-origin:left center}
+.page.in-prev{animation:inPrev .65s cubic-bezier(.2,.75,.25,1) both;transform-origin:right center}
+@keyframes inNext{from{opacity:0;transform:perspective(1800px) rotateY(-24deg) translateX(40px)}to{opacity:1;transform:none}}
+@keyframes inPrev{from{opacity:0;transform:perspective(1800px) rotateY(24deg) translateX(-40px)}to{opacity:1;transform:none}}
+
+.run{display:flex;justify-content:space-between;gap:1rem;font-family:var(--serif);font-style:italic;font-size:.9rem;color:var(--muted);border-bottom:1.5px solid var(--line);padding-bottom:.5rem;margin-bottom:1.6rem}
+.folio{margin-top:2.4rem;text-align:center;font-family:var(--serif);font-style:italic;color:var(--muted)}
+.kicker{display:inline-block;font-family:var(--hand);font-weight:700;font-size:1.35rem;line-height:1.1;background:var(--tint,var(--pink));color:var(--accent-ink,var(--rose-ink));padding:.1rem .75rem .15rem;border-radius:4px 14px 4px 14px;transform:rotate(-1.5deg)}
+.headline{font-family:var(--serif);font-weight:900;font-size:clamp(1.9rem,5vw,3rem);line-height:1.06;margin:.7rem 0 1rem;letter-spacing:-.01em}
+.dropcap::first-letter{float:left;font-family:var(--serif);font-weight:900;font-size:3.7em;line-height:.8;padding:.06em .12em 0 0;color:var(--accent,var(--rose))}
+.lead{max-width:62ch}
+h3.sec{font-family:var(--serif);font-weight:800;font-size:1.5rem;margin:2.3rem 0 .2rem;display:flex;align-items:center;gap:.75rem}
+h3.sec::after{content:"";flex:1;height:1.5px;background:var(--line)}
+.feature{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:clamp(1.2rem,4vw,2.6rem);align-items:start}
+@media(max-width:760px){.feature{grid-template-columns:1fr}.feature .polaroid{max-width:290px;justify-self:center;width:100%}}
+
+/* polaroid pictures */
+.polaroid{margin:0;background:var(--polaroid);padding:.75rem .75rem 0;border-radius:4px;box-shadow:0 14px 30px -8px var(--shadow);position:relative;transform:rotate(2.5deg)}
+.polaroid.tilt-l{transform:rotate(-2.5deg)}
+.polaroid::before{content:"";position:absolute;top:-12px;left:50%;width:92px;height:24px;transform:translateX(-50%) rotate(-3deg);background:var(--tint,var(--pink));opacity:.9;border-radius:2px;background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.35) 0 6px,transparent 6px 12px)}
+.polaroid .art{background:var(--tint,var(--pink));border-radius:2px;aspect-ratio:200/170}
+.art svg{width:100%;height:100%;display:block}
+.polaroid figcaption{font-family:var(--hand);font-size:1.45rem;text-align:center;padding:.35rem .2rem .55rem;color:var(--ink);line-height:1.2}
+
+/* study cards */
+.sound{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin:1.2rem 0}
+@media(max-width:520px){.sound{grid-template-columns:1fr}}
+.sbox{background:var(--tint);border-radius:18px;padding:1rem 1.1rem;border:1.5px dashed var(--accent)}
+.sbox .big{font-family:var(--serif);font-weight:900;font-style:italic;font-size:2.6rem;line-height:1;color:var(--accent-ink)}
+.sbox p{margin:.3rem 0}
+.tip{font-family:var(--hand);font-size:1.5rem;color:var(--accent-ink,var(--rose-ink));margin:.6rem 0 0;line-height:1.25}
+.story{background:var(--butter);border-radius:4px 18px 18px 18px;padding:.9rem 1.2rem;margin:1.1rem 0 0;box-shadow:0 8px 18px -12px var(--shadow)}
+.story .lbl{font-family:var(--hand);font-size:1.35rem;font-weight:700;display:block;line-height:1.2}
+.rules{display:grid;grid-template-columns:repeat(auto-fill,minmax(225px,1fr));gap:1.3rem 1.1rem;margin-top:1.5rem}
+.rule{position:relative;background:var(--paper);border:1.5px solid var(--line);border-top:5px solid var(--accent);border-radius:14px;padding:1rem 1.05rem .95rem;box-shadow:0 8px 18px -12px var(--shadow)}
+.rule .no{position:absolute;top:-14px;right:12px;width:28px;height:28px;border-radius:50%;background:var(--accent);color:var(--on-accent);display:grid;place-items:center;font-weight:900;font-size:.8rem}
+.rule h4{font-family:var(--serif);font-weight:800;font-size:1.12rem;margin:0 0 .2rem;line-height:1.25}
+.rule p{margin:0;font-size:.93rem;color:var(--muted)}
+.rule .ex{margin-top:.55rem;color:var(--ink);font-size:.98rem;background:var(--tint);border-radius:10px;padding:.45rem .6rem;line-height:1.6}
+b.ar{font-weight:900;color:var(--accent-ink,var(--rose-ink));background:linear-gradient(transparent 58%,rgba(227,132,159,.3) 58%);background:linear-gradient(transparent 58%,color-mix(in srgb,var(--accent,var(--rose)) 32%,transparent) 58%);padding:0 .12em;border-radius:2px}
+i.z{font-style:normal;display:inline-grid;place-items:center;min-width:1.4em;height:1.4em;border-radius:50%;border:1.5px dashed var(--mint-d);color:var(--mint-ink);font-weight:900;font-size:.8em;line-height:1;vertical-align:.06em;margin:0 .08em}
+
+/* tricky pairs */
+.pairs{display:grid;gap:.7rem;margin-top:1.1rem}
+.pair{display:grid;grid-template-columns:1fr auto 1fr;gap:.6rem;align-items:stretch}
+.pair>div{border-radius:14px;padding:.6rem .9rem}
+.pair>div:first-child{background:var(--mint)}
+.pair>div:last-child{background:var(--lav)}
+.pair .vs{align-self:center;font-family:var(--serif);font-style:italic;color:var(--muted);padding:0}
+.pair small{display:block;color:var(--muted);font-size:.82rem}
+@media(max-width:600px){.pair{grid-template-columns:1fr}.pair .vs{text-align:center}}
+.steps{counter-reset:s;display:grid;gap:.6rem;margin-top:1.1rem}
+.step{display:flex;gap:.8rem;align-items:center;background:var(--paper);border:1.5px solid var(--line);border-radius:14px;padding:.7rem .9rem}
+.step::before{counter-increment:s;content:counter(s);flex:none;width:30px;height:30px;border-radius:50%;background:var(--rose);color:var(--on-accent);display:grid;place-items:center;font-weight:900}
+.step .go{margin-left:auto;font-weight:900;white-space:nowrap;font-size:1.05rem}
+@media(max-width:520px){.step{flex-wrap:wrap}.step .go{margin-left:42px}}
+.flips{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem}
+.flip{font-weight:700;border:1.5px dashed var(--rose);background:var(--paper);color:var(--ink);border-radius:999px;padding:.45rem 1rem;cursor:pointer;transition:background .25s,transform .25s}
+.flip:hover{transform:rotate(-2deg)}
+.flip.on{background:var(--pink);border-style:solid}
+.flip .a{display:none;color:var(--rose-ink);font-weight:900}
+.flip.on .a{display:inline}.flip.on .q{display:none}
+
+/* cover */
+.mast{font-family:var(--serif);font-weight:900;font-style:italic;font-size:clamp(4.2rem,17vw,9.5rem);line-height:.82;letter-spacing:-.03em;color:var(--rose-ink);margin:0}
+.mast-sub{display:flex;justify-content:space-between;flex-wrap:wrap;gap:.3rem 1rem;font-family:var(--serif);font-style:italic;font-size:.95rem;color:var(--muted);border-top:2.5px solid var(--ink);border-bottom:1px solid var(--line);padding:.45rem 0;margin:.7rem 0 1.5rem}
+.cover-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:1.5rem;align-items:center}
+@media(max-width:720px){.cover-grid{grid-template-columns:1fr}}
+.cline{margin:0 0 1.1rem}
+.cline .big{font-family:var(--serif);font-weight:900;font-size:clamp(1.7rem,4.2vw,2.5rem);line-height:1.05}
+.cline p{margin:.35rem 0 0;color:var(--muted)}
+.cline.small{display:flex;gap:.6rem;align-items:baseline;margin-bottom:.55rem}
+.cline.small .ic{color:var(--rose)}
+.cline.small span{font-weight:800;font-size:1.05rem}
+.cover-art{position:relative}
+.cover-art .art{aspect-ratio:300/260}
+.sticker{position:absolute;top:-4px;right:4%;width:110px;height:110px;border-radius:50%;background:var(--sun);color:#3e2b3f;display:grid;place-items:center;text-align:center;font-weight:900;font-size:.85rem;line-height:1.15;transform:rotate(12deg);box-shadow:0 8px 18px -6px var(--shadow);animation:wob 4.5s ease-in-out infinite}
+.sticker b{font-family:var(--serif);font-size:1.9rem;display:block;line-height:1}
+@keyframes wob{50%{transform:rotate(4deg) scale(1.05)}}
+
+/* contents */
+.letter{font-family:var(--hand);font-size:1.5rem;line-height:1.3;background:var(--butter);border-radius:4px 18px 18px 18px;padding:1rem 1.3rem;transform:rotate(-.8deg);box-shadow:0 10px 22px -14px var(--shadow)}
+.letter p{margin:0 0 .5rem}
+.howto{display:grid;gap:.55rem;margin-top:1.1rem}
+.howto div{display:flex;gap:.75rem;align-items:center;background:var(--tint);border-radius:14px;padding:.55rem .85rem;font-weight:700}
+.howto .ic{font-size:1.35rem}
+.toc{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.55rem;margin-top:1rem}
+.toc-item{color:var(--ink);text-align:left;display:flex;align-items:center;gap:.75rem;background:var(--paper);border:1.5px solid var(--line);border-radius:14px;padding:.6rem .8rem;cursor:pointer;transition:transform .15s,border-color .15s}
+.toc-item:hover{transform:translateX(4px);border-color:var(--rose)}
+.toc-item .pg{font-family:var(--serif);font-weight:900;font-size:1.35rem;color:var(--rose);min-width:2.1rem}
+.toc-item .tt{font-weight:800;line-height:1.25;flex:1}
+.toc-item .tg{font-size:.75rem;font-weight:800;padding:.15rem .55rem;border-radius:999px;background:var(--mint);color:var(--mint-ink);white-space:nowrap}
+.toc-item .tg.ch{background:var(--pink);color:var(--rose-ink)}
+.toc-item .tg.ft{background:var(--lav);color:var(--lav-ink)}
+
+/* buttons */
+.btn{font-weight:800;font-size:.95rem;border:none;border-radius:999px;padding:.62rem 1.25rem;cursor:pointer;background:var(--rose);color:var(--on-accent);box-shadow:0 6px 14px -6px var(--rose);transition:transform .15s}
+.btn:hover{transform:translateY(-2px)}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line);box-shadow:none}
+.btn.soft{background:var(--lav);color:var(--ink);box-shadow:none}
+
+/* exercises */
+.exgrid{display:grid;grid-template-columns:minmax(0,.62fr) minmax(0,1.6fr);gap:clamp(1.2rem,4vw,2.4rem);align-items:start}
+@media(max-width:760px){.exgrid{grid-template-columns:1fr}.exside{display:grid;grid-template-columns:auto 1fr;gap:.4rem 1rem;align-items:center}.exside .polaroid{grid-column:1/-1;max-width:230px;width:100%;margin:1rem auto 0!important}.exside .focus{grid-column:1/-1}}
+.exno{font-family:var(--serif);font-weight:900;font-style:italic;font-size:4.6rem;line-height:.9;color:var(--accent)}
+.mode{display:inline-block;font-weight:800;font-size:.8rem;padding:.2rem .65rem;border-radius:999px;background:var(--mint);color:var(--mint-ink);margin-top:.3rem}
+.mode.ch{background:var(--pink);color:var(--rose-ink)}
+.focus{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:1.2rem}
+.focus span{font-size:.8rem;font-weight:700;background:var(--tint);border-radius:999px;padding:.2rem .6rem}
+.extitle{font-family:var(--serif);font-weight:900;font-size:clamp(1.65rem,4vw,2.3rem);line-height:1.08;margin:.6rem 0 .45rem}
+.task{color:var(--muted);margin:0 0 1rem}
+.optchip{display:inline-block;font-weight:900;background:var(--tint);border-radius:8px;padding:0 .45rem;margin:.1rem .1rem;font-size:.9rem;color:var(--accent-ink)}
+.textbox{font-size:1.07rem;line-height:2.35;background:var(--paper);border:1.5px solid var(--line);border-radius:18px;padding:1rem 1.2rem;box-shadow:0 10px 24px -18px var(--shadow)}
+.textbox p{margin:0 0 .5rem}
+.textbox p:last-child{margin-bottom:0}
+.textbox .ttl{font-family:var(--hand);font-weight:700;font-size:1.7rem;line-height:1.2;margin-bottom:.3rem;color:var(--accent-ink)}
+.gapw{white-space:nowrap}
+select.gap{appearance:none;-webkit-appearance:none;font:inherit;font-weight:800;font-size:.98rem;color:var(--ink);background-color:var(--tint);border:none;border-bottom:2.5px solid var(--accent);border-radius:9px 9px 3px 3px;padding:.05rem 1.45rem .05rem .55rem;min-width:3.6rem;cursor:pointer;line-height:1.6;background-image:linear-gradient(45deg,transparent 50%,var(--accent) 50%),linear-gradient(135deg,var(--accent) 50%,transparent 50%);background-position:calc(100% - 11px) 58%,calc(100% - 6px) 58%;background-size:5px 5px;background-repeat:no-repeat;transition:background-color .2s}
+select.gap option{color:#3e2b3f;background:#fff}
+select.gap.ok{background-color:var(--mint);border-bottom-color:var(--good)}
+select.gap.no{background-color:var(--pink);border-bottom-color:var(--bad);animation:shake .4s}
+select.gap.shown{background-color:var(--butter);border-bottom-color:var(--sun)}
+select.gap.pulse{animation:pulse 1s}
+@keyframes shake{25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+@keyframes pulse{50%{box-shadow:0 0 0 7px rgba(255,212,126,.6)}}
+.hbtn{font-size:.62rem;font-weight:900;width:1.3rem;height:1.3rem;border-radius:50%;border:none;background:transparent;color:var(--muted);display:inline-grid;place-items:center;vertical-align:super;padding:0;margin-left:1px;cursor:default}
+.hints-on .hbtn{background:var(--sun);color:#3e2b3f;cursor:pointer;transition:transform .15s}
+.hints-on .hbtn:hover{transform:scale(1.2)}
+.chat{display:flex;flex-direction:column;gap:.7rem}
+.bub{max-width:90%;background:var(--lav);padding:.5rem .9rem .6rem;border-radius:18px 18px 18px 4px;line-height:2.15}
+.bub.me{align-self:flex-end;background:var(--pink);border-radius:18px 18px 4px 18px}
+.bub .who{display:block;font-family:var(--hand);font-size:1.15rem;font-weight:700;color:var(--muted);line-height:1.3}
+.bub select.gap{background-color:var(--paper)}
+.bub select.gap.ok{background-color:var(--mint)}
+.bub select.gap.no{background-color:var(--paper)}
+.bub select.gap.shown{background-color:var(--butter)}
+.controls{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin-top:1.1rem}
+.switch{display:inline-flex;align-items:center;gap:.5rem;font-weight:800;cursor:pointer;user-select:none;margin-left:auto;position:relative}
+.switch input{position:absolute;opacity:0;width:1px;height:1px}
+.switch .tr{width:44px;height:24px;border-radius:999px;background:var(--line);position:relative;transition:background .2s}
+.switch .tr::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:var(--paper);box-shadow:0 1px 3px var(--shadow);transition:left .2s}
+.switch input:checked + .tr{background:var(--sun)}
+.switch input:checked + .tr::after{left:23px}
+.switch input:focus-visible + .tr{outline:2.5px solid var(--rose);outline-offset:2px}
+.hint-help{font-family:var(--hand);font-size:1.3rem;color:var(--muted);margin:.6rem 0 0;line-height:1.2}
+.note{margin-top:.9rem;background:var(--butter);border-radius:4px 16px 16px 16px;padding:.65rem 1rem;font-family:var(--hand);font-size:1.45rem;line-height:1.25;box-shadow:0 8px 16px -10px var(--shadow);transform:rotate(-.6deg)}
+.fb{margin-top:1rem;border-radius:16px;padding:.9rem 1.1rem;background:var(--tint)}
+.fb .res{font-family:var(--serif);font-weight:800;font-size:1.35rem}
+.fb .stars{color:#e9a91f;letter-spacing:.08em;margin-left:.3rem}
+.fb ul{margin:.6rem 0 0;padding-left:1.1rem}
+.fb li{margin:.3rem 0}
+.fb s{color:var(--bad)}
+
+/* results */
+.rosette{--p:0;width:min(240px,70vw);aspect-ratio:1;border-radius:50%;justify-self:center;background:conic-gradient(var(--rose) calc(var(--p) * 1%),var(--line) 0);display:grid;place-items:center;box-shadow:0 18px 40px -14px var(--shadow)}
+.rosette>div{width:78%;aspect-ratio:1;border-radius:50%;background:var(--paper);display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:1rem}
+.rosette b{font-family:var(--serif);font-weight:900;font-size:3rem;color:var(--rose-ink);line-height:1}
+.rosette span{font-size:.82rem;color:var(--muted);font-weight:700;margin-top:.35rem;line-height:1.3}
+.resgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.8rem;margin-top:1.1rem}
+.rcard{border-radius:16px;padding:.75rem .9rem;background:var(--tint);border:1.5px solid transparent;cursor:pointer;text-align:left;color:var(--ink);display:flex;flex-direction:column;gap:.15rem;transition:border-color .15s}
+.rcard:hover{border-color:var(--accent)}
+.rcard .n{font-family:var(--serif);font-weight:900;font-style:italic;font-size:1.6rem;color:var(--accent-ink);line-height:1}
+.rcard .tt{font-weight:800;line-height:1.25}
+.rcard .s{font-size:.85rem;color:var(--muted);font-weight:700}
+
+/* pager */
+.pager{position:fixed;left:0;right:0;bottom:0;z-index:6;display:flex;justify-content:center;padding:.6rem .75rem calc(.6rem + env(safe-area-inset-bottom,0px));pointer-events:none}
+.pager .inner{pointer-events:auto;display:flex;align-items:center;gap:.6rem;background:rgba(255,251,253,.85);background:color-mix(in srgb,var(--paper) 86%,transparent);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:999px;padding:.35rem;box-shadow:0 12px 30px -12px var(--shadow)}
+.nbtn{border:none;background:var(--pink);color:var(--ink);font-weight:800;border-radius:999px;padding:.5rem 1rem;cursor:pointer}
+.nbtn:disabled{opacity:.35;cursor:default}
+.pinfo{min-width:96px;text-align:center;font-family:var(--serif);font-style:italic;font-size:.9rem;color:var(--muted)}
+.pbar{height:4px;border-radius:4px;background:var(--line);margin-top:3px;overflow:hidden}
+.pbar i{display:block;height:100%;width:0;background:var(--rose);transition:width .4s}
+
+.conf{position:fixed;z-index:20;pointer-events:none;top:-30px;animation:fall 2.6s cubic-bezier(.3,.6,.4,1) forwards}
+@keyframes fall{to{transform:translate(var(--dx),110vh) rotate(540deg);opacity:.15}}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .fl{display:none}
+}
+</style>
+</head>
+<body>
+<div class="bg" aria-hidden="true"><span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span><span class="blob b4"></span><div id="floaters"></div></div>
+
+<header class="topbar">
+  <span class="brand">Bloom<small>the article issue</small></span>
+  <span class="sp"></span>
+  <select class="jump" id="jump" aria-label="Go to page"></select>
+  <span class="chip" id="chip" title="Your score">⭐ 0</span>
+</header>
+
+<main id="book">
+
+<!-- COVER -->
+<section class="page cover t-a" data-title="Cover">
+  <p class="mast">Bloom</p>
+  <div class="mast-sub"><span>The teen life magazine</span><span>Autumn 2026, special grammar issue</span><span>Level: pre-intermediate</span></div>
+  <div class="cover-grid">
+    <div>
+      <div class="cline"><div class="big">A, an, the… or nothing at all?</div><p>The tiny words that make your English sound natural.</p></div>
+      <div class="cline small"><span class="ic">✿</span><span>Study cards: every rule in one place</span></div>
+      <div class="cline small"><span class="ic">✦</span><span>Diaries, chats and blogs from teen life</span></div>
+      <div class="cline small"><span class="ic">♡</span><span>The 3-second article test</span></div>
+      <div style="margin-top:1.4rem"><button class="btn" data-go="1">Open the magazine</button></div>
+    </div>
+    <div class="cover-art"><div class="art" data-art="desk"></div><div class="sticker"><span><b>10</b>exercises inside!</span></div></div>
+  </div>
+  <div class="folio"></div>
+</section>
+
+<!-- CONTENTS -->
+<section class="page t-a" data-title="Contents" id="contents">
+  <div class="run"><span>Bloom</span><span>In this issue</span></div>
+  <div class="feature">
+    <div>
+      <span class="kicker">In this issue</span>
+      <h2 class="headline">Little words, big difference</h2>
+      <p class="dropcap lead">In English, tiny words like <b>a</b>, <b>an</b> and <b>the</b> appear in almost every sentence. And sometimes there is no article at all. We call that the <b>zero article</b> and write it like this: <i class="z">Ø</i>. This issue is your guide. First read the study cards, then practise with stories, chats and diaries from teen life.</p>
+      <div class="howto">
+        <div><span class="ic">📖</span>Read the study cards on pages 3 to 6.</div>
+        <div><span class="ic">💡</span>Do the guided exercises. Tap the yellow numbers for hints.</div>
+        <div><span class="ic">💪</span>Try the challenge exercises without hints.</div>
+      </div>
+    </div>
+    <div class="letter">
+      <p>Hey you!</p>
+      <p>Don't worry if articles feel strange. Lots of languages, like Ukrainian, don't have them at all! Just look for patterns, and soon you'll hear when something sounds wrong.</p>
+      <p>Love, the Bloom team ♡</p>
+    </div>
+  </div>
+  <h3 class="sec">Study cards</h3>
+  <div class="toc" id="toc-f"></div>
+  <h3 class="sec">Practice</h3>
+  <div class="toc" id="toc-p"></div>
+  <div class="folio"></div>
+</section>
+
+<!-- A / AN -->
+<section class="page t-a" data-title="Study card: A / AN" data-toc="feature">
+  <div class="run"><span>Bloom feature</span><span>Study card 1</span></div>
+  <div class="feature">
+    <div>
+      <span class="kicker">Study card: a / an</span>
+      <h2 class="headline">A and an: the “any one” words</h2>
+      <p class="dropcap lead">A and an mean “one, any one, not a special one”. We use them only with <b>singular countable nouns</b>: a phone, an idea, a friend. Never with plurals (<s>a books</s>) and never with uncountable nouns (<s>a music</s>, <s>a homework</s>).</p>
+      <div class="sound">
+        <div class="sbox"><div class="big">a</div><p><b>+ consonant sound</b></p><p>a book, a hoodie, a selfie, a <u>u</u>niversity /juː/, a <u>Eu</u>ropean /jʊə/, a <u>o</u>ne-day trip /w/</p></div>
+        <div class="sbox"><div class="big">an</div><p><b>+ vowel sound</b></p><p>an apple, an idea, an umbrella, an <u>h</u>our (silent h), an <u>h</u>onest girl, an e-mail</p></div>
+      </div>
+      <p class="tip">Listen, don't look! It's the first sound that matters, not the first letter.</p>
+    </div>
+    <figure class="polaroid"><div class="art" data-art="backpack"></div><figcaption>a backpack and an apple</figcaption></figure>
+  </div>
+  <h3 class="sec">When do we use a / an?</h3>
+  <div class="rules">
+    <div class="rule"><span class="no">1</span><h4>First mention</h4><p>We talk about something for the first time.</p><div class="ex">I saw <b class="ar">a</b> cute dog in the park.</div></div>
+    <div class="rule"><span class="no">2</span><h4>One of many, any one</h4><p>It's not important which one.</p><div class="ex">Can I borrow <b class="ar">a</b> pen? I need <b class="ar">a</b> new phone case.</div></div>
+    <div class="rule"><span class="no">3</span><h4>Jobs</h4><p>We say what someone does.</p><div class="ex">My mum is <b class="ar">a</b> nurse. I want to be <b class="ar">an</b> artist.</div></div>
+    <div class="rule"><span class="no">4</span><h4>Describing</h4><p>We say what someone or something is like.</p><div class="ex">She's <b class="ar">a</b> kind girl. It's <b class="ar">an</b> amazing song!</div></div>
+    <div class="rule"><span class="no">5</span><h4>What a…!</h4><p>Exclamations with a singular noun.</p><div class="ex">What <b class="ar">a</b> beautiful dress! What <b class="ar">an</b> awful day!</div></div>
+    <div class="rule"><span class="no">6</span><h4>How often, how much</h4><p>“Per” in everyday English.</p><div class="ex">twice <b class="ar">a</b> week, three times <b class="ar">a</b> day, €5 <b class="ar">an</b> hour</div></div>
+    <div class="rule"><span class="no">7</span><h4>Set phrases</h4><p>Learn them as one piece.</p><div class="ex">have <b class="ar">a</b> shower, have <b class="ar">a</b> good time, <b class="ar">a</b> lot of, <b class="ar">a</b> few, in <b class="ar">a</b> hurry</div></div>
+  </div>
+  <div class="folio"></div>
+</section>
+
+<!-- THE -->
+<section class="page t-the" data-title="Study card: THE" data-toc="feature">
+  <div class="run"><span>Bloom feature</span><span>Study card 2</span></div>
+  <div class="feature">
+    <div>
+      <span class="kicker">Study card: the</span>
+      <h2 class="headline">The: the one we both know</h2>
+      <p class="dropcap lead">The means “this exact one, you know which!”. It works with all kinds of nouns: singular (the phone), plural (the phones) and uncountable (the music).</p>
+      <div class="story"><span class="lbl">The story trick: a first, then the</span>I've got <b class="ar">a</b> cat and <b class="ar">a</b> hamster. <b class="ar">The</b> cat is lazy, but <b class="ar">the</b> hamster runs all night!</div>
+    </div>
+    <figure class="polaroid tilt-l"><div class="art" data-art="sunmoon"></div><figcaption>the sun and the moon</figcaption></figure>
+  </div>
+  <h3 class="sec">When do we use the?</h3>
+  <div class="rules">
+    <div class="rule"><span class="no">1</span><h4>Second mention</h4><p>We already talked about it.</p><div class="ex">I bought a hoodie. <b class="ar">The</b> hoodie is pink.</div></div>
+    <div class="rule"><span class="no">2</span><h4>Only one in the world</h4><p>There is just one.</p><div class="ex"><b class="ar">the</b> sun, <b class="ar">the</b> moon, <b class="ar">the</b> sky, <b class="ar">the</b> internet, <b class="ar">the</b> world</div></div>
+    <div class="rule"><span class="no">3</span><h4>We both know which</h4><p>It's clear from the situation.</p><div class="ex">Close <b class="ar">the</b> door, please. Where's <b class="ar">the</b> teacher?</div></div>
+    <div class="rule"><span class="no">4</span><h4>A phrase tells us which</h4><p>Words after the noun make it specific.</p><div class="ex"><b class="ar">the</b> girl in blue jeans, <b class="ar">the</b> capital of Spain, <b class="ar">the</b> song you sent me</div></div>
+    <div class="rule"><span class="no">5</span><h4>Superlatives and order</h4><p>Number one, first, last…</p><div class="ex"><b class="ar">the</b> best, <b class="ar">the</b> funniest, <b class="ar">the</b> first, <b class="ar">the</b> last, <b class="ar">the</b> same, <b class="ar">the</b> only</div></div>
+    <div class="rule"><span class="no">6</span><h4>Musical instruments</h4><p>With play.</p><div class="ex">play <b class="ar">the</b> guitar, play <b class="ar">the</b> piano, play <b class="ar">the</b> drums</div></div>
+    <div class="rule"><span class="no">7</span><h4>Geography</h4><p>Rivers, seas, oceans, mountain ranges, and countries with States, Kingdom or a plural name.</p><div class="ex"><b class="ar">the</b> Dnipro, <b class="ar">the</b> Black Sea, <b class="ar">the</b> Atlantic, <b class="ar">the</b> Carpathians, <b class="ar">the</b> USA, <b class="ar">the</b> UK, <b class="ar">the</b> Netherlands</div></div>
+    <div class="rule"><span class="no">8</span><h4>Set phrases</h4><p>Learn them as one piece.</p><div class="ex">in <b class="ar">the</b> morning, go to <b class="ar">the</b> cinema, listen to <b class="ar">the</b> radio, <b class="ar">the</b> Smiths (the Smith family)</div></div>
+  </div>
+  <div class="folio"></div>
+</section>
+
+<!-- ZERO -->
+<section class="page t-zero" data-title="Study card: zero article Ø" data-toc="feature">
+  <div class="run"><span>Bloom feature</span><span>Study card 3</span></div>
+  <div class="feature">
+    <div>
+      <span class="kicker">Study card: zero article</span>
+      <h2 class="headline">Ø: when nothing is perfect</h2>
+      <p class="dropcap lead">Sometimes the best article is no article at all! We call it the zero article <i class="z">Ø</i>. We use it most often when we talk about things <b>in general</b>.</p>
+      <div class="story"><span class="lbl">General or specific?</span><i class="z">Ø</i> Pizza is my favourite food. <small>(all pizza)</small><br><b class="ar">The</b> pizza at Kate's party was cold. <small>(that pizza)</small></div>
+    </div>
+    <figure class="polaroid"><div class="art" data-art="music"></div><figcaption>Ø books, Ø music, Ø fun</figcaption></figure>
+  </div>
+  <h3 class="sec">When do we use no article?</h3>
+  <div class="rules">
+    <div class="rule"><span class="no">1</span><h4>Plurals in general</h4><p>All of them, not specific ones.</p><div class="ex"><i class="z">Ø</i> Cats are clever. I love <i class="z">Ø</i> sneakers.</div></div>
+    <div class="rule"><span class="no">2</span><h4>Uncountables in general</h4><p>Music, homework, water, money…</p><div class="ex"><i class="z">Ø</i> Music helps me relax. <i class="z">Ø</i> Homework is boring!</div></div>
+    <div class="rule"><span class="no">3</span><h4>Names</h4><p>People, cities, most countries, streets, single mountains and lakes.</p><div class="ex"><i class="z">Ø</i> Anna, <i class="z">Ø</i> Lviv, <i class="z">Ø</i> Ukraine, <i class="z">Ø</i> Oxford Street, <i class="z">Ø</i> Mount Everest, <i class="z">Ø</i> Lake Svitiaz</div></div>
+    <div class="rule"><span class="no">4</span><h4>Meals</h4><p>Breakfast, lunch, dinner.</p><div class="ex">have <i class="z">Ø</i> breakfast, after <i class="z">Ø</i> lunch, before <i class="z">Ø</i> dinner</div></div>
+    <div class="rule"><span class="no">5</span><h4>Sports and games</h4><p>With play.</p><div class="ex">play <i class="z">Ø</i> football, play <i class="z">Ø</i> volleyball, play <i class="z">Ø</i> chess</div></div>
+    <div class="rule"><span class="no">6</span><h4>School subjects and languages</h4><p>What you study and speak.</p><div class="ex">I'm good at <i class="z">Ø</i> maths. She speaks <i class="z">Ø</i> English.</div></div>
+    <div class="rule"><span class="no">7</span><h4>Days, months, holidays</h4><p>Time words.</p><div class="ex">on <i class="z">Ø</i> Monday, in <i class="z">Ø</i> July, at <i class="z">Ø</i> Christmas</div></div>
+    <div class="rule"><span class="no">8</span><h4>Places and their main use</h4><p>We go there for its usual purpose.</p><div class="ex">go to <i class="z">Ø</i> school, at <i class="z">Ø</i> home, go to <i class="z">Ø</i> bed, in <i class="z">Ø</i> hospital, at <i class="z">Ø</i> work</div></div>
+    <div class="rule"><span class="no">9</span><h4>By + transport</h4><p>How you travel.</p><div class="ex">by <i class="z">Ø</i> bus, by <i class="z">Ø</i> bike, by <i class="z">Ø</i> train (but: on foot)</div></div>
+    <div class="rule"><span class="no">10</span><h4>Set phrases</h4><p>Learn them as one piece.</p><div class="ex">at <i class="z">Ø</i> night, watch <i class="z">Ø</i> TV, <i class="z">Ø</i> next week, <i class="z">Ø</i> last year</div></div>
+  </div>
+  <div class="folio"></div>
+</section>
+
+<!-- TRICKY -->
+<section class="page t-mix" data-title="Study card: tricky pairs" data-toc="feature">
+  <div class="run"><span>Bloom feature</span><span>Study card 4</span></div>
+  <div class="feature">
+    <div>
+      <span class="kicker">Study card: tricky pairs</span>
+      <h2 class="headline">Same word, different article</h2>
+      <p class="dropcap lead">One small change and the meaning changes too. Compare the green side with the purple side.</p>
+    </div>
+    <figure class="polaroid tilt-l"><div class="art" data-art="school"></div><figcaption>school or the school?</figcaption></figure>
+  </div>
+  <div class="pairs">
+    <div class="pair"><div>I go to <i class="z">Ø</i> school.<small>I'm a student there.</small></div><span class="vs">vs</span><div>Mum went to <b class="ar">the</b> school.<small>She visited the building.</small></div></div>
+    <div class="pair"><div>I play <i class="z">Ø</i> tennis.<small>a sport</small></div><span class="vs">vs</span><div>I play <b class="ar">the</b> violin.<small>an instrument</small></div></div>
+    <div class="pair"><div>I love <i class="z">Ø</i> music.<small>music in general</small></div><span class="vs">vs</span><div><b class="ar">The</b> music at the party was too loud.<small>that music</small></div></div>
+    <div class="pair"><div>We have <i class="z">Ø</i> lunch at one.<small>a meal</small></div><span class="vs">vs</span><div>We had <b class="ar">a</b> lovely lunch.<small>adjective + meal</small></div></div>
+    <div class="pair"><div>I'm in <i class="z">Ø</i> bed.<small>sleeping or resting</small></div><span class="vs">vs</span><div>My cat is on <b class="ar">the</b> bed.<small>the piece of furniture</small></div></div>
+    <div class="pair"><div>I live in <i class="z">Ø</i> Ukraine.<small>most countries</small></div><span class="vs">vs</span><div>She lives in <b class="ar">the</b> UK.<small>Kingdom, States, plural names</small></div></div>
+    <div class="pair"><div>I watch <i class="z">Ø</i> TV.<small>set phrase</small></div><span class="vs">vs</span><div>I listen to <b class="ar">the</b> radio.<small>set phrase</small></div></div>
+  </div>
+
+  <h3 class="sec">The 3-second test</h3>
+  <div class="steps">
+    <div class="step"><span>Is it a name, a meal, a sport, a subject, a language or a day?</span><span class="go">→ <i class="z">Ø</i></span></div>
+    <div class="step"><span>Do we both know which one? Is it the only one, or number one?</span><span class="go">→ the</span></div>
+    <div class="step"><span>Is it one singular thing, any one, or the first time we mention it?</span><span class="go">→ a / an</span></div>
+    <div class="step"><span>Is it plural or uncountable, and we mean it in general?</span><span class="go">→ <i class="z">Ø</i></span></div>
+  </div>
+
+  <h3 class="sec">Quick check</h3>
+  <p class="task">Say your answer, then tap to see if you're right.</p>
+  <div class="flips">
+    <button class="flip"><span class="q">___ moon</span><span class="a">the moon</span></button>
+    <button class="flip"><span class="q">___ hour</span><span class="a">an hour</span></button>
+    <button class="flip"><span class="q">play ___ chess</span><span class="a">play Ø chess</span></button>
+    <button class="flip"><span class="q">play ___ violin</span><span class="a">play the violin</span></button>
+    <button class="flip"><span class="q">___ Ukraine</span><span class="a">Ø Ukraine</span></button>
+    <button class="flip"><span class="q">___ USA</span><span class="a">the USA</span></button>
+    <button class="flip"><span class="q">What ___ day!</span><span class="a">What a day!</span></button>
+    <button class="flip"><span class="q">___ best day ever</span><span class="a">the best day ever</span></button>
+    <button class="flip"><span class="q">___ university</span><span class="a">a university</span></button>
+    <button class="flip"><span class="q">go to ___ bed</span><span class="a">go to Ø bed</span></button>
+  </div>
+  <div class="folio"></div>
+</section>
+
+<!-- exercises are inserted here -->
+
+<!-- RESULTS -->
+<section class="page t-mix" id="final" data-title="Your results">
+  <div class="run"><span>Bloom</span><span>Last page</span></div>
+  <div class="feature">
+    <div>
+      <span class="kicker">Your scorecard</span>
+      <h2 class="headline" id="res-title">Ready, set, go!</h2>
+      <p class="lead" id="res-msg"></p>
+      <div class="controls"><button class="btn" id="again">Practise my mistakes</button><button class="btn ghost" id="restart">Start over</button></div>
+    </div>
+    <div class="rosette" id="rosette"><div><b id="res-num">—</b><span id="res-sub"></span></div></div>
+  </div>
+  <h3 class="sec">All exercises</h3>
+  <div class="resgrid" id="resgrid"></div>
+  <p class="tip" style="text-align:center;margin-top:2rem">See you in the next issue! ♡</p>
+  <div class="folio"></div>
+</section>
+
+</main>
+
+<nav class="pager" aria-label="Pages">
+  <div class="inner">
+    <button class="nbtn" id="prev" aria-label="Previous page">‹ Back</button>
+    <div class="pinfo">page <span id="pnum">1</span> of <span id="ptot"></span><div class="pbar"><i id="pfill"></i></div></div>
+    <button class="nbtn" id="next" aria-label="Next page">Next ›</button>
+  </div>
+</nav>
+
+<script>
+/*DATA*/
+const E = [
+{ title:"What's in my bag?", kicker:"Diary", tint:"a", mode:"guided", options:["a","an"], art:"backpack", cap:"my everyday bag",
+  focus:["a + consonant sound","an + vowel sound","silent h","u = /juː/"],
+  task:"Choose a or an. Listen to the first sound of the next word!", head:"Dear Diary…",
+  text:"I always carry {an|'umbrella' starts with the sound /ʌ/} umbrella, {a|'notebook' starts with the sound /n/} notebook and {an|'orange' starts with the sound /ɒ/} orange for lunch. My sister says I need {a|'uniform' starts with /juː/, like the word 'you'} uniform for my dance club. My first lesson takes {an|the h in 'hour' is silent} hour, and after school I have {a|you can hear the h in 'huge'} huge cup of hot chocolate.\n\nNext year I want to study at {a|'university' sounds like 'you-niversity'} university abroad, maybe in {a|'European' starts with /jʊə/, like 'you'} European city. I'm {an|the h in 'honest' is silent} honest girl, so I'll tell you a secret: I also want to be {an|'actress' starts with the sound /æ/} actress!" },
+
+{ title:"A weird Monday", kicker:"Story", tint:"the", mode:"guided", options:["a","an","the"], art:"guitar", cap:"the guitar guy",
+  focus:["1st mention","2nd mention","we both know which","superlatives"],
+  task:"Choose a, an or the. Is it the first time we hear about it, or do we already know it?",
+  text:"On Monday {a|first time we hear about him: any new boy} new boy came to our class. {^the|we've already met this boy (2nd mention)} boy had {a|first mention: one guitar, we don't know which} guitar and {an|first mention, and listen to the first sound of 'old'} old skateboard. At lunch he played {the|2nd mention, and it's a musical instrument!} guitar in {the|we all know which canteen: our school has only one} school canteen. {^the|2nd mention of the skateboard} skateboard was covered in stickers.\n\nThen {a|first mention: one of many teachers} teacher came in and asked, “Is this {a|any concert, first mention} concert?” Everybody laughed. It was {the|superlative: funniest} funniest day of the term!" },
+
+{ title:"Things I love (and hate)", kicker:"Opinion", tint:"zero", mode:"guided", options:["the","0"], art:"cat", cap:"Luna, queen of the house",
+  focus:["in general = Ø","specific = the","plurals","uncountables"],
+  task:"Choose the or Ø. Do I mean it in general, or one specific thing?",
+  text:"I love {0|music in general} music. {^the|specific: only the music at that wedding} music at my cousin's wedding was terrible, though! I think {0|all cats, in general} cats are smarter than {0|all dogs, in general} dogs. My cat Luna loves {0|milk in general} milk, but {the|specific: the milk in our fridge} milk in our fridge is always for Mum's coffee.\n\nI hate {0|homework in general} homework, especially {0|school subjects} maths. But {the|specific: the homework from Mrs Kovalenko yesterday} homework from Mrs Kovalenko yesterday was actually fun. Oh, and {0|plural, in general: all spiders} spiders? No, thank you!" },
+
+{ title:"My busy week", kicker:"Planner", tint:"zero", mode:"guided", options:["a","the","0"], art:"bus", cap:"my school bus",
+  focus:["meals","go to school, go to bed","at home, in hospital","by bus"],
+  task:"Choose a, the or Ø. Think about meals, places and transport.",
+  text:"I get up at seven and have {0|meals} breakfast with my brother. Then I go to {0|I go there to study} school by {0|by + transport} bus. On Tuesday Dad went to {the|Dad isn't a student: he visited the building} school to talk to my teacher.\n\nOn Wednesday Grandma was in {0|she was there as a patient} hospital, so we visited her after {0|meals} lunch. She's OK now and she's at {0|set phrase: at … home} home again. On Friday I had {a|meal + adjective (lovely)} lovely dinner with my friends at {a|first mention: one of many cafés} new café. I went to {0|I went there to sleep} bed after midnight!" },
+
+{ title:"Summer camp diary", kicker:"Diary", tint:"the", mode:"guided", options:["a","the","0"], art:"camp", cap:"camp nights",
+  focus:["only one in the world","superlatives, first","instruments vs sports","in the afternoon, at night"],
+  task:"Choose a, the or Ø. Remember: only one, number one, instruments and sports.", head:"Day 1",
+  text:"{^the|ordinal number: first} first day at camp was amazing! {^the|there is only one in the world} sun was shining all day. In {the|part of the day: in … afternoon} afternoon we played {0|sports and games} volleyball, and in the evening Sofia played {the|musical instruments} piano. Our camp leader, Taras, is {the|superlative: best} best person ever.\n\nThere was no Wi-Fi, so nobody used {the|there is only one, like the sun} internet. At {0|set phrase: at … night} night we lay on the grass and looked at {the|there is only one in the sky} moon and {the|specific: the stars in the sky that night} stars. It was {the|superlative: most beautiful} most beautiful night of my life." },
+
+{ title:"My dream trip", kicker:"Travel", tint:"the", mode:"guided", options:["the","0"], art:"globe", cap:"where next?",
+  focus:["cities, most countries = Ø","the UK, the USA","rivers, seas, ranges","one mountain = Ø"],
+  task:"Choose the or Ø. Look at the type of place: city, country, river, sea or mountains?",
+  text:"I live in {0|cities} Lviv, in {0|most countries} Ukraine. Next summer I want to travel to {the|a country name with 'Kingdom'} UK and visit {0|cities} London. I'd love to walk along {0|streets} Oxford Street and take photos of {the|rivers} Thames.\n\nAfter that I want to fly to {0|most countries} Italy and swim in {the|seas} Mediterranean Sea. My big dream is to see {the|a country name with 'States'} USA and {the|mountain ranges (a group of mountains)} Rocky Mountains. But first, I'll climb {0|one single mountain} Hoverla in {the|mountain ranges (a group of mountains)} Carpathians!" },
+
+{ title:"Texts with Mia", kicker:"Chat", tint:"a", mode:"challenge", options:["a","an","the","0"], art:"chat", cap:"3 new messages!",
+  focus:["mixed: a, an, the, Ø"],
+  task:"Choose a, an, the or Ø. Read the whole chat first!",
+  chat:[
+   ["Mia","OMG, I've got {0|'news' is uncountable} news! I've got {a|first mention: one of many jobs} part-time job! 😍"],
+   ["me","No way! Where?"],
+   ["Mia","At {a|first mention: one of many bookshops} bookshop near the station. I work there twice {a|how often: two times per week} week."],
+   ["me","Cool! Is it the bookshop with the big yellow door?"],
+   ["Mia","Yes! {^the|we know which owner: the owner of that bookshop} owner is {an|first mention, and listen to the first sound of 'old'} old man. He's {a|jobs} writer!"],
+   ["me","What {a|exclamation: What … !} cool job! 🤩"],
+   ["Mia","I know! And I get {0|plural, in general} free books 📚"],
+   ["me","Can we meet after {0|she goes there to study} school?"],
+   ["Mia","Sure! Let's have {0|meals} dinner at {the|specific: the one on Shevchenko Street} pizza place on Shevchenko Street. My treat! 🍕"]
+  ] },
+
+{ title:"Blog: my first job", kicker:"Blog", tint:"mix", mode:"challenge", options:["a","an","the","0"], art:"teddy", cap:"Max's favourite toy",
+  focus:["mixed: a, an, the, Ø"],
+  task:"Choose a, an, the or Ø. No hints this time!",
+  text:"Last summer I wanted to earn {0|uncountable, in general} money, so I found {a|first mention: one of many jobs} job as {a|jobs} babysitter. {^the|we know which family: the one I worked for} family lived in a big house next to {a|first mention: we hear about this park for the first time} park. They had {an|first mention, and listen to the first sound of 'adorable'} adorable little boy called Max.\n\nMax hated {0|plural, in general} vegetables, but he loved {0|plural, in general} dinosaurs. Every day we went to {the|2nd mention: the same park} park and fed the ducks. Once Max fell into the pond! It was {the|superlative: scariest} scariest moment of my summer, but now it's {a|one of many funny stories} funny story." },
+
+{ title:"Kate's party", kicker:"Story", tint:"a", mode:"challenge", options:["a","an","the","0"], art:"balloons", cap:"party time!",
+  focus:["mixed: a, an, the, Ø"],
+  task:"Choose a, an, the or Ø. No hints this time!",
+  text:"On Saturday I went to {a|first mention: one of many parties} birthday party at Kate's house. When I arrived, {the|specific: the music at this party} music was really loud and everyone was dancing in {the|we know which: the living room in Kate's house} living room. Kate's brother played {the|musical instruments} drums and her dad made {0|plural noun, first mention (a/an only works with singular nouns!)} pancakes for everyone. {^the|2nd mention: the pancakes her dad made} pancakes were delicious!\n\nI met {an|first mention, and listen to the first sound of 'interesting'} interesting girl from {the|a plural country name} Netherlands. She speaks {0|languages} English, Dutch and German! We talked about {0|plural, in general} books and films all evening. I got home at {0|time phrase: at … midnight, at … night} midnight. What {a|exclamation: What … !} night!" },
+
+{ title:"Is your phone your best friend?", kicker:"Big feature", tint:"the", mode:"challenge", options:["a","an","the","0"], art:"sleep", cap:"phone, go to sleep!",
+  focus:["final test: everything!"],
+  task:"Choose a, an, the or Ø. This is the final test. Good luck!",
+  text:"Is your phone your best friend? {^a|first mention: one survey, not a specific one} recent survey says that {0|plural, in general} teenagers check their phones about 100 times {a|how often: 100 times per day} day! Most of them use {the|there is only one, like the sun} internet for {0|uncountable, in general} music, videos and chats with friends. But {0|plural, in general} doctors say that screens are bad for {0|uncountable, in general} sleep.\n\nTry this: put your phone in {a|any drawer: one of many} drawer for {an|the h in 'hour' is silent} hour before you go to {0|go to … bed = to sleep} bed. Read {a|any book: one of many} book or listen to {the|set phrase: listen to … radio} radio instead. It's {the|superlative: easiest} easiest way to feel better!" }
+];
+/*END DATA*/
+
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const RX=/\{(\^?)(a|an|the|0)\|([^}]*)\}/g;
+const lab=(o,cap)=>{const t=o==='0'?'Ø':o;return cap&&o!=='0'?t[0].toUpperCase()+t.slice(1):t};
+const stars=(c,t)=>{const k=Math.round(c/t*5);return '★'.repeat(k)+'☆'.repeat(5-k)};
+const reduced=()=>window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const scores=new Array(E.length).fill(null);
+const resets=[];
+
+/* ---------- illustrations ---------- */
+const F='#3e2b3f';
+const sp=(x,y,s,c)=>`<path d="M${x} ${y-s}Q${x} ${y} ${x+s} ${y}Q${x} ${y} ${x} ${y+s}Q${x} ${y} ${x-s} ${y}Q${x} ${y} ${x} ${y-s}Z" fill="${c}"/>`;
+const bgc=`<circle cx="100" cy="85" r="70" fill="var(--paper)" opacity=".55"/>`;
+const svg=(inner,vb='0 0 200 170')=>`<svg viewBox="${vb}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">${inner}</svg>`;
+const moon=(cx,cy,r,c)=>`<path d="M${cx} ${cy-r}A${r} ${r} 0 1 0 ${cx+r*0.9} ${cy+r*0.55}A${r*0.78} ${r*0.78} 0 1 1 ${cx} ${cy-r}Z" fill="${c}"/>`;
+const ART={
+ desk:()=>svg(`<circle cx="150" cy="130" r="120" fill="var(--paper)" opacity=".6"/>
+  <rect x="18" y="196" width="66" height="46" rx="5" fill="var(--lav)" transform="rotate(-10 51 219)"/><rect x="24" y="202" width="54" height="34" rx="3" fill="var(--paper)" opacity=".7" transform="rotate(-10 51 219)"/><path d="M34 212h34M34 220h28M34 228h20" stroke="var(--lav-d)" stroke-width="2.5" stroke-linecap="round" transform="rotate(-10 51 219)"/>
+  <path d="M190 120a43 43 0 0 1 86 0" fill="none" stroke="var(--lav-d)" stroke-width="10" stroke-linecap="round"/>
+  <rect x="180" y="112" width="22" height="42" rx="11" fill="var(--lav-d)"/><rect x="264" y="112" width="22" height="42" rx="11" fill="var(--lav-d)"/>
+  <g transform="rotate(8 227 208)"><rect x="196" y="160" width="62" height="96" rx="12" fill="${F}"/><rect x="202" y="168" width="50" height="78" rx="6" fill="var(--mint)"/><path d="M227 200c-5-8-16-3-11 5l11 10l11-10c5-8-6-13-11-5z" fill="var(--rose)"/></g>
+  <path d="M78 104h88l-11 126a12 12 0 0 1-12 11h-42a12 12 0 0 1-12-11z" fill="var(--peach)"/>
+  <rect x="128" y="22" width="10" height="84" rx="5" fill="var(--rose-ink)" transform="rotate(14 133 64)"/>
+  <rect x="70" y="92" width="104" height="18" rx="9" fill="var(--rose)"/>
+  <g fill="${F}" opacity=".8"><circle cx="102" cy="224" r="7"/><circle cx="120" cy="230" r="7"/><circle cx="139" cy="223" r="7"/><circle cx="111" cy="209" r="7"/><circle cx="130" cy="210" r="7"/><circle cx="146" cy="206" r="6"/></g>
+  <circle cx="110" cy="150" r="4.5" fill="${F}"/><circle cx="136" cy="150" r="4.5" fill="${F}"/><path d="M115 160q8 7 16 0" stroke="${F}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="101" cy="161" r="6" fill="var(--rose)" opacity=".5"/><circle cx="145" cy="161" r="6" fill="var(--rose)" opacity=".5"/>
+  ${sp(40,60,10,'var(--sun)')}${sp(250,50,8,'var(--rose)')}${sp(60,150,6,'var(--lav-d)')}${sp(285,190,6,'var(--sun)')}${sp(170,40,5,'var(--mint-d)')}`,'0 0 300 260'),
+ backpack:()=>svg(bgc+`<path d="M80 48v-12a20 20 0 0 1 40 0v12" fill="none" stroke="var(--rose)" stroke-width="7" stroke-linecap="round"/>
+  <rect x="56" y="44" width="88" height="106" rx="30" fill="var(--rose)"/><rect x="56" y="44" width="88" height="42" rx="30" fill="var(--pink)" opacity=".85"/>
+  <rect x="70" y="96" width="60" height="40" rx="12" fill="var(--peach)"/><path d="M70 111h60" stroke="var(--rose)" stroke-width="3"/><circle cx="100" cy="72" r="5" fill="var(--paper)"/>
+  <circle cx="158" cy="134" r="17" fill="#ef8a9a"/><path d="M158 118q1-9 8-12" stroke="#8a5d4b" stroke-width="3" fill="none" stroke-linecap="round"/><ellipse cx="170" cy="110" rx="8" ry="4" fill="var(--mint-d)" transform="rotate(-25 170 110)"/>
+  <g transform="rotate(-18 30 130)"><rect x="24" y="104" width="11" height="44" rx="2" fill="var(--sun)"/><path d="M24 148l5.5 10l5.5-10z" fill="var(--bear)"/></g>
+  ${sp(40,40,7,'var(--sun)')}${sp(165,55,5,'var(--lav-d)')}`),
+ sunmoon:()=>{let r='';for(let i=0;i<8;i++)r+=`<rect x="68" y="28" width="6" height="14" rx="3" fill="var(--sun)" transform="rotate(${i*45} 71 78)"/>`;
+  return svg(bgc+r+`<circle cx="71" cy="78" r="27" fill="var(--sun)"/><circle cx="62" cy="74" r="3" fill="${F}"/><circle cx="80" cy="74" r="3" fill="${F}"/><path d="M63 86q8 7 16 0" stroke="${F}" stroke-width="2.5" fill="none" stroke-linecap="round"/>`+moon(152,84,30,'var(--lav-d)')+sp(168,38,7,'var(--sun)')+sp(122,132,6,'var(--rose)')+sp(178,134,4,'var(--lav-d)')+sp(34,138,5,'var(--rose)'))},
+ music:()=>svg(bgc+`<rect x="34" y="118" width="86" height="18" rx="4" fill="var(--lav-d)"/><rect x="40" y="100" width="78" height="18" rx="4" fill="var(--mint-d)"/><rect x="30" y="81" width="84" height="18" rx="4" fill="var(--rose)" transform="rotate(-4 72 90)"/><path d="M42 127h68M48 109h58" stroke="var(--paper)" stroke-width="2" opacity=".7"/>
+  <g fill="var(--rose-ink)"><ellipse cx="140" cy="108" rx="11" ry="8" transform="rotate(-20 140 108)"/><rect x="148" y="52" width="4" height="56"/><path d="M148 52q20 6 22 26q-8-12-22-14z"/></g>
+  <g fill="var(--lav-d)"><ellipse cx="166" cy="140" rx="8" ry="6" transform="rotate(-20 166 140)"/><rect x="171" y="104" width="3.5" height="36"/></g>`+sp(50,45,7,'var(--sun)')+sp(176,40,5,'var(--rose)')),
+ school:()=>svg(bgc+`<rect x="48" y="72" width="104" height="72" rx="6" fill="var(--peach)"/><path d="M40 76L100 34L160 76Z" fill="var(--rose)"/><circle cx="100" cy="60" r="10" fill="var(--paper)"/><path d="M100 54v6l4 3" stroke="${F}" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <rect x="88" y="108" width="24" height="36" rx="12" fill="var(--lav-d)"/><g fill="var(--paper)"><rect x="60" y="86" width="18" height="16" rx="3"/><rect x="122" y="86" width="18" height="16" rx="3"/><rect x="60" y="114" width="18" height="16" rx="3"/><rect x="122" y="114" width="18" height="16" rx="3"/></g>
+  <path d="M100 34V12" stroke="${F}" stroke-width="2.5"/><path d="M100 12h22l-6 6l6 6h-22z" fill="var(--mint-d)"/><rect x="30" y="144" width="140" height="6" rx="3" fill="var(--mint-d)" opacity=".6"/>`+sp(172,40,6,'var(--sun)')+sp(32,50,5,'var(--lav-d)')),
+ guitar:()=>svg(bgc+`<g transform="rotate(28 100 90)"><rect x="94" y="10" width="12" height="70" rx="3" fill="var(--rose-ink)"/><rect x="90" y="4" width="20" height="16" rx="5" fill="var(--rose)"/><circle cx="100" cy="88" r="25" fill="var(--peach)"/><circle cx="100" cy="122" r="33" fill="var(--peach)"/><circle cx="100" cy="100" r="10" fill="${F}" opacity=".8"/><rect x="88" y="128" width="24" height="6" rx="3" fill="var(--rose-ink)"/><path d="M97 12V131M100 12V131M103 12V131" stroke="var(--paper)" stroke-width="1"/></g>`+sp(40,40,7,'var(--sun)')+sp(166,140,6,'var(--lav-d)')+`<path d="M150 42q8-12 18-4" fill="none" stroke="var(--lav-d)" stroke-width="3" stroke-linecap="round"/>`),
+ cat:()=>svg(bgc+`<path d="M140 128q34 4 26-30" fill="none" stroke="var(--lav-d)" stroke-width="10" stroke-linecap="round"/><ellipse cx="100" cy="122" rx="44" ry="30" fill="var(--lav-d)"/><path d="M74 58L72 28L94 46Z M126 58L128 28L106 46Z" fill="var(--lav-d)"/><circle cx="100" cy="72" r="32" fill="var(--lav-d)"/><path d="M77 50L76 36L88 46Z M123 50L124 36L112 46Z" fill="var(--pink)"/>
+  <circle cx="88" cy="70" r="4.5" fill="${F}"/><circle cx="112" cy="70" r="4.5" fill="${F}"/><path d="M96 80h8l-4 5z" fill="var(--rose)"/><path d="M100 85q-4 6-9 3M100 85q4 6 9 3" stroke="${F}" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M80 82h-22M80 86l-20 5M120 82h22M120 86l20 5" stroke="${F}" stroke-width="1.5" opacity=".6"/>
+  <rect x="28" y="112" width="26" height="36" rx="4" fill="var(--paper)" stroke="var(--rose)" stroke-width="2"/><rect x="30" y="126" width="22" height="20" rx="3" fill="#ffffff"/>`+sp(162,40,7,'var(--sun)')),
+ bus:()=>svg(bgc+`<rect x="28" y="56" width="146" height="74" rx="18" fill="var(--sun)"/><rect x="28" y="102" width="146" height="9" fill="var(--rose)"/><g fill="var(--paper)"><rect x="42" y="68" width="26" height="24" rx="5"/><rect x="74" y="68" width="26" height="24" rx="5"/><rect x="106" y="68" width="26" height="24" rx="5"/><rect x="140" y="68" width="22" height="50" rx="5"/></g>
+  <circle cx="55" cy="80" r="5" fill="var(--bear)"/><circle cx="87" cy="80" r="5" fill="var(--lav-d)"/>
+  <circle cx="62" cy="132" r="14" fill="${F}"/><circle cx="62" cy="132" r="5" fill="var(--paper)"/><circle cx="140" cy="132" r="14" fill="${F}"/><circle cx="140" cy="132" r="5" fill="var(--paper)"/><rect x="20" y="146" width="160" height="5" rx="2.5" fill="var(--mint-d)" opacity=".5"/>`+sp(40,32,6,'var(--rose)')+sp(170,30,7,'var(--lav-d)')),
+ camp:()=>svg(bgc+moon(160,40,16,'var(--sun)')+sp(40,35,5,'var(--sun)')+sp(110,25,4,'var(--lav-d)')+sp(72,46,3,'var(--sun)')+`<path d="M26 138L74 58L122 138Z" fill="var(--peach)"/><path d="M74 58L122 138H96Z" fill="var(--rose)" opacity=".55"/><path d="M62 138L74 100L86 138Z" fill="var(--rose-ink)"/>
+  <path d="M136 142L172 128M136 128L172 142" stroke="#8a5d4b" stroke-width="6" stroke-linecap="round"/><path d="M154 132c-14-6-12-22 0-34c2 10 12 12 10 22c4-4 4-8 2-12c8 8 6 22-12 24z" fill="#f59a7a"/><path d="M154 132c-6-3-6-11 0-17c1 5 6 7 5 11c-1 4-3 6-5 6z" fill="var(--sun)"/><rect x="20" y="141" width="164" height="5" rx="2.5" fill="var(--mint-d)" opacity=".5"/>`),
+ globe:()=>svg(bgc+`<circle cx="92" cy="96" r="48" fill="var(--mint)"/><path d="M70 66q14-6 20 6q-4 10 6 14q8 10-4 18q-10 2-12 12q-12-6-10-20q-12-8 0-30z M110 96q12-4 18 6q2 14-10 20q-10-8-8-26z" fill="var(--mint-d)"/><ellipse cx="92" cy="96" rx="20" ry="48" fill="none" stroke="var(--mint-d)" stroke-width="1.5" opacity=".6"/><path d="M44 96h96" stroke="var(--mint-d)" stroke-width="1.5" opacity=".6"/><circle cx="92" cy="96" r="48" fill="none" stroke="var(--mint-d)" stroke-width="3"/>
+  <path d="M30 152q60-20 96-70" fill="none" stroke="var(--rose)" stroke-width="2.5" stroke-dasharray="6 7" stroke-linecap="round"/><g transform="translate(150 52) rotate(-35)"><path d="M-22 0q0-5 6-5h30q8 0 10 5q-2 5-10 5h-30q-6 0-6-5z" fill="var(--rose)"/><path d="M-2-4l-10-16h7l15 16z M-2 4l-10 16h7l15-16z M-20-3l-6-9h5l7 9z" fill="var(--rose-ink)"/></g>`+sp(40,40,6,'var(--sun)')),
+ chat:()=>svg(bgc+`<rect x="58" y="12" width="84" height="146" rx="16" fill="${F}"/><rect x="65" y="26" width="70" height="118" rx="8" fill="var(--paper)"/><rect x="72" y="36" width="44" height="14" rx="7" fill="var(--lav)"/><rect x="88" y="56" width="40" height="14" rx="7" fill="var(--pink)"/><rect x="72" y="76" width="52" height="14" rx="7" fill="var(--lav)"/><rect x="96" y="96" width="32" height="14" rx="7" fill="var(--pink)"/>
+  <path d="M100 126c-4-6-12-2-8 4l8 7l8-7c4-6-4-10-8-4z" fill="var(--rose)"/><circle cx="160" cy="44" r="14" fill="var(--rose)"/><text x="160" y="49" text-anchor="middle" font-size="14" font-weight="900" fill="#ffffff" font-family="Nunito,sans-serif">3</text>`+sp(36,50,7,'var(--sun)')+sp(166,112,6,'var(--lav-d)')),
+ teddy:()=>svg(bgc+`<circle cx="74" cy="44" r="14" fill="var(--bear)"/><circle cx="126" cy="44" r="14" fill="var(--bear)"/><circle cx="74" cy="44" r="7" fill="var(--pink)"/><circle cx="126" cy="44" r="7" fill="var(--pink)"/><ellipse cx="100" cy="122" rx="38" ry="34" fill="var(--bear)"/><ellipse cx="100" cy="128" rx="20" ry="18" fill="var(--peach)"/>
+  <circle cx="62" cy="112" r="13" fill="var(--bear)"/><circle cx="138" cy="112" r="13" fill="var(--bear)"/><circle cx="78" cy="152" r="14" fill="var(--bear)"/><circle cx="122" cy="152" r="14" fill="var(--bear)"/><circle cx="100" cy="66" r="32" fill="var(--bear)"/><ellipse cx="100" cy="78" rx="14" ry="10" fill="var(--peach)"/>
+  <circle cx="88" cy="62" r="4" fill="${F}"/><circle cx="112" cy="62" r="4" fill="${F}"/><ellipse cx="100" cy="74" rx="5" ry="3.5" fill="${F}"/><path d="M95 81q5 4 10 0" stroke="${F}" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M86 98l14 6l-14 6z M114 98l-14 6l14 6z" fill="var(--rose)"/><circle cx="100" cy="104" r="4" fill="var(--rose-ink)"/>`+sp(40,40,6,'var(--sun)')+sp(165,40,6,'var(--lav-d)')),
+ balloons:()=>svg(bgc+`<path d="M70 97q10 30 30 58M100 83q-4 40 0 72M132 97q-6 30-32 58" fill="none" stroke="var(--muted)" stroke-width="1.5"/><ellipse cx="70" cy="62" rx="24" ry="30" fill="var(--rose)"/><ellipse cx="132" cy="62" rx="24" ry="30" fill="var(--mint-d)"/><ellipse cx="100" cy="46" rx="26" ry="32" fill="var(--lav-d)"/><path d="M70 91l-4 6h8z M132 91l-4 6h8z M100 77l-4 6h8z" fill="var(--muted)"/>
+  <ellipse cx="92" cy="34" rx="5" ry="9" fill="#ffffff" opacity=".45"/><ellipse cx="62" cy="50" rx="4" ry="8" fill="#ffffff" opacity=".45"/><ellipse cx="124" cy="50" rx="4" ry="8" fill="#ffffff" opacity=".45"/>
+  <rect x="30" y="120" width="7" height="4" fill="var(--sun)" transform="rotate(30 33 122)"/><rect x="160" y="110" width="7" height="4" fill="var(--rose)" transform="rotate(-20 163 112)"/><rect x="150" y="140" width="7" height="4" fill="var(--lav-d)" transform="rotate(50 153 142)"/><rect x="44" y="146" width="7" height="4" fill="var(--mint-d)"/>`+sp(172,30,6,'var(--sun)')+sp(30,40,5,'var(--rose)')),
+ sleep:()=>svg(bgc+moon(150,46,22,'var(--sun)')+`<g transform="rotate(-12 80 80)"><rect x="62" y="44" width="38" height="66" rx="8" fill="${F}"/><rect x="66" y="50" width="30" height="50" rx="4" fill="var(--lav)"/></g><rect x="30" y="96" width="130" height="54" rx="8" fill="var(--peach)"/><rect x="30" y="96" width="130" height="14" rx="6" fill="var(--rose)"/><rect x="82" y="124" width="26" height="6" rx="3" fill="var(--rose-ink)"/>
+  <g font-family="Caveat,cursive" font-weight="700" fill="var(--lav-d)"><text x="112" y="74" font-size="22">z</text><text x="124" y="60" font-size="28">Z</text><text x="40" y="44" font-size="18">z</text></g>`+sp(40,72,5,'var(--lav-d)')+sp(178,92,5,'var(--rose)'))
+};
+
+/* ---------- build exercises ---------- */
+const book=$('#book'), finalPage=$('#final');
+function buildEx(ex,i){
+  const s=document.createElement('section');
+  s.className='page t-'+ex.tint; s.dataset.title='Exercise '+(i+1)+': '+ex.title; s.dataset.toc='ex'; s.dataset.ex=i;
+  const gaps=[];
+  const parse=t=>t.replace(RX,(m,cap,ans,hint)=>{const n=gaps.length;gaps.push({ans,hint,cap:!!cap});
+    return `<span class="gapw"><select class="gap" data-n="${n}" aria-label="Gap ${n+1}"><option value="">…</option>${ex.options.map(o=>`<option value="${o}">${lab(o,cap)}</option>`).join('')}</select><button type="button" class="hbtn" data-n="${n}" aria-label="Hint for gap ${n+1}">${n+1}</button></span>`;});
+  const body=ex.chat
+    ? `<div class="chat">${ex.chat.map(([w,t])=>`<div class="bub${w==='me'?' me':''}"><span class="who">${w==='me'?'Me':w}</span>${parse(t)}</div>`).join('')}</div>`
+    : ex.text.split('\n\n').map(p=>`<p>${parse(p)}</p>`).join('');
+  const guided=ex.mode==='guided';
+  s.innerHTML=`<div class="run"><span>Bloom practice, ${i+1} of ${E.length}</span><span>${guided?'Guided':'Challenge'}</span></div>
+  <div class="exgrid">
+    <aside class="exside">
+      <div class="exno">${String(i+1).padStart(2,'0')}</div>
+      <span class="mode ${guided?'':'ch'}">${guided?'Guided, with hints':'Challenge, no hints'}</span>
+      <figure class="polaroid ${i%2?'tilt-l':''}" style="margin-top:1.4rem"><div class="art" data-art="${ex.art}"></div><figcaption>${ex.cap}</figcaption></figure>
+      <div class="focus">${ex.focus.map(f=>`<span>${f}</span>`).join('')}</div>
+    </aside>
+    <div>
+      <span class="kicker">${ex.kicker}</span>
+      <h2 class="extitle">${ex.title}</h2>
+      <p class="task">${ex.task}<br>Options: ${ex.options.map(o=>`<b class="optchip">${o==='0'?'Ø (no article)':o}</b>`).join(' ')}</p>
+      <div class="textbox${guided?' hints-on':''}">${ex.head?`<div class="ttl">${ex.head}</div>`:''}${body}</div>
+      <div class="controls">
+        <button class="btn" data-act="check">Check answers</button>
+        <button class="btn soft" data-act="show">Show answers</button>
+        <button class="btn ghost" data-act="reset">Try again</button>
+        <label class="switch"><input type="checkbox" ${guided?'checked':''}><span class="tr"></span>Hints</label>
+      </div>
+      <p class="hint-help"></p>
+      <div class="note" hidden></div>
+      <div class="fb" hidden></div>
+    </div>
+  </div>
+  <div class="folio"></div>`;
+
+  const tb=$('.textbox',s), sels=$$('select.gap',s), note=$('.note',s), fb=$('.fb',s), sw=$('.switch input',s), help=$('.hint-help',s);
+  const setHelp=()=>{help.textContent=sw.checked?'Tap a yellow number for a hint 💡':'Hints are off. Show what you know! 💪'};
+  setHelp();
+  sw.addEventListener('change',()=>{tb.classList.toggle('hints-on',sw.checked);if(!sw.checked)note.hidden=true;setHelp();});
+  tb.addEventListener('click',e=>{
+    const b=e.target.closest('.hbtn'); if(!b||!tb.classList.contains('hints-on'))return;
+    const n=+b.dataset.n; note.innerHTML=`💡 <b>Gap ${n+1}:</b> ${gaps[n].hint}`; note.hidden=false;
+    const sel=sels[n]; sel.classList.remove('pulse'); void sel.offsetWidth; sel.classList.add('pulse');
+  });
+  sels.forEach(sel=>sel.addEventListener('change',()=>sel.classList.remove('ok','no','shown','pulse')));
+
+  const check=()=>{
+    let c=0; const wrong=[];
+    sels.forEach((sel,n)=>{sel.classList.remove('ok','no','shown','pulse');
+      if(sel.value===gaps[n].ans){c++;sel.classList.add('ok')}else{sel.classList.add('no');wrong.push(n)}});
+    const t=gaps.length; scores[i]={c,t}; updateScores();
+    const msg=c===t?'Perfect! You are an article star! 🌟':(c/t>=.7?'Nice work! Look at your mistakes:':'Keep going! Read the explanations and try again:');
+    fb.innerHTML=`<div class="res">${c} / ${t}<span class="stars">${stars(c,t)}</span></div><p style="margin:.3rem 0 0">${msg}</p>`+
+      (wrong.length?`<ul>${wrong.map(n=>{const g=gaps[n],v=sels[n].value;return `<li><b>${n+1}.</b> ${v?`<s>${lab(v,g.cap)}</s> → `:'(empty) → '}<b class="ar">${lab(g.ans,g.cap)}</b>: ${g.hint}</li>`}).join('')}</ul>`:'');
+    fb.hidden=false; note.hidden=true;
+    if(c===t)confetti();
+  };
+  const show=()=>{sels.forEach((sel,n)=>{sel.value=gaps[n].ans;sel.classList.remove('ok','no','pulse');sel.classList.add('shown')});
+    fb.innerHTML='<p style="margin:0"><b>Here are the correct answers.</b> Read the text aloud, then press “Try again” and do it yourself!</p>'; fb.hidden=false; note.hidden=true;};
+  const reset=()=>{sels.forEach(sel=>{sel.value='';sel.classList.remove('ok','no','shown','pulse')});fb.hidden=true;note.hidden=true;};
+  resets[i]=reset;
+  $$('[data-act]',s).forEach(b=>b.addEventListener('click',()=>({check,show,reset})[b.dataset.act]()));
+  return s;
+}
+E.forEach((ex,i)=>book.insertBefore(buildEx(ex,i),finalPage));
+$$('[data-art]').forEach(el=>{el.innerHTML=ART[el.dataset.art]()});
+
+/* ---------- pages, contents, navigation ---------- */
+const pages=$$('.page');
+const exStart=pages.findIndex(p=>p.dataset.ex==='0');
+pages.forEach((p,i)=>{const f=$('.folio',p);if(f)f.textContent=i===0?'':`${i+1}`});
+$('#ptot').textContent=pages.length;
+const jump=$('#jump');
+jump.innerHTML=pages.map((p,i)=>`<option value="${i}">${i+1}. ${p.dataset.title}</option>`).join('');
+jump.addEventListener('change',()=>go(+jump.value));
+
+$('#toc-f').innerHTML=pages.map((p,i)=>p.dataset.toc==='feature'?`<button class="toc-item" data-go="${i}"><span class="pg">${i+1}</span><span class="tt">${p.dataset.title.replace('Study card: ','')}</span><span class="tg ft">study card</span></button>`:'').join('');
+$('#toc-p').innerHTML=E.map((ex,i)=>`<button class="toc-item" data-go="${exStart+i}"><span class="pg">${exStart+i+1}</span><span class="tt">${ex.title}</span><span class="tg ${ex.mode==='guided'?'':'ch'}" id="toc-sc-${i}">${ex.mode==='guided'?'guided':'challenge'}</span></button>`).join('');
+
+let cur=0;
+pages[0].classList.add('active');
+function go(i){
+  if(i<0||i>=pages.length||i===cur)return;
+  const dir=i>cur?'in-next':'in-prev';
+  pages[cur].classList.remove('active','in-next','in-prev');
+  cur=i; const p=pages[i];
+  p.classList.add('active'); void p.offsetWidth; p.classList.add(dir);
+  updatePager();
+  if(p.id==='final')renderFinal();
+  window.scrollTo({top:0,behavior:reduced()?'auto':'smooth'});
+}
+function updatePager(){
+  $('#pnum').textContent=cur+1;
+  $('#pfill').style.width=((cur+1)/pages.length*100)+'%';
+  $('#prev').disabled=cur===0; $('#next').disabled=cur===pages.length-1;
+  jump.value=cur;
+}
+updatePager();
+$('#prev').addEventListener('click',()=>go(cur-1));
+$('#next').addEventListener('click',()=>go(cur+1));
+document.addEventListener('click',e=>{
+  const g=e.target.closest('[data-go]'); if(g){go(+g.dataset.go);return}
+  const f=e.target.closest('.flip'); if(f)f.classList.toggle('on');
+});
+document.addEventListener('keydown',e=>{
+  if(/SELECT|INPUT|TEXTAREA/.test(e.target.tagName))return;
+  if(e.key==='ArrowRight')go(cur+1); if(e.key==='ArrowLeft')go(cur-1);
+});
+let tx=0,ty=0;
+book.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY},{passive:true});
+book.addEventListener('touchend',e=>{
+  if(e.target.closest('select'))return;
+  const dx=e.changedTouches[0].clientX-tx, dy=e.changedTouches[0].clientY-ty;
+  if(Math.abs(dx)>80&&Math.abs(dx)>2*Math.abs(dy))go(cur+(dx<0?1:-1));
+},{passive:true});
+
+/* ---------- scores ---------- */
+function totals(){let c=0,t=0,n=0;scores.forEach(s=>{if(s){c+=s.c;t+=s.t;n++}});return {c,t,n}}
+function updateScores(){
+  const {c,t,n}=totals();
+  $('#chip').textContent=n?`⭐ ${c}/${t}`:'⭐ 0';
+  E.forEach((ex,i)=>{const el=$('#toc-sc-'+i);if(el&&scores[i])el.textContent=`${scores[i].c}/${scores[i].t} ★`});
+}
+function renderFinal(){
+  const {c,t,n}=totals(); const pct=t?Math.round(c/t*100):0;
+  let title,msg;
+  if(!n){title='Ready, set, go!';msg="You haven't checked any exercises yet. Start with exercise 1!"}
+  else if(pct>=90){title='Article queen 👑';msg='Wow! You really know your a, an, the and Ø.'}
+  else if(pct>=70){title='Great job! ✿';msg='Almost there. Look at your mistakes and try those exercises again.'}
+  else if(pct>=50){title='Good start!';msg='Read the study cards again, then redo the exercises with hints on.'}
+  else {title='Keep going!';msg='Every mistake is a lesson. Turn on the hints and try again. You can do it!'}
+  $('#res-title').textContent=title; $('#res-msg').textContent=msg;
+  $('#res-num').textContent=n?pct+'%':'—';
+  $('#res-sub').textContent=n?`${c} of ${t} correct, ${n} of ${E.length} exercises checked`:'no exercises checked yet';
+  $('#rosette').style.setProperty('--p',pct);
+  $('#resgrid').innerHTML=E.map((ex,i)=>`<button class="rcard t-${ex.tint}" data-go="${exStart+i}"><span class="n">${String(i+1).padStart(2,'0')}</span><span class="tt">${ex.title}</span><span class="s">${scores[i]?`${scores[i].c}/${scores[i].t} ${stars(scores[i].c,scores[i].t)}`:'not checked yet'}</span></button>`).join('');
+}
+$('#again').addEventListener('click',()=>{
+  let k=scores.findIndex(s=>!s||s.c<s.t); if(k<0)k=0; go(exStart+k);
+});
+$('#restart').addEventListener('click',()=>{
+  resets.forEach(r=>r()); scores.fill(null);
+  E.forEach((ex,i)=>{const el=$('#toc-sc-'+i);if(el)el.textContent=ex.mode==='guided'?'guided':'challenge'});
+  updateScores(); renderFinal();
+});
+
+/* ---------- motion ---------- */
+function confetti(){
+  if(reduced())return;
+  const ch=['♡','✿','✦','❀','★'], cols=['var(--rose)','var(--lav-d)','var(--mint-d)','var(--sun)'];
+  for(let k=0;k<36;k++){
+    const e=document.createElement('span'); e.className='conf'; e.textContent=ch[k%ch.length];
+    e.style.left=Math.random()*100+'vw'; e.style.color=cols[k%cols.length]; e.style.fontSize=(14+Math.random()*18)+'px';
+    e.style.setProperty('--dx',(Math.random()*120-60)+'px'); e.style.animationDelay=(Math.random()*.4)+'s';
+    document.body.appendChild(e); setTimeout(()=>e.remove(),3300);
+  }
+}
+(function floaters(){
+  if(reduced())return;
+  const box=$('#floaters'), ch=['✿','♡','✦','❀','○','✧'], cols=['var(--rose)','var(--lav-d)','var(--mint-d)','var(--sun)'];
+  for(let k=0;k<18;k++){
+    const e=document.createElement('span'); e.className='fl'; e.textContent=ch[k%ch.length];
+    e.style.left=Math.random()*100+'vw'; e.style.color=cols[k%cols.length]; e.style.fontSize=(12+Math.random()*20)+'px';
+    e.style.setProperty('--dx',(Math.random()*80-40)+'px');
+    const d=18+Math.random()*16; e.style.animationDuration=d+'s'; e.style.animationDelay=(-Math.random()*d)+'s';
+    box.appendChild(e);
+  }
+})();
+</script>
+</body>
+</html>
