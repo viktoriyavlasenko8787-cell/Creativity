@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cold Case — Past &amp; Perfect Tenses (B2)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@400;700&family=Special+Elite&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#c7d1dc; --dot:rgba(10,20,40,.17); --paper:#ffffff; --ink:#000; --muted:#45505c;
+  --red:#d10000; --blue:#1f4fa8; --yellow:#ffcc00; --cap:#ffcc00;
+  --g-past:#a9c7ef; --g-pres:#c3e8b8; --g-hab:#e7cdf5;
+  --ok-bg:#d4f5d9; --bad-bg:#ffd9d9; --shadow:#000;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#121821; --dot:rgba(255,255,255,.06); --paper:#1d2530; --ink:#eef1f5; --muted:#a9b3bf;
+    --red:#ff5a52; --blue:#7fa7ff; --yellow:#ffcc33; --cap:#5a4800;
+    --g-past:#213c63; --g-pres:#24482a; --g-hab:#46284f;
+    --ok-bg:#1c4529; --bad-bg:#561f22; --shadow:#000;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121821; --dot:rgba(255,255,255,.06); --paper:#1d2530; --ink:#eef1f5; --muted:#a9b3bf;
+  --red:#ff5a52; --blue:#7fa7ff; --yellow:#ffcc33; --cap:#5a4800;
+  --g-past:#213c63; --g-pres:#24482a; --g-hab:#46284f;
+  --ok-bg:#1c4529; --bad-bg:#561f22; --shadow:#000;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html,body{margin:0}
+body{
+  background-color:var(--bg);
+  background-image:radial-gradient(var(--dot) 1.3px,transparent 1.7px);
+  background-size:13px 13px;
+  color:var(--ink);
+  font-family:'Comic Neue','Comic Sans MS','Chalkboard SE',cursive,sans-serif;
+  font-size:18px; line-height:1.5; min-height:100vh;
+}
+h1,h2,h3,h4{font-family:'Bangers','Impact','Arial Black',sans-serif;font-weight:400;letter-spacing:.04em;margin:0}
+.type{font-family:'Special Elite','Courier New',monospace}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+
+/* predicates */
+.v{color:var(--red);font-weight:700}
+.v.t{text-decoration:underline wavy;text-underline-offset:5px;text-decoration-thickness:2px}
+
+.topbar{max-width:1120px;margin:0 auto;padding:12px 16px 0;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.brand{font-family:'Special Elite',monospace;font-size:17px}
+.stars{font-family:'Bangers',sans-serif;font-size:20px;background:var(--paper);border:3px solid var(--ink);padding:2px 12px;box-shadow:3px 3px 0 var(--shadow);white-space:nowrap}
+main{max-width:1120px;margin:0 auto;padding:16px 16px 124px}
+
+.slide{display:none}
+.slide.active{display:block;animation:pop .25s ease-out}
+@keyframes pop{from{transform:scale(.98);opacity:0}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.slide.active,.boom{animation:none}.shake{animation:none!important}}
+
+.panel{background:var(--paper);border:3px solid var(--ink);box-shadow:6px 6px 0 var(--shadow);padding:18px;position:relative}
+.caption{display:inline-block;background:var(--cap);color:var(--ink);border:3px solid var(--ink);padding:3px 12px;font-family:'Special Elite',monospace;font-size:17px;box-shadow:3px 3px 0 var(--shadow)}
+.slide-title{font-size:clamp(38px,6vw,62px);margin:14px 0 4px;text-shadow:3px 3px 0 var(--yellow)}
+.task{font-size:19px;margin:4px 0 18px;max-width:78ch}
+.task b{background:var(--paper);padding:0 4px;border:2px solid var(--ink)}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:26px;align-items:center;padding:28px}
+.logo{font-size:clamp(68px,13vw,150px);line-height:.88;color:var(--ink);text-shadow:7px 7px 0 var(--yellow);margin:16px 0 6px;transform:rotate(-2deg);transform-origin:left}
+.sub{font-family:'Special Elite',monospace;font-size:clamp(19px,2.4vw,24px);margin:0 0 6px;line-height:1.3}
+.level{display:inline-block;font-family:'Bangers',sans-serif;font-size:22px;letter-spacing:.05em;border:3px solid var(--ink);padding:0 10px;margin:4px 0 16px;background:var(--g-past)}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
+.badge{border:2px solid var(--ink);background:var(--paper);padding:1px 10px;font-weight:700;font-size:15px}
+.big-btn{font-family:'Bangers',sans-serif;font-size:24px;letter-spacing:.05em;background:var(--yellow);color:#000;border:3px solid var(--ink);padding:8px 22px;box-shadow:5px 5px 0 var(--shadow)}
+.big-btn:active{transform:translate(3px,3px);box-shadow:2px 2px 0 var(--shadow)}
+.hero-art{display:flex;flex-direction:column;gap:30px;position:relative}
+.noir{width:100%;height:auto;border:3px solid var(--ink);box-shadow:5px 5px 0 var(--shadow);display:block}
+.stamp{position:absolute;right:-6px;bottom:18px;font-family:'Special Elite',monospace;font-size:20px;color:var(--blue);border:3px double var(--blue);padding:2px 10px;transform:rotate(-9deg);background:var(--paper)}
+.legend{margin-top:22px;display:inline-block;background:var(--paper);border:3px solid var(--ink);padding:8px 14px;box-shadow:4px 4px 0 var(--shadow)}
+
+/* bubble */
+.bubble{position:relative;background:var(--paper);border:3px solid var(--ink);border-radius:26px;padding:14px 18px;box-shadow:5px 5px 0 var(--shadow);font-size:19px}
+.bubble::after{content:"";position:absolute;bottom:-22px;left:44px;border-style:solid;border-width:22px 13px 0 13px;border-color:var(--ink) transparent transparent transparent}
+.bubble::before{content:"";position:absolute;bottom:-15px;left:47px;border-style:solid;border-width:17px 10px 0 10px;border-color:var(--paper) transparent transparent transparent;z-index:1}
+
+/* warm-up */
+.warm{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr));gap:36px 22px;margin-bottom:26px}
+.warm .bubble{font-size:20px;padding:18px 20px 16px;transition:transform .15s}
+.warm .bubble.pick{transform:scale(1.03) rotate(-.8deg);background:var(--cap)}
+.warm .bubble.pick::before{border-top-color:var(--cap)}
+.qnum{font-family:'Bangers',sans-serif;font-size:22px;color:var(--blue);margin-right:6px}
+.follow{display:block;margin-top:8px;font-size:16px;color:var(--muted)}
+.follow b{color:var(--ink)}
+.ttag{display:inline-block;margin-top:10px;font-size:14px;font-weight:700;border:2px dashed var(--ink);padding:0 8px}
+
+/* grammar */
+.groups{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 16px}
+.groups span{border:2px solid var(--ink);padding:2px 10px;font-weight:700;font-size:15px}
+.gcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:18px}
+.gcard{background:var(--paper);border:3px solid var(--ink);box-shadow:5px 5px 0 var(--shadow);display:flex;flex-direction:column}
+.gcard header{padding:8px 12px;border-bottom:3px solid var(--ink)}
+.gcard h3{font-size:24px}
+.g-past header,.groups .g-past{background:var(--g-past)}
+.g-pres header,.groups .g-pres{background:var(--g-pres)}
+.g-hab header,.groups .g-hab{background:var(--g-hab)}
+.gbody{padding:10px 12px 12px;font-size:15.5px;display:flex;flex-direction:column;gap:7px}
+.formula{font-weight:700;color:var(--red);font-size:16.5px;border:2px solid var(--ink);padding:3px 8px}
+.use{margin:0}
+.markers{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.ml{font-weight:700;font-size:14px;width:100%}
+.chip-m{font-size:13.5px;border:2px dashed var(--ink);padding:0 7px;background:var(--paper)}
+.watch{margin:0;font-size:14.5px;border-left:4px solid var(--yellow);padding:2px 0 2px 8px}
+.gex p{margin:3px 0;font-style:italic}
+
+/* exercises */
+.ex-head{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.focus{font-weight:700;background:var(--paper);border:2px solid var(--ink);padding:2px 10px}
+.uatag{font-weight:700;background:linear-gradient(#3d7bff 0 50%,#ffd500 50% 100%);color:#000;border:2px solid var(--ink);padding:2px 10px;text-shadow:0 0 4px #fff}
+.items{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(330px,100%),1fr));gap:20px}
+.item{padding:18px 16px 14px}
+.item.ok{background-color:var(--ok-bg)}
+.item.no{background-color:var(--bad-bg)}
+.num{position:absolute;top:-14px;left:-12px;width:34px;height:34px;display:grid;place-items:center;background:var(--ink);color:var(--paper);font-family:'Bangers',sans-serif;font-size:20px;border-radius:50%}
+.q{margin:4px 0 10px;font-size:19px}
+.uaq{margin:2px 0 8px;font-size:18px;padding:4px 8px;border-left:5px solid #3d7bff;background:rgba(255,213,0,.16)}
+.gap{display:inline-block;min-width:90px;border-bottom:3px solid var(--ink);text-align:center}
+.gap.filled{border-bottom-style:dotted}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opts.col{flex-direction:column;align-items:stretch}
+.opt{background:var(--paper);border:3px solid var(--ink);border-radius:8px;padding:5px 14px;box-shadow:3px 3px 0 var(--shadow);text-align:left;font-size:17px}
+.opt:hover{background:var(--g-past)}
+.opt.good{background:var(--ok-bg);outline:3px solid #16a34a;outline-offset:-1px}
+.opt.good::before{content:"✔ "}
+.opt.bad{background:var(--bad-bg);text-decoration:line-through;opacity:.75}
+.opt.dim{opacity:.4}
+.explain{margin:10px 0 0;font-size:16px}
+.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-3px)}}
+
+.fill{font:inherit;font-weight:700;color:var(--red);background:transparent;border:none;border-bottom:3px solid var(--ink);padding:0 4px;min-width:7ch;max-width:100%;border-radius:0}
+.fill.good{background:var(--ok-bg)} .fill.bad{background:var(--bad-bg)} .fill.shown{background:var(--g-past)}
+.hint{color:var(--muted);font-weight:700;font-size:16px}
+.mark{margin:6px 0 0;font-weight:700;font-size:15px;min-height:1em}
+.story{font-size:19px;line-height:2.2;max-width:none}
+.story .sn{font-family:'Bangers',sans-serif;color:var(--blue);font-size:18px;margin-right:3px}
+.story .mk{font-weight:700;margin-left:3px}
+.notebook{background-image:repeating-linear-gradient(transparent 0 40px,rgba(31,79,168,.18) 40px 42px);}
+select.tsel{font:inherit;font-size:16px;color:var(--ink);background:var(--paper);border:3px solid var(--ink);padding:4px 8px;max-width:100%;width:100%}
+select.tsel.good{background:var(--ok-bg)} select.tsel.bad{background:var(--bad-bg)}
+
+.match{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.mcol{display:flex;flex-direction:column;gap:12px}
+.mbtn{background:var(--paper);border:3px solid var(--ink);box-shadow:4px 4px 0 var(--shadow);padding:12px 14px;text-align:left;font-size:18px;min-height:62px}
+.mbtn.sel{background:var(--cap);transform:translate(2px,2px);box-shadow:2px 2px 0 var(--shadow)}
+.mbtn.done{color:#000;cursor:default}
+.mbtn.done .v{color:#b00000}
+
+.zone{min-height:54px;border:3px dashed var(--ink);padding:8px;display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.zone:empty::after{content:"Tap the words below to build the sentence";color:var(--muted);font-size:15px;align-self:center}
+.pool{display:flex;flex-wrap:wrap;gap:6px;min-height:40px}
+.tile{background:var(--paper);border:2px solid var(--ink);box-shadow:2px 2px 0 var(--shadow);padding:3px 10px;font-size:18px;border-radius:5px}
+.tile.v{color:var(--red)}
+
+.sortwrap{display:grid;gap:18px}
+.spool{min-height:60px;border:3px dashed var(--ink);padding:10px;display:flex;flex-wrap:wrap;gap:8px}
+.spool:empty::after{content:"All sentences are in the boxes. Press Check.";color:var(--muted)}
+.boxes{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.box{border:3px solid var(--ink);background:var(--paper);box-shadow:5px 5px 0 var(--shadow);min-height:170px;cursor:pointer}
+.box h4{font-size:21px;padding:6px 10px;border-bottom:3px solid var(--ink)}
+.box:nth-child(1) h4{background:var(--g-past)} .box:nth-child(2) h4{background:var(--g-pres)} .box:nth-child(3) h4{background:var(--g-hab)}
+.drop{display:flex;flex-direction:column;gap:8px;padding:10px}
+.chip{background:var(--paper);border:2px solid var(--ink);box-shadow:3px 3px 0 var(--shadow);padding:6px 10px;text-align:left;font-size:17px}
+.chip.sel{background:var(--cap);outline:3px solid var(--blue)}
+.chip.good{background:var(--ok-bg)} .chip.bad{background:var(--bad-bg)}
+.gs{display:inline-block;min-width:60px;border-bottom:2px solid var(--ink)}
+
+.judge{display:flex;gap:10px;flex-wrap:wrap}
+.fix{margin:10px 0 0;font-weight:700}
+
+.ex-foot{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:26px}
+.ebtn{font-family:'Bangers',sans-serif;font-size:21px;letter-spacing:.05em;border:3px solid var(--ink);padding:5px 16px;box-shadow:4px 4px 0 var(--shadow);background:var(--paper)}
+.ebtn.check{background:var(--yellow);color:#000}
+.ebtn:active{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--shadow)}
+.result{display:flex;align-items:center}
+.score{font-family:'Bangers',sans-serif;font-size:24px;background:var(--paper);border:3px solid var(--ink);padding:2px 12px}
+.boomwrap{filter:drop-shadow(3px 3px 0 var(--ink))}
+.boom{display:grid;place-items:center;width:170px;height:120px;background:var(--yellow);color:#000;font-family:'Bangers',sans-serif;font-size:24px;text-align:center;line-height:1;
+  clip-path:polygon(50% 0%,61% 20%,82% 6%,78% 30%,100% 30%,84% 48%,100% 66%,77% 68%,82% 94%,61% 79%,50% 100%,39% 79%,18% 94%,23% 68%,0% 66%,16% 48%,0% 30%,22% 30%,18% 6%,39% 20%);animation:pop .3s}
+
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:10;background:var(--paper);border-top:3px solid var(--ink);
+  padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;justify-content:space-between;gap:10px}
+.navbtn{font-family:'Bangers',sans-serif;font-size:22px;letter-spacing:.05em;background:var(--yellow);color:#000;border:3px solid var(--ink);padding:4px 16px;box-shadow:3px 3px 0 var(--shadow)}
+.navbtn:disabled{opacity:.35;cursor:default}
+.navmid{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0}
+.where{font-family:'Special Elite',monospace;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:48vw}
+.dots{display:flex;gap:6px}
+.dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--ink);background:var(--paper);padding:0}
+.dot.on{background:var(--ink)}
+.dot.sep{margin-left:8px}
+
+@media (max-width:820px){
+  .boxes{grid-template-columns:1fr}
+}
+@media (max-width:760px){
+  body{font-size:17px}
+  .hero{grid-template-columns:1fr;padding:20px}
+  .hero-art{order:-1}
+  .match{grid-template-columns:1fr}
+  .dots{display:none}
+  .navbtn{font-size:19px;padding:4px 10px}
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand">File #0611 · Harbour Street</div>
+  <div class="stars" title="Correct answers">★ <span id="stars">0</span></div>
+</div>
+
+<main id="slides">
+
+<!-- SLIDE 1 -->
+<section class="slide active" data-title="Cold Case">
+  <div class="panel hero">
+    <div>
+      <span class="caption">A grammar comic for adults</span>
+      <h1 class="logo">Cold Case</h1>
+      <p class="sub">Twenty years later, Inspector Ray Novak reopens the Harbour Street diamond robbery.</p>
+      <span class="level">Level B2 · Narrative tenses</span>
+      <div class="badges">
+        <span class="badge">Past Simple</span><span class="badge">Past Continuous</span>
+        <span class="badge">Past Perfect</span><span class="badge">Past Perfect Continuous</span>
+        <span class="badge">Present Perfect</span><span class="badge">Present Perfect Continuous</span>
+        <span class="badge">Used to</span><span class="badge">Would</span>
+      </div>
+      <button class="big-btn" type="button" data-go="1">Open the file ▶</button>
+    </div>
+    <div class="hero-art">
+      <div class="bubble">Twenty years ago, someone <span class="v">walked</span> out of that shop with a million in diamonds. I <span class="v">have been chasing</span> him ever since, and today I <span class="v">have found</span> something nobody <span class="v">had noticed</span> before.</div>
+      <svg class="noir" viewBox="0 0 320 260" role="img" aria-label="A detective in a hat and trench coat standing under a streetlight in the rain">
+        <rect width="320" height="260" fill="#16202e"/>
+        <rect x="0" y="40" width="70" height="220" fill="#0e151f"/>
+        <rect x="12" y="62" width="14" height="18" fill="#ffd43b" opacity=".55"/>
+        <rect x="38" y="100" width="14" height="18" fill="#ffd43b" opacity=".35"/>
+        <rect x="12" y="140" width="14" height="18" fill="#ffd43b" opacity=".2"/>
+        <polygon points="240,64 150,260 330,260" fill="#ffd43b" opacity=".25"/>
+        <rect x="236" y="58" width="8" height="202" fill="#000"/>
+        <path d="M224 46 h32 l-7 14 h-18 z" fill="#000"/>
+        <circle cx="240" cy="64" r="6" fill="#ffe680"/>
+        <g stroke="#9bb3d1" stroke-width="2" opacity=".45" stroke-linecap="round">
+          <line x1="90" y1="10" x2="80" y2="34"/><line x1="140" y1="22" x2="130" y2="46"/><line x1="200" y1="6" x2="190" y2="30"/>
+          <line x1="280" y1="30" x2="270" y2="54"/><line x1="110" y1="70" x2="100" y2="94"/><line x1="300" y1="110" x2="290" y2="134"/>
+          <line x1="60" y1="20" x2="50" y2="44"/><line x1="170" y1="60" x2="160" y2="84"/><line x1="260" y1="150" x2="250" y2="174"/>
+        </g>
+        <ellipse cx="160" cy="250" rx="90" ry="8" fill="#ffd43b" opacity=".18"/>
+        <g fill="#000">
+          <path d="M112 260 L120 168 Q128 140 160 136 Q192 140 200 168 L208 260 Z"/>
+          <ellipse cx="160" cy="114" rx="19" ry="23"/>
+          <path d="M138 100 Q140 72 160 74 Q180 72 182 100 Z"/>
+          <ellipse cx="160" cy="100" rx="40" ry="7.5"/>
+        </g>
+        <rect x="140" y="92" width="40" height="5" fill="#3a3a3a"/>
+        <path d="M146 140 L160 178 L174 140" fill="none" stroke="#2f2f2f" stroke-width="4"/>
+        <path d="M182 100 Q186 108 178 128 M200 168 L208 260" fill="none" stroke="#ffd43b" stroke-width="2.5" opacity=".8"/>
+      </svg>
+      <span class="stamp">Case reopened</span>
+    </div>
+  </div>
+  <p class="legend">Every <b>predicate</b> (the verb part of a sentence) in this comic <span class="v">is</span> red.</p>
+</section>
+
+<!-- SLIDE 2 -->
+<section class="slide" data-title="Warm-up Interview">
+  <span class="caption">Warm-up</span>
+  <h2 class="slide-title">The Interview Room</h2>
+  <p class="task">Answer in detail, the way a witness would. Use <b>the same tense</b> as the question, then try the follow-up.</p>
+  <div class="warm" id="warm"></div>
+  <button class="big-btn" type="button" id="randQ">🎲 Random question</button>
+</section>
+
+<!-- SLIDE 3 -->
+<section class="slide" data-title="Grammar Cards">
+  <span class="caption">Grammar cards</span>
+  <h2 class="slide-title">The Detective's Tense File</h2>
+  <div class="groups"><span class="g-past">Telling a past story</span><span class="g-pres">Past connected to now</span><span class="g-hab">Past habits</span></div>
+  <div class="gcards" id="gcards"></div>
+</section>
+
+</main>
+
+<nav class="nav" aria-label="Slides">
+  <button class="navbtn" type="button" id="prev">◀ Back</button>
+  <div class="navmid"><div class="where" id="where"></div><div class="dots" id="dots"></div></div>
+  <button class="navbtn" type="button" id="next">Next ▶</button>
+</nav>
+
+<script>
+const V=s=>s.replace(/\{\{(.+?)\}\}/g,'<span class="v t">$1</span>').replace(/\[\[(.+?)\]\]/g,'<span class="v">$1</span>');
+function el(tag,cls,html){const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function norm(s){return (s||'').toLowerCase().replace(/[’‘`´]/g,"'").replace(/'d\b/g,' had').replace(/'ve\b/g,' have').replace(/'m\b/g,' am').replace(/[.,!?;:"“”]/g,'').replace(/\s+/g,' ').trim()}
+function shake(n){n.classList.remove('shake');void n.offsetWidth;n.classList.add('shake')}
+
+/* WARM-UP */
+const WARM=[
+ {q:'What [[were]] you [[doing]] when you [[heard]] about a world event that you still [[remember]] clearly?',f:'Who [[were]] you with?',t:'Past Continuous + Past Simple'},
+ {q:'What [[did]] you [[use to believe]] at twenty that you no longer [[believe]]?',f:'What [[changed]] your mind?',t:'Used to'},
+ {q:'[[Had]] you already [[chosen]] your career by the time you [[finished]] school, or [[did]] it [[happen]] later?',f:'What [[had]] you [[dreamt]] of doing as a kid?',t:'Past Perfect'},
+ {q:'What [[have]] you [[been focusing]] on lately, at work or at home?',f:'How long [[have]] you [[been doing]] it?',t:'Present Perfect Continuous'},
+ {q:'What [[is]] the most memorable trip you [[have]] ever [[taken]]?',f:'[[Have]] you [[been]] back since?',t:'Present Perfect'}
+];
+const warm=document.getElementById('warm');
+WARM.forEach((w,i)=>warm.append(el('div','bubble',`<span class="qnum">Q${i+1}</span>${V(w.q)}<span class="follow"><b>Follow-up:</b> ${V(w.f)}</span><span class="ttag">${w.t}</span>`)));
+document.getElementById('randQ').addEventListener('click',()=>{const b=[...warm.children];b.forEach(x=>x.classList.remove('pick'));b[Math.floor(Math.random()*b.length)].classList.add('pick')});
+
+/* GRAMMAR CARDS */
+const GRAM=[
+ {g:'g-past',n:'Past Simple',f:'V2 / V-ed • didn’t + V • Did … + V?',u:'Finished actions and states at a definite past time; the main events of a story, in order.',m:['in 2006','… ago','the other day','back then','when'],w:'Not with an unfinished time period or “since”.',e:['The alarm [[went]] off, and the guard [[called]] the police.']},
+ {g:'g-past',n:'Past Continuous',f:'was / were + V-ing',u:'An action in progress at a past moment; the background or atmosphere of a story; an interrupted action.',m:['while','as','at that moment','all night','when'],w:'With “always” it shows an annoying past habit: He [[was always losing]] his keys.',e:['It [[was raining]] when the alarm [[went]] off.']},
+ {g:'g-past',n:'Past Perfect',f:'had + V3',u:'An action completed before another past action or moment; “the past of the past”.',m:['by the time','before','after','already','until','no sooner … than','hardly … when'],w:'It [[was]] the first time I [[had seen]] … • I [[had hoped]] … (a plan that failed).',e:['By the time Ray [[arrived]], the thieves [[had disappeared]].']},
+ {g:'g-past',n:'Past Perfect Continuous',f:'had been + V-ing',u:'A longer action continuing up to a past moment; explains a past result.',m:['for','since','how long','all morning','by then'],w:'Not with state verbs: [[had known]], not had been knowing.',e:['His eyes [[were]] red. He [[had been watching]] the cameras all night.']},
+ {g:'g-pres',n:'Present Perfect',f:'have / has + V3',u:'Life experience; a past action with a result now; an unfinished time period.',m:['ever','never','yet','already','so far','this year','since','recently'],w:'This [[is]] the first time I [[have seen]] … • a number of completed things: I [[have read]] 3 reports.',e:['Ray [[has interviewed]] twelve witnesses so far.']},
+ {g:'g-pres',n:'Present Perfect Continuous',f:'have / has been + V-ing',u:'Duration up to now; recent activity with visible evidence; temporary situations.',m:['for','since','how long','lately','all week','recently'],w:'Focus on the activity, not the result: I [[have been reading]] reports all day.',e:['You [[look]] tired. [[Have]] you [[been working]] nights again?']},
+ {g:'g-hab',n:'Used to',f:'used to + V • didn’t use to • Did … use to?',u:'Past habits AND past states that are no longer true.',m:['in those days','back then','no longer','not … anymore'],w:'Don’t mix up: [[be used to]] / [[get used to]] + -ing = be / become accustomed.',e:['Ray [[used to smoke]]. He [[didn’t use to care]] about his health.']},
+ {g:'g-hab',n:'Would',f:'would + V',u:'Repeated past actions in memories and stories, often nostalgic; typical behaviour.',m:['every Friday','whenever','in those days','sometimes','often'],w:'Never for states: [[used to have]] a car, not would have.',e:['On Fridays the team [[would meet]] at Mickey’s bar.']}
+];
+const gc=document.getElementById('gcards');
+GRAM.forEach(g=>gc.append(el('article','gcard '+g.g,
+ `<header><h3>${g.n}</h3></header><div class="gbody"><div class="formula">${g.f}</div><p class="use">${g.u}</p>
+ <div class="markers"><span class="ml">Time markers:</span>${g.m.map(x=>`<span class="chip-m">${x}</span>`).join('')}</div>
+ <p class="watch"><b>Watch out:</b> ${V(g.w)}</p>
+ <div class="gex">${g.e.map(x=>`<p>${V(x)}</p>`).join('')}</div></div>`)));
+
+/* EXERCISES */
+const FUNCS=['Background action in a story','Earlier action before another past action','Long action up to a past moment','Past habit or state that is no longer true','Repeated action in a nostalgic memory','Experience or result connected to now','Recent activity with visible evidence now','Annoying habit in the past'];
+const EX=[
+ {type:'choice',title:'The Night of the Robbery',focus:'Past Simple, Continuous or Perfect',task:'Choose the best form for each panel of the story.',items:[
+  {q:'It ___ heavily when the alarm [[went]] off at 2:14 a.m.',o:['[[was raining]]','[[rained]]','[[had rained]]'],a:0},
+  {q:'By the time the first patrol car [[arrived]], the thieves ___.',o:['[[disappeared]]','[[were disappearing]]','[[had disappeared]]'],a:2},
+  {q:'The night guard ___ that he [[had been watching]] the cameras all night.',o:['[[insisted]]','[[had been insisting]]','[[has insisted]]'],a:0},
+  {q:'While Ray ___ the back door, his partner [[was talking]] to the neighbours.',o:['[[examined]]','[[was examining]]','[[had examined]]'],a:1},
+  {q:'Ray ___ the guard somewhere before, but he [[couldn’t remember]] where.',o:['[[met]]','[[was meeting]]','[[had met]]'],a:2},
+  {q:'As soon as Ray ___ the open safe, he [[knew]] it [[was]] an inside job.',o:['[[saw]]','[[was seeing]]','[[had been seeing]]'],a:0}
+ ]},
+ {type:'type',story:true,title:'Ray’s Notebook, 2006',focus:'Mixed narrative tenses',task:'Complete the detective’s notes. Put the verbs in brackets into the correct past form. Contractions are fine.',items:[
+  {q:'Victor Sallow ___ at the jewellery shop for only three months when the robbery [[happened]].',h:'work',a:['had been working','had worked']},
+  {q:'Before that, he ___ his job at a bank after a scandal.',h:'lose',a:['had lost']},
+  {q:'On the night of the robbery, he ___ that he [[was]] at home, asleep.',h:'claim',a:['claimed']},
+  {q:'But at 1:30 a.m. a taxi driver ___ a man in a grey coat near the shop.',h:'notice',a:['noticed']},
+  {q:'The man ___ up and down and [[kept]] looking at his watch.',h:'walk',a:['was walking']},
+  {q:'When Ray ___ Sallow two days later, his hands [[were shaking]].',h:'question',a:['questioned']},
+  {q:'He clearly ___ for days.',h:'not / sleep',a:['hadn’t slept','had not slept','hadn’t been sleeping','had not been sleeping']},
+  {q:'In fifteen years on the force, Ray ___ such a nervous suspect.',h:'never / meet',a:['had never met']}
+ ]},
+ {type:'match',title:'Match the Halves',focus:'B2 structures: inversion, “the first time”, “since”',task:'Tap the beginning of a sentence, then tap its ending.',items:[
+  {l:'No sooner [[had]] Ray [[closed]] the file',r:'than the phone [[rang]] again.'},
+  {l:'Hardly [[had]] the guard [[sat]] down',r:'when the alarm [[went]] off.'},
+  {l:'It [[was]] the first time Ray',r:'[[had seen]] a safe opened so cleanly.'},
+  {l:'It [[has been]] twenty years',r:'since the diamonds [[disappeared]].'},
+  {l:'This [[is]] the third time',r:'Lena [[has called]] me today.'},
+  {l:'Ray [[had been hoping]] for a confession,',r:'but Sallow [[said]] nothing.'}
+ ]},
+ {type:'select',title:'Why This Tense?',focus:'Meaning and function',task:'Look at the underlined predicate. Why is it in this form? Choose its function.',opts:FUNCS,items:[
+  {q:'In those days, Ray {{would spend}} every Friday night at Mickey’s bar.',a:4},
+  {q:'The guard’s eyes [[were]] red. He {{had been staring}} at the monitors for hours.',a:2},
+  {q:'His old partner {{was always losing}} the car keys!',a:7},
+  {q:'It {{was raining}}, and the streets [[were]] empty.',a:0},
+  {q:'Ray {{used to smoke}}, but he [[quit]] years ago.',a:3},
+  {q:'By the time Ray [[arrived]], the thieves {{had left}}.',a:1},
+  {q:'{{Have}} you ever {{worked}} on a case like this?',a:5},
+  {q:'Your hands [[are]] dirty. {{Have}} you {{been digging}} in the garden?',a:6}
+ ]},
+ {type:'choice',ua:true,title:'Ukrainian → English',focus:'Translation',task:'Choose the correct English translation of the Ukrainian sentence.',items:[
+  {q:'Я [[працюю]] в поліції з 2004 року.',o:['I [[have been working]] for the police since 2004.','I [[am working]] for the police since 2004.','I [[worked]] for the police since 2004.'],a:0},
+  {q:'Ледве він [[зайшов]] у кімнату, як [[погасло]] світло.',o:['Hardly [[had]] he [[entered]] the room when the lights [[went]] out.','Hardly he [[entered]] the room when the lights [[had gone]] out.','Hardly [[did]] he [[enter]] the room than the lights [[were going]] out.'],a:0},
+  {q:'Я [[сподівався]] закрити справу до Різдва, але не [[вийшло]].',o:['I [[had hoped]] to close the case before Christmas, but it [[didn’t work]] out.','I [[have hoped]] to close the case before Christmas, but it [[didn’t work]] out.','I [[hoped]] to close the case before Christmas, but it [[hasn’t worked]] out.'],a:0},
+  {q:'Вона вічно [[запізнювалася]] на наради!',o:['She [[was always arriving]] late for meetings!','She [[had always arrived]] late for meetings!','She [[has always been arriving]] late for meetings!'],a:0},
+  {q:'Я досі не [[можу]] звикнути до нічних змін.',o:['I still [[can’t get used to]] working night shifts.','I still [[can’t used to]] work night shifts.','I still [[can’t get used to]] work night shifts.'],a:0},
+  {q:'Це вперше я [[бачу]] таку чисту роботу.',o:['This [[is]] the first time I [[have seen]] such a clean job.','This [[is]] the first time I [[see]] such a clean job.','This [[is]] the first time I [[saw]] such a clean job.'],a:0}
+ ]},
+ {type:'order',ua:true,title:'Build the Sentence',focus:'Word order',task:'Read the Ukrainian sentence and tap the English words in the correct order. Tap a word again to send it back.',items:[
+  {ua:'Ледве ми [[приїхали]], як [[почався]] дощ.',w:['Hardly','*had','we','*arrived','when','it','*started','*to','*rain.']},
+  {ua:'Раніше я не [[любив]] каву.',w:['I','*didn’t','*use','*to','*like','coffee.']},
+  {ua:'Скільки часу ти [[чекав]], перш ніж вони [[відповіли]]?',w:['How','long','*had','you','*been','*waiting','before','they','*answered?']},
+  {ua:'Він [[звик]] працювати вночі.',w:['He','*is','*used','*to','*working','at','night.']},
+  {ua:'Щойно Рей [[повернувся]] додому, як [[задзвонив]] телефон.',w:['No','sooner','*had','Ray','*got','home','than','the','phone','*rang.']}
+ ]},
+ {type:'choice',title:'Used to, Would or Be / Get Used to?',focus:'Past habits vs being accustomed',task:'Choose the correct form for each gap.',items:[
+  {q:'Ray ___ have a moustache in the nineties.',o:['[[used to]]','[[would]]','[[was used to]]'],a:0,e:'A past <b>state</b> that is no longer true → used to. “Would” is not possible with states.'},
+  {q:'After twenty years of night shifts, he ___ sleeping during the day.',o:['[[is used to]]','[[used to]]','[[would]]'],a:0,e:'<b>be used to + -ing</b> = to be accustomed to something.'},
+  {q:'Every Sunday his father ___ take him fishing on the lake.',o:['[[would]]','[[was used to]]','[[got used to]]'],a:0,e:'A repeated past <b>action</b> in a memory → would (used to is also possible).'},
+  {q:'Moving to the city was hard, but Lena quickly ___ the noise.',o:['[[got used to]]','[[used to]]','[[would]]'],a:0,e:'<b>get used to + noun / -ing</b> = to become accustomed.'},
+  {q:'As a rookie, Ray ___ like paperwork at all.',o:['[[didn’t use to]]','[[wouldn’t]]','[[wasn’t used to]]'],a:0,e:'<b>like</b> is a state → didn’t use to (no -d after didn’t!).'},
+  {q:'I’ll never ___ waking up at 5 a.m.!',o:['[[get used to]]','[[use to]]','[[would]]'],a:0,e:'After <b>will</b> and other modals → get used to + -ing.'}
+ ]},
+ {type:'sort',title:'Sort the Evidence',focus:'Past Simple vs Present Perfect vs Present Perfect Continuous',task:'Which form does the gap need? Tap a sentence, then tap the right box.',boxes:['Past Simple','Present Perfect','Present Perfect Continuous'],items:[
+  {q:'Ray ___ (join) the police in 2004.',a:0},
+  {q:'So far he ___ (interview) twelve witnesses.',a:1},
+  {q:'His eyes [[are]] red. He ___ (stare) at the screen all night.',a:2},
+  {q:'Ever since that night, Sallow ___ (not trust) anyone.',a:1},
+  {q:'Someone ___ (smoke) in here. The room [[smells]] awful.',a:2},
+  {q:'When ___ you last ___ (see) her?',a:0},
+  {q:'This [[is]] the first time I ___ (visit) this prison.',a:1},
+  {q:'I ___ (try) to call you all morning! Where [[were]] you?',a:2},
+  {q:'Lena ___ (retire) two years ago.',a:0}
+ ]},
+ {type:'judge',title:'Spot the Mistake',focus:'Typical B2 errors',task:'Is the sentence correct or wrong? Look closely at the red predicates.',items:[
+  {q:'I [[am knowing]] Lena since we [[were]] at the academy.',ok:false,fix:'I [[have known]] Lena since we [[were]] at the academy.'},
+  {q:'By the time we [[got]] there, the shop [[had been closed]] for an hour.',ok:true},
+  {q:'When I [[was]] young, I [[would live]] by the sea.',ok:false,fix:'When I [[was]] young, I [[used to live]] by the sea. (a state → not would)'},
+  {q:'He [[didn’t used to]] drink coffee.',ok:false,fix:'He [[didn’t use to]] drink coffee.'},
+  {q:'I [[have been reading]] three reports this morning.',ok:false,fix:'I [[have read]] three reports this morning. (a number of finished things)'},
+  {q:'We [[had been driving]] for six hours when the engine [[broke]] down.',ok:true},
+  {q:'This [[is]] the first time I [[eat]] sushi.',ok:false,fix:'This [[is]] the first time I [[have eaten]] sushi.'},
+  {q:'I [[am]] not [[used to drive]] on the left.',ok:false,fix:'I [[am]] not [[used to driving]] on the left.'},
+  {q:'[[Did]] you [[see]] the news yesterday?',ok:true}
+ ]},
+ {type:'type',ua:true,title:'Finish the Translation',focus:'Translation',task:'Read the Ukrainian sentence. Write the missing English predicate using the words in brackets.',items:[
+  {ua:'Коли ми [[приїхали]], вистава вже [[почалася]].',q:'When we [[arrived]], the show ___.',h:'already / start',a:['had already started','had started already','had started']},
+  {ua:'Я [[шукаю]] нову роботу вже пів року.',q:'I ___ for a new job for six months.',h:'look',a:['have been looking']},
+  {ua:'Він [[був]] втомлений, бо цілий день [[працював]] у саду.',q:'He [[was]] tired because he ___ in the garden all day.',h:'work',a:['had been working']},
+  {ua:'У дитинстві ми щоліта [[їздили]] до бабусі в село.',q:'As kids, we ___ to our grandma’s village every summer.',h:'would / go',a:['would go']},
+  {ua:'Скільки разів ти [[був]] за кордоном?',q:'How many times ___ abroad?',h:'you / be',a:['have you been']},
+  {ua:'Я досі не [[звик]] до нового графіка.',q:'I still ___ to the new schedule.',h:'not / be / used',a:['am not used']},
+  {ua:'Ледве я [[ліг]] спати, як [[задзвонив]] телефон.',q:'Hardly ___ to bed when the phone [[rang]].',h:'I / go',a:['had I gone']}
+ ]}
+];
+
+const TOTAL=EX.reduce((s,e)=>s+e.items.length,0);
+const scores=EX.map(()=>0),results=[];
+function setScore(idx,n,done){
+ scores[idx]=n;
+ document.getElementById('stars').textContent=scores.reduce((a,b)=>a+b,0)+' / '+TOTAL;
+ const r=results[idx],tot=EX[idx].items.length;
+ if(!done){r.innerHTML='';return}
+ r.innerHTML=n===tot?`<span class="boomwrap"><span class="boom">Case closed!<br>${n} / ${tot}</span></span>`:`<span class="score">Score: ${n} / ${tot}</span>`;
+}
+
+const R={
+ choice(ex,body,idx){
+  let first=0,answered=0;const grid=el('div','items');
+  ex.items.forEach((it,k)=>{
+   const p=el('div','panel item');
+   p.innerHTML=`<span class="num">${k+1}</span><p class="q${ex.ua?' uaq':''}">${V(it.q).replace('___','<span class="gap">&nbsp;</span>')}</p><div class="opts${ex.ua?' col':''}"></div><p class="explain" hidden></p>`;
+   const opts=p.querySelector('.opts'),gap=p.querySelector('.gap'),exp=p.querySelector('.explain');
+   let tried=false,done=false;
+   shuffle(it.o.map((_,j)=>j)).forEach(j=>{
+    const o=it.o[j],b=el('button','opt',V(o));b.type='button';
+    b.addEventListener('click',()=>{
+     if(done||b.classList.contains('bad'))return;
+     if(j===it.a){done=true;answered++;if(!tried)first++;b.classList.add('good');p.classList.add('ok');
+      opts.querySelectorAll('.opt').forEach(x=>{if(x!==b)x.classList.add('dim')});
+      if(gap){gap.innerHTML=V(o);gap.classList.add('filled')}
+      if(it.e){exp.innerHTML='💡 '+it.e;exp.hidden=false}
+      setScore(idx,first,answered===ex.items.length);
+     }else{tried=true;b.classList.add('bad');shake(p)}
+    });opts.append(b);
+   });
+   grid.append(p);
+  });
+  body.append(grid);return {};
+ },
+ type(ex,body,idx){
+  const rows=[];
+  const field=(it,k)=>{const w=Math.max(...it.a.map(x=>x.length))+3;
+   return `<input class="fill" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" style="width:${w}ch" aria-label="Answer ${k+1}"> <span class="hint">(${it.h})</span>`};
+  if(ex.story){
+   const p=el('div','panel story notebook');
+   p.innerHTML=ex.items.map((it,k)=>`<span class="sent"><span class="sn">${k+1}</span>${V(it.q).replace('___',field(it,k))}<span class="mk"></span></span>`).join(' ');
+   [...p.querySelectorAll('.sent')].forEach((s,k)=>rows.push({inp:s.querySelector('input'),mk:s.querySelector('.mk'),it:ex.items[k]}));
+   body.append(p);
+  }else{
+   const grid=el('div','items');
+   ex.items.forEach((it,k)=>{
+    const p=el('div','panel item');
+    p.innerHTML=`<span class="num">${k+1}</span>${it.ua?`<p class="uaq">${V(it.ua)}</p>`:''}<p class="q">${V(it.q).replace('___',field(it,k))}</p><p class="mark mk"></p>`;
+    rows.push({inp:p.querySelector('input'),mk:p.querySelector('.mk'),it});grid.append(p);
+   });
+   body.append(grid);
+  }
+  const api={
+   check(){let n=0;rows.forEach(({inp,mk,it})=>{const ok=it.a.some(a=>norm(a)===norm(inp.value));if(ok)n++;inp.classList.remove('shown');
+     inp.classList.toggle('good',ok);inp.classList.toggle('bad',!ok);mk.textContent=ok?'✔':'✘'});setScore(idx,n,true)},
+   show(){rows.forEach(({inp,mk,it})=>{inp.value=it.a[0];inp.classList.remove('good','bad');inp.classList.add('shown');mk.textContent=''})}
+  };
+  rows.forEach(({inp,mk})=>{inp.addEventListener('keydown',e=>{if(e.key==='Enter')api.check()});
+   inp.addEventListener('input',()=>{inp.classList.remove('good','bad','shown');mk.textContent=''})});
+  return api;
+ },
+ select(ex,body,idx){
+  const grid=el('div','items'),rows=[];
+  ex.items.forEach((it,k)=>{
+   const p=el('div','panel item');p.innerHTML=`<span class="num">${k+1}</span><p class="q">${V(it.q)}</p>`;
+   const s=el('select','tsel');s.setAttribute('aria-label','Function of sentence '+(k+1));
+   s.innerHTML='<option value="">— choose —</option>'+ex.opts.map((t,i)=>`<option value="${i}">${t}</option>`).join('');
+   s.addEventListener('change',()=>s.classList.remove('good','bad'));
+   p.append(s);rows.push({s,it});grid.append(p);
+  });
+  body.append(grid);
+  return {
+   check(){let n=0;rows.forEach(({s,it})=>{const ok=s.value!==''&&+s.value===it.a;if(ok)n++;s.classList.toggle('good',ok);s.classList.toggle('bad',!ok)});setScore(idx,n,true)},
+   show(){rows.forEach(({s,it})=>{s.value=String(it.a);s.classList.remove('bad');s.classList.add('good')})}
+  };
+ },
+ match(ex,body,idx){
+  const wrap=el('div','match'),L=el('div','mcol'),Rc=el('div','mcol');
+  const colors=['#9fd3ff','#b6f0b0','#ffd59a','#ffc4e1','#d9c8ff','#ffe98a'];
+  let sel=null,matched=0,first=0;const missed=new Set();
+  ex.items.forEach((it,k)=>{const b=el('button','mbtn',V(it.l));b.type='button';b.dataset.k=k;
+   b.addEventListener('click',()=>{if(b.classList.contains('done'))return;L.querySelectorAll('.mbtn').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');sel=k});L.append(b)});
+  shuffle(ex.items.map((_,k)=>k)).forEach(k=>{const b=el('button','mbtn',V(ex.items[k].r));b.type='button';
+   b.addEventListener('click',()=>{
+    if(sel===null||b.classList.contains('done'))return;const lb=L.querySelector(`[data-k="${sel}"]`);
+    if(k===sel){[lb,b].forEach(x=>{x.classList.add('done');x.classList.remove('sel');x.style.background=colors[k]});matched++;if(!missed.has(k))first++;sel=null;setScore(idx,first,matched===ex.items.length)}
+    else{missed.add(sel);shake(b);shake(lb)}
+   });Rc.append(b)});
+  wrap.append(L,Rc);body.append(wrap);return {};
+ },
+ order(ex,body,idx){
+  const grid=el('div','items'),rows=[];
+  ex.items.forEach((it,k)=>{
+   const p=el('div','panel item');p.innerHTML=`<span class="num">${k+1}</span><p class="uaq">${V(it.ua)}</p>`;
+   const zone=el('div','zone'),pool=el('div','pool'),mark=el('p','mark');
+   const tiles=it.w.map((t,i)=>({t:t.replace(/^\*/,''),red:t.startsWith('*'),i}));
+   let sh;do{sh=shuffle(tiles)}while(sh.every((x,j)=>x.i===j));
+   sh.forEach(t=>{const b=el('button','tile'+(t.red?' v':''),t.t);b.type='button';b.dataset.i=t.i;
+    b.addEventListener('click',()=>{(b.parentElement===pool?zone:pool).append(b);mark.textContent='';p.classList.remove('ok','no')});pool.append(b)});
+   p.append(zone,pool,mark);rows.push({p,zone,pool,mark,it});grid.append(p);
+  });
+  body.append(grid);
+  const target=it=>it.w.map(t=>t.replace(/^\*/,'')).join(' ');
+  return {
+   check(){let n=0;rows.forEach(({p,zone,pool,mark,it})=>{const got=[...zone.children].map(b=>b.textContent).join(' ');const ok=pool.children.length===0&&got===target(it);
+    if(ok)n++;p.classList.toggle('ok',ok);p.classList.toggle('no',!ok);mark.textContent=ok?'✔ Correct!':'✘ Not yet'});setScore(idx,n,true)},
+   show(){rows.forEach(({p,zone,pool,mark})=>{[...zone.children,...pool.children].sort((a,b)=>a.dataset.i-b.dataset.i).forEach(b=>zone.append(b));p.classList.remove('no');mark.textContent=''})}
+  };
+ },
+ sort(ex,body,idx){
+  const wrap=el('div','sortwrap'),pool=el('div','spool'),boxes=el('div','boxes');let sel=null;
+  const drops=ex.boxes.map(name=>{const b=el('div','box',`<h4>${name}</h4>`);const d=el('div','drop');b.append(d);
+   b.addEventListener('click',()=>{if(sel){d.append(sel);sel.classList.remove('sel');sel=null}});boxes.append(b);return d});
+  pool.addEventListener('click',e=>{if(e.target===pool&&sel){pool.append(sel);sel.classList.remove('sel');sel=null}});
+  const chips=shuffle(ex.items.map((it,k)=>({it,k}))).map(({it,k})=>{
+   const c=el('button','chip',V(it.q).replace(/___/g,'<span class="gs">&nbsp;</span>'));c.type='button';c.dataset.k=k;
+   c.addEventListener('click',e=>{e.stopPropagation();c.classList.remove('good','bad');
+    if(sel===c){c.classList.remove('sel');sel=null;return}if(sel)sel.classList.remove('sel');sel=c;c.classList.add('sel')});
+   pool.append(c);return c;
+  });
+  wrap.append(pool,boxes);body.append(wrap);
+  return {
+   check(){let n=0;chips.forEach(c=>{const ok=drops.indexOf(c.parentElement)===ex.items[c.dataset.k].a;if(ok)n++;c.classList.toggle('good',ok);c.classList.toggle('bad',!ok)});setScore(idx,n,true)},
+   show(){chips.forEach(c=>{drops[ex.items[c.dataset.k].a].append(c);c.classList.remove('bad','sel');c.classList.add('good')});sel=null}
+  };
+ },
+ judge(ex,body,idx){
+  const grid=el('div','items');let score=0,answered=0;
+  ex.items.forEach((it,k)=>{
+   const p=el('div','panel item');p.innerHTML=`<span class="num">${k+1}</span><p class="q">${V(it.q)}</p>`;
+   const row=el('div','judge'),fix=el('p','fix');fix.hidden=true;let done=false;
+   [['✔ Correct',true],['✘ Wrong',false]].forEach(([label,val])=>{
+    const b=el('button','opt',label);b.type='button';
+    b.addEventListener('click',()=>{if(done)return;done=true;answered++;const right=val===it.ok;if(right)score++;
+     b.classList.add(right?'good':'bad');p.classList.add(right?'ok':'no');if(!right)shake(p);
+     fix.innerHTML=it.ok?'This sentence is correct.':'✍ Correct version: '+V(it.fix);fix.hidden=false;
+     setScore(idx,score,answered===ex.items.length)});
+    row.append(b);
+   });
+   p.append(row,fix);grid.append(p);
+  });
+  body.append(grid);return {};
+ }
+};
+
+const main=document.getElementById('slides');
+EX.forEach((ex,idx)=>{
+ const sec=el('section','slide');sec.dataset.title=`Exercise ${idx+1}: ${ex.title}`;
+ sec.innerHTML=`<div class="ex-head"><span class="caption">Exercise ${idx+1}</span><span class="focus">${ex.focus}</span>${ex.ua?'<span class="uatag">UA → EN</span>':''}</div>
+ <h2 class="slide-title">${ex.title}</h2><p class="task">${ex.task}</p><div class="ex-body"></div>
+ <div class="ex-foot"><button class="ebtn check" type="button">Check</button><button class="ebtn show" type="button">Show answers</button><button class="ebtn again" type="button">↺ Start again</button><div class="result" aria-live="polite"></div></div>`;
+ main.append(sec);
+ const body=sec.querySelector('.ex-body'),bc=sec.querySelector('.check'),bs=sec.querySelector('.show');
+ results[idx]=sec.querySelector('.result');let api;
+ function build(){body.innerHTML='';api=R[ex.type](ex,body,idx);bc.hidden=!api.check;bs.hidden=!api.show;setScore(idx,0,false)}
+ bc.addEventListener('click',()=>api.check&&api.check());
+ bs.addEventListener('click',()=>api.show&&api.show());
+ sec.querySelector('.again').addEventListener('click',build);
+ build();
+});
+
+const slides=[...document.querySelectorAll('.slide')];
+const dots=document.getElementById('dots'),where=document.getElementById('where'),prev=document.getElementById('prev'),next=document.getElementById('next');
+slides.forEach((s,i)=>{const d=el('button','dot'+(i===3?' sep':''));d.type='button';d.title=s.dataset.title;d.setAttribute('aria-label',s.dataset.title);d.addEventListener('click',()=>go(i));dots.append(d)});
+let cur=0;
+function go(n){
+ cur=Math.max(0,Math.min(slides.length-1,n));
+ slides.forEach((s,i)=>s.classList.toggle('active',i===cur));
+ [...dots.children].forEach((d,i)=>d.classList.toggle('on',i===cur));
+ where.textContent=`${cur+1}/${slides.length} · ${slides[cur].dataset.title}`;
+ prev.disabled=cur===0;next.disabled=cur===slides.length-1;window.scrollTo({top:0});
+}
+prev.addEventListener('click',()=>go(cur-1));
+next.addEventListener('click',()=>go(cur+1));
+document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>go(+b.dataset.go)));
+document.addEventListener('keydown',e=>{const t=document.activeElement&&document.activeElement.tagName;if(t==='INPUT'||t==='SELECT'||t==='TEXTAREA')return;
+ if(e.key==='ArrowRight')go(cur+1);if(e.key==='ArrowLeft')go(cur-1)});
+go(0);
+</script>
+</body>
+</html>
